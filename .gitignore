@@ -1,5 +1,6 @@
 etd/*
 *.pyc
+*swp
 local_settings.py
 local_urls.py
 aristotle/catalog/solr_cache
