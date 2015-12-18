@@ -5,6 +5,7 @@ local_urls.py
 aristotle/catalog/solr_cache
 aristotle/aristotle.sqlite
 aristotle/dev.db
+instance*
 log
 site_media
 sitestatic

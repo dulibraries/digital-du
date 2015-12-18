@@ -1,6 +1,5 @@
-{% load discovery_extras %}
 <form class="form-search" data-bind="submit: searchCatalog">
-      <img src="{{ STATIC_URL }}img/bg/library/mag-glass.png" style="float:left"/>
+      <img src="{{ url_for('static', filename="img/bg/library/mag-glass.png") }}" style="float:left"/>
       <select data-bind="click: searchRouting,
                          options: searchingOptions,
                          optionsText: 'name',
@@ -18,7 +17,7 @@
              style="width:270px;padding-top:5px;" 
              class="input-medium" 
              placeholder="Search TIGER" 
-             value="{{ request.REQUEST.q }}"></input>
+             value="{{ request.path }}"></input>
       <input type="submit" class="btn btn-primary" value="Go"></input>
       <label class="checkbox" style="float:left;padding-top:5px;padding-right:5px;">
         <input type="checkbox" data-bind="checked: exactSearch"> Exact Search</input>

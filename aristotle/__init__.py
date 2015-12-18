@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
+"""Port of Aristotle for use as a Digital Archives of Colorado College 
+front-end"""
+__author__ = "Jeremy Nelson"
 
-__about__ = """
-This project demonstrates a social networking site. It provides profiles,
-friends, photos, blogs, tribes, wikis, tweets, bookmarks, swaps,
-locations and user-to-user messaging.
+from flask import Flask
 
-In 0.5 this was called "complete_project".
-"""
+app = Flask(__name__,  instance_relative_config=True)
+app.config.from_pyfile('config.py')
+
+from .views import *

@@ -1,36 +1,28 @@
-{% extends 'cc-bootstrap-base.html' %}
-{% load i18n %}
-{% load discovery_extras %}
+{% extends 'discovery/cc-bootstrap-base.html' %}
 
-{% block more-css %}
+{% block more_css %}
  <link href="{{ STATIC_URL }}discovery/css/jquery-ui-1.8.13.custom.css" rel="stylesheet" />
  <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" />
  <link href="{{ STATIC_URL }}discovery/css/discovery.css" rel="stylesheet" /> 
 {% endblock %}
 
-{% block library-breadcrumb %}
+{% block library_breadcrumb %}
  <div id="breadcrumb"></div>
 {% endblock %}
 
-{% block results-detail %}
+{% block results_detail %}
 {% endblock %}
 
 
-{% block results-list %}
+{% block results_list %}
 <div class="main content" id="main-content">
-{% comment %}
-{% if response.docs %}
-{% include 'results-list.html' %}
-{% else %}
-{% endcomment %}
 <div class="results-list discovery-service">
 <div class="discovery-home">
-{% if spellcheck %}
+{# if spellcheck %}
   {{ spellcheck|display_spellcheck }}
-{% else %}
-<h1>{% trans "Welcome to Tutt Library's New TIGER Catalog" %}</h1>
- Docs are {{ docs }}
- <h1 class="discovery-home">{% trans "What is a discovery service?" %}</h1>
+{% else #}
+<h1>Welcome to Digital Archives of Colorado College</h1>
+ <h1 class="discovery-home">What is a discovery service?</h1>
  <p>
   THE MESSAGE
   The Tutt Library's new search interface is an example of a catalog with
@@ -43,22 +35,18 @@
   contribute to its design and functionality. The source code repository
   is available on <a href="https://github.com/jermnelson/Discover-Aristotle">Github</a>.
  </p>
-{% endif %}
  <span class="clear"></span>
 </div>
 </div>
-{% comment %}
-{% endif %}
-{% endcomment %}
 </div>
 <span class="clear"></span>
 {% endblock %}
 
 
-{% block more-scripts %}
-{% comment %}
+{% block more_scripts %}
+{# comment %}
 <script src="{{ STATIC_URL }}js/jquery.js"></script>
-{% endcomment %}
+{% endcomment #}
 <script src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
 <script src="{{ STATIC_URL }}js/jquery.ui.widget.js"></script>
 <script src="{{ STATIC_URL }}js/jquery.ui.dialog.js"></script>
@@ -77,13 +65,13 @@
  var viewModel = new simpleViewModel();
  ko.applyBindings(viewModel);
 </script>
-{% endblock more-scripts %}
+{% endblock more_scripts %}
 
 {% block dialogs %}
 <div id="search_dialog" class="modal hide">
-{% include 'search_history_dialog.html' %}
+{% include 'discovery/snippets/search_history_dialog.html' %}
 </div>
 <div id="cart-dlg" class="modal hide">
-{% include 'cart_dialog.html' %}
+{% include 'discovery/snippets/cart_dialog.html' %}
 </div>
 {% endblock %}
