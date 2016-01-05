@@ -1,9 +1,9 @@
 {% extends 'discovery/cc-bootstrap-base.html' %}
 
 {% block more_css %}
- <link href="{{ STATIC_URL }}discovery/css/jquery-ui-1.8.13.custom.css" rel="stylesheet" />
- <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" />
- <link href="{{ STATIC_URL }}discovery/css/discovery.css" rel="stylesheet" /> 
+ <link href="{{ url_for('static', filename='css/jquery-ui-1.8.13.custom.css') }}" rel="stylesheet" />
+ <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+ <link href="{{ url_for('static', filename='css/discovery.css') }}" rel="stylesheet" /> 
 {% endblock %}
 
 {% block library_breadcrumb %}
@@ -47,15 +47,10 @@
 {# comment %}
 <script src="{{ STATIC_URL }}js/jquery.js"></script>
 {% endcomment #}
-<script src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
-<script src="{{ STATIC_URL }}js/jquery.ui.widget.js"></script>
-<script src="{{ STATIC_URL }}js/jquery.ui.dialog.js"></script>
-<script src="{{ STATIC_URL }}js/bootstrap.js"></script>
-<script src="{{ STATIC_URL }}js/bootstrap-tab.js"></script>
-<script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
-<script src="{{ STATIC_URL }}js/knockout.js"></script>
-<script src="{{ STATIC_URL }}discovery/js/discovery.js"></script>
-<script src="{{ STATIC_URL }}js/google-analytics.js"></script>
+<script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+<script src="{{ url_for('static', filename='js/discovery.js') }}"></script>
+{#<script src="{{ STATIC_URL }}js/google-analytics.js"></script>#}
 <script>
  $(function() {
    $("#cart-dlg").on('show', function() {

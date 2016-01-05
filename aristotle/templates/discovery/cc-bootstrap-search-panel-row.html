@@ -1,5 +1,5 @@
 <div class="row" style="padding-bottom: 22px">
- <div id="contact-library" class="span3">
+ <div id="contact-library" class="col-md-3">
    <h5><strong>Contacting Tutt Library</strong></h5>
      <ul style="margin-left:1.5em;list-style-type:none">
       <li>Circulation Desk: 389-6184</li>
@@ -9,7 +9,7 @@
        </li>
        </ul>
  </div>
- <div class="span8 bootstrap-searchbox">
+ <div class="col-md-8 bootstrap-searchbox">
   <ul class="search-options">
    {% if is_advanced_search %}
     <li><a href="/catalog/">Basic Search</a></li>
@@ -21,8 +21,6 @@
    {% if search_history %}
     <li><a href="#search_dialog" data-toggle="modal" id="search_display">Search History</a></li>
    {% endif %}
-    <li><a href="http://tiger.coloradocollege.edu">Classic TIGER</a></li>
-    <li><a href="https://tiger.coloradocollege.edu/patroninfo">Login to TIGER</a></li>
     <li><a href="#" onclick="$('#discovery_help').modal('show')">Need Help?</a></li>
     {% include "discovery/snippets/help.html" %}
   </ul>

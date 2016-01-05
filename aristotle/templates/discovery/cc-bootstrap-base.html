@@ -18,7 +18,7 @@
  {% endblock %}
  <div class="clear"></div>
  {% block feature %}
-  <div class="feature" style="background-image: url({{ STATIC_URL }}img/temp/library/busy-library.jpg);height:180px;">
+  <div class="feature" style="background-image: url('{{ url_for('static', filename='img/busy-library.jpg') }}');height:180px;">
    <span class="clear"></span>
   </div>
  {% endblock %}
@@ -33,7 +33,7 @@
   <div class="clear"></div>
 {% endblock %}
 {# comment %}START background color div{% endcomment #}
-<div style="background: #F1ECE5 url('{{ STATIC_URL }}img/design/bg/blue.gif') repeat-x;">
+<div style="background: #F1ECE5 url('{{ url_for('static', filename="img/blue.gif") }}') repeat-x;">
  {# comment %}START Bootstrap Container{% endcomment #}
  {% block container %}
  <div class="container">

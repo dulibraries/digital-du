@@ -13,7 +13,7 @@
    {# comment %}END facet accordion heading{% endcomment #}
    </div>
    {# comment %}START facet accordion body{% endcomment #}
-   <div class="accordion-body collapse {% if forloop.counter < 3 %}in{% endif %}" 
+   <div class="accordion-body collapse {% if loop.index0 < 3 %}in{% endif %}" 
      id="{{ facet.name }}">
      {# comment %}START facet accordion inner{% endcomment #}
      <div class="accordion-inner facet-inner">
