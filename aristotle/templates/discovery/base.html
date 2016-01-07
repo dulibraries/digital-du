@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% block head_title %}Library Search &#8226; Colorado College{% endblock %}</title>
+   {% block base_css %}
+    {% include "discovery/snippets/cc-bootstrap-styles.html" %} 
+    <style>
+     iframe.website-header {
+      margin: 0;
+      padding: 0;
+      border: none;
+      height: 190px; 
+      width: 100%;
+     }
+    </style>
+   {% endblock %}
+   {% block more_css %}{% endblock %}
+ </head>
+ <body class="department library">
+ {# block accessibility %}
+  {% include "discovery/accessibility.html" %}
+ {% endblock #}
+ {% block collapsed_header %}
+  <div class="{#container#}">
+   <div class="row">
+     <div class="col-md-12 col-sm-12">
+      <iframe src="{{ url_for('header') }}" class="website-header" scrolling="no"></iframe>
+     </div>
+   </div>
+  </div>
+ {% endblock %}
+ <div class="clear"></div>
+{% block library_breadcrumb %}
+{% endblock %}
+<div style="background: #F1ECE5 url('{{ url_for('static', filename="img/blue.gif") }}') repeat-x;">
+ {% block container %}
+ <div class="container">
+  {% include "discovery/search-panel-row.html" %}
+  {% include "discovery/pagination-row.html" %}
+  {% include "discovery/facets-results-row.html" %}
+ </div>
+ {% endblock %}
+</div>
+{% block footers %}
+  {{ None|footer|safe }}
+{% endblock %}
+
+{% block scripts %}
+  {% block more_scripts %}
+  {% endblock more_scripts %}
+  {# include 'discovery/snippets/cc-scripts.html' #}
+{% endblock %}
+
+{% block dialogs %}{% endblock %}
+ </body>
+</html>

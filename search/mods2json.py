@@ -84,7 +84,7 @@ def originInfo2rdf(mods):
     output = {}
     originInfo = mods.find("{{{0}}}originInfo".format(MODS))
     place = originInfo.find("{{{0}}}place/{{{0}}}placeTerm".format(MODS))
-    if place.text is not None:
+    if place is not None and place.text is not None:
         output['place'] = place.text
     publisher = originInfo.find("{{{0}}}publisher".format(MODS))
     if publisher is not None and publisher.text is not None:
@@ -178,6 +178,7 @@ def url2rdf(mods):
     #! Saves as handle identifier
     if hasattr(url, "text"):
         return {"handle": url.text}
+    return {}
 
 def mods2rdf(mods):
     rdf_json = {}

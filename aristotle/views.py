@@ -2,7 +2,14 @@ __author__ = "Jeremy Nelson"
 
 from flask import render_template
 
-from . import app
+from . import app, REPO_SEARCH
+
+@app.route("/header")
+def header():
+    """Returns HTML doc to be included in iframe"""
+    return render_template('discovery/snippets/cc-header.html')
+
+@app.route("/search")
 
 @app.route("/")
 def index():

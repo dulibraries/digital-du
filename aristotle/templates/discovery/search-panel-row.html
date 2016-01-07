@@ -25,9 +25,10 @@
     {% include "discovery/snippets/help.html" %}
   </ul>
  {% if not is_advanced_search %}
-  {% include "discovery/snippets/cc-simple-search.html" %}
+   In simple search
+  {% include "discovery/snippets/simple-search.html" %}
  {% else %}
-  {% include "discovery/snippets/cc-advanced-search.html" %}
+  {% include "discovery/snippets/advanced-search.html" %}
  {% endif %}
  {# comment %}
     <a class="btn btn-primary" href="/catalog/browse">{% if is_browse_search %}{% trans "New " %}{% endif %}{% trans "Browse Search" %}</a>

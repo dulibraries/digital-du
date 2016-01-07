@@ -42,6 +42,20 @@ class Indexer(object):
             self.rest_url = "http://localhost:8080/fedora/objects/"
         if not self.ri_search:
             self.ri_search = "http://localhost:8080/fedora/risearch"
+
+    def __reindex_pid__(seld, pid, body):
+        """Internal method checks and if pid already exists"""
+        return False 
+        query = pid.replace(":", "\:")
+        result = self.es.search(q=query, index='repository', doc_type='mods')
+        if result.get('total') > 0:
+            mods_id = result.get('hits')[0].get('_id')
+            self.es.index(
+                id=mods_id,
+                index="repository",
+                doc_type="mods",
+                body=body)
+            return True
           
 
     def index_pid(self, pid):
@@ -72,23 +86,44 @@ class Indexer(object):
         mods_xml = etree.XML(mods_result.text)
         mods_body = mods2rdf(mods_xml)
         mods_body['pid'] = pid
-        # If pid already exists reindexes same ID
-        query = pid.replace(":", "\:")
-        result = self.es.search(q=query, index='repository', doc_type='mods')
-        if result.get('total') > 0:
-            mods_id = result.get('hits')[0].get('_id')
-            self.es.index(
-                id=mods_id,
-                index="repository",
-                doc_type="mods",
-                body=mods_body)
-        else:
+        if not self.__reindex_pid__(pid, mods_body):
             mods_index_result = self.es.index(
                 index="repository", 
                 doc_type="mods", 
                 body=mods_body)
-            print(mods_index_result)
             mods_id = mods_index_result  
+
+    def index_collection(self, pid):
+        """Method takes a parent collection PID, retrieves all children, and
+        iterates through and indexes all pids
+
+        Args:
+            pid -- Collection PID
+        """
+        sparql = """SELECT DISTINCT ?s
+WHERE {{
+  ?s <fedora-rels-ext:isMemberOfCollection> <info:fedora/{}> .
+}}""".format(pid)
+        print("RI search URI {}".format(self.ri_search))
+        children_response = requests.post(
+            self.ri_search,
+            data={"type": "tuples",
+                  "lang": "sparql",
+                  "format": "json",
+                  "query": sparql},
+            auth=self.auth)
+        if children_response.status_code < 400:
+            for row in children_response.json().get('results'):
+                iri = row.get('s')
+                child_pid = iri.split("/")[-1]
+                self.index_pid(child_pid)
+        else:
+            raise IndexerError(
+                "Failed to index collection PID {}, error {}".format(
+                    pid,
+                    children_response.status_code),
+                children_response.text)
+
         
         
             
