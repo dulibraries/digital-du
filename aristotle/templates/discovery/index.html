@@ -33,7 +33,7 @@
  var viewModel = new simpleViewModel();
  ko.applyBindings(viewModel);
  if(viewModel.searchResults().length < 1) {
-  viewModel.initDisplay("coccc:root");
+	 viewModel.initDisplay("{{ pid }}");
  }
 </script>
 {% endblock more_scripts %}

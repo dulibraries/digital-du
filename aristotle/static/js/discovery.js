@@ -328,6 +328,7 @@ var simpleViewModel = function() {
 
 
   self.initDisplay = function(pid) {
+     self.searchResults.removeAll();
      $.ajax({
             url: '/browse',
             data: {pid: pid},
@@ -336,8 +337,10 @@ var simpleViewModel = function() {
                self.searchResults.removeAll();
 	       for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
+		 var child_pid = row["_source"]["pid"]; 
 		 var search_result = {"abstract": row["_source"]["abstract"],
-			              "bib_link": row["_id"],
+			              "bib_link": "/pid/"+child_pid,
+	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
                	                       "creator": row["_source"]["creator"]};
 	         self.searchResults.push(search_result); 
@@ -375,8 +378,9 @@ var simpleViewModel = function() {
                  self.searchResults.removeAll();
                  for(row_num in data["results"]) {
                      var row = data["results"][row_num];
-                     var search_result = {"search_prefix": row["search_prefix"],
+                     var search_result = {"abstract": row["_source"]["abstract"],
                                           "bib_link": "/catalog/record/" + row["ils-bib-numbers"][0],
+                                          
                                           "title":row["title"],
                                           "creator": row["creator"]};
                      self.searchResults.push(search_result)
@@ -396,8 +400,10 @@ var simpleViewModel = function() {
                self.searchResults.removeAll();
 	       for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
+                 var pid = row["_source"]["pid"]; 
 		 var search_result = {"abstract": row["_source"]["abstract"],
-			              "bib_link": row["_id"],
+			              "bib_link": '/pid/'+pid,
+                                      "thumbnail": "http://li-fedora:8080/fedora/objects/"+pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
                	                       "creator": row["_source"]["creator"]};
 	         self.searchResults.push(search_result); 

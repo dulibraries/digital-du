@@ -11,12 +11,14 @@
  <ul class="media-list" data-bind="foreach: searchResults">
   <li class="media">
     <div class="media-left">
-      <a data-bind="attr: { href: bib_link }">
-        <img class="media-object"  style="width:100px">
+      <a data-bind="attr: { href: bib_link }" >
+       <img class="media-object" data-bind="attr: { src: thumbnail }" style="width:100px">
       </a>
     </div>
     <div class="media-body">
-     <h4 class="media-heading" data-bind="text: title"></h4>
+    <a data-bind="attr: { href: bib_link }" style="color: #264D85;">
+    <h4 class="media-heading" data-bind="text: title">
+    </h4></a>
      <p data-bind="text: abstract" style="font-size: .8em; color: #3e332c;"></p> 
     </div> 
 {# <span data-bind="text: search_prefix"></span>#}

@@ -26,9 +26,13 @@ class Indexer(object):
         """Internal method checks and if pid already exists"""
         if self.es.count().get('count') < 1:
             return False
-        query = pid.replace(":", "\:")
-        result = self.es.search(q=query, index='repository', doc_type='mods')
-        if result.get('total') > 0:
+        dsl = {
+            "query": {
+                "term": {"pid": pid}
+            }
+        }
+        result = self.es.search(body=dsl, index='repository', doc_type='mods')
+        if  result.get('hits').get('total') > 0:
             mods_id = result.get('hits')[0].get('_id')
             self.es.index(
                 id=mods_id,

@@ -34,10 +34,19 @@ def browse(pid):
         pid -- PID of Fedora Object
     """
     dsl = {
-        "sort": [ "titlePrinciple" ],
+        "sort": [ "titlePrincipal" ],
         "query": {
-            "term": { "inCollection": pid }
+            "match": { "inCollection": pid }
         }
     }
-    print(dsl)
     return REPO_SEARCH.search(body=dsl, index="repository")
+
+def get_pid(es_id):
+    """Function takes Elastic search id and returns the object's
+    pid.
+
+    Args:
+        pid -- PID of Fedora Object
+    """
+    es_doc = REPO_SEARCH.get_source(id=es_id, index="repository")
+    return es_doc.get("pid")
