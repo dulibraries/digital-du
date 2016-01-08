@@ -1,34 +1,38 @@
 <form class="form-search" data-bind="submit: searchCatalog">
+   <img src="{{ url_for('static', filename="img/mag-glass.png") }}" style="float:left"/>
+
   <div class="row">
-    <section class="col-md-1">
-      <img src="{{ url_for('static', filename="img/mag-glass.png") }}" {#style="float:left"#}/>
-    </section>
-    <section class="col-md-2">
-      <select data-bind="click: searchRouting,
-                         options: searchingOptions,
-                         optionsText: 'name',
-                         value: chosenSearch" style="width:100px"
+     <section class="col-md-2">
+      <div class='form-group'>
+
+       <select data-bind="click: searchRouting,
+                          options: searchingOptions,
+                          optionsText: 'name',
+ 			 value: chosenSearch" 
          class="form-control">
       </select>
     </section>
-    <section class="col-md-6">
+    <section class="col-md-4">
      {# <select data-bind="options: numberOptions,
                          optionsText: 'name',
                          value: chosenNumberOption,
                          visible: shouldShowNumber"
           class="form-control" > 
-      </select> #}
+  </select> #}
+      <div class='form-group'>
       <input 
              data-bind="value: searchQuery"
              name="q" 
              type="text" 
-             style="width:270px;padding-top:5px;" 
              class="form-control" 
-             placeholder="Search TIGER" 
-             value="{{ request.path }}"></input>
-    </section>
-    <section class="col-md-2">
-      <input type="submit" class="btn btn-primary" value="Go"></input>
+             placeholder="Search DigitialCC" 
+	     value="{{ request.path }}"></input>
+     </div>
+     </section>
+     <section class="col-md-2">
+     <div class='form-group'>
+	<input type="submit" class="btn btn-primary" value="Go"></input>
+      </div>	     
     </section>
     {#  <label class="checkbox" style="float:left;padding-top:5px;padding-right:5px;">
         <input type="checkbox" data-bind="checked: exactSearch"> Exact Search</input> #}

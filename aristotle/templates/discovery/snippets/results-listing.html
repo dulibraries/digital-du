@@ -1,0 +1,35 @@
+<div class="row">
+ <div class="span3">
+  <p>Your search for <em data-bind="text: searchQuery"></em> matched on these records:
+ </div>
+ {# include 'cc-bootstrap-sortby.html' %}
+ {% include 'cc-bootstrap-cart.html' #}
+
+</div>
+<div class="row">
+ <div class="span9">
+ <ul class="media-list" data-bind="foreach: searchResults">
+  <li class="media">
+    <div class="media-left">
+      <a data-bind="attr: { href: bib_link }">
+        <img class="media-object"  style="width:100px">
+      </a>
+    </div>
+    <div class="media-body">
+     <h4 class="media-heading" data-bind="text: title"></h4>
+     <p data-bind="text: abstract" style="font-size: .8em; color: #3e332c;"></p> 
+    </div> 
+{# <span data-bind="text: search_prefix"></span>#}
+  <table class="list-record">
+    <tbody> 
+    <tr class="list-record"  data-bind="foreach: creator">
+     <th class="list-record">Author/Creator</th>
+     <td class="list-record"><a href="#"><span data-bind="text: $data"></span></a></td>
+    </tr>
+   </tbody>
+  </table>
+ 
+  </li>
+</ul>
+</div>
+</div>

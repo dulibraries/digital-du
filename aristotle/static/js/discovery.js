@@ -327,11 +327,31 @@ var simpleViewModel = function() {
   };
 
 
+  self.initDisplay = function(pid) {
+     $.ajax({
+            url: '/browse',
+            data: {pid: pid},
+            method: "POST",
+            success: function(data) {
+               self.searchResults.removeAll();
+	       for(i in data["hits"]["hits"]) {
+                 var row = data["hits"]["hits"][i];
+		 var search_result = {"abstract": row["_source"]["abstract"],
+			              "bib_link": row["_id"],
+			              "title": row["_source"]["titlePrincipal"],
+               	                       "creator": row["_source"]["creator"]};
+	         self.searchResults.push(search_result); 
+
+               }
+            }
+    });
+
+  }
+
   self.searchCatalog = function(formElement) {
     var search_type = self.chosenSearch()["search_type"];
     var search_query = self.searchQuery();
     var exact_search = self.exactSearch();
-    $('#ol-result-listing').empty();
     switch(search_type) {
 
       case "author_search":
@@ -367,7 +387,24 @@ var simpleViewModel = function() {
 
     
       case "search":
-          window.location.replace("/catalog/search?search_type&q=" + search_query );
+	  $.ajax({
+            url: '/search',
+            data: {q: search_query,
+                   type: search_type},
+            method: "POST",
+            success: function(data) {
+               self.searchResults.removeAll();
+	       for(i in data["hits"]["hits"]) {
+                 var row = data["hits"]["hits"][i];
+		 var search_result = {"abstract": row["_source"]["abstract"],
+			              "bib_link": row["_id"],
+			              "title": row["_source"]["titlePrincipal"],
+               	                       "creator": row["_source"]["creator"]};
+	         self.searchResults.push(search_result); 
+
+               }
+            }
+	  });
           break;
 
       case "subject_search":

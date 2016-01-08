@@ -48,9 +48,14 @@
 {% endblock %}
 
 {% block scripts %}
+  <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/default.js') }}"></script>
+
   {% block more_scripts %}
   {% endblock more_scripts %}
-  {# include 'discovery/snippets/cc-scripts.html' #}
+
 {% endblock %}
 
 {% block dialogs %}{% endblock %}

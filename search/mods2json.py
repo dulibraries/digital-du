@@ -83,6 +83,8 @@ def notes2rdf(mods):
 def originInfo2rdf(mods):
     output = {}
     originInfo = mods.find("{{{0}}}originInfo".format(MODS))
+    if not originInfo:
+        return output
     place = originInfo.find("{{{0}}}place/{{{0}}}placeTerm".format(MODS))
     if place is not None and place.text is not None:
         output['place'] = place.text
@@ -104,6 +106,8 @@ def originInfo2rdf(mods):
 def physicalDescription2rdf(mods):
     output = {}
     physicalDescription = mods.find("{{{0}}}physicalDescription".format(MODS))
+    if not physicalDescription:
+        return output
     extent = physicalDescription.find("{{{0}}}extent".format(MODS))
     if extent is not None and extent.text is not None:
         #! Should add maps and illustrations and page numbers as separate

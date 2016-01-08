@@ -1,15 +1,26 @@
 __author__ = "Jeremy Nelson"
 
-from flask import render_template
+import json
+from flask import jsonify, render_template, request
 
 from . import app, REPO_SEARCH
+from search import browse
+
+@app.route("/browse", methods=["POST", "GET"])
+def browser():
+    pid = request.form["pid"]
+    return browse(pid)
 
 @app.route("/header")
 def header():
     """Returns HTML doc to be included in iframe"""
     return render_template('discovery/snippets/cc-header.html')
 
-@app.route("/search")
+@app.route("/search", methods=["POST", "GET"])
+def query():
+    if request.method.startswith("POST"):
+        search_result = REPO_SEARCH.search(q=request.form["q"])
+        return jsonify(search_result)
 
 @app.route("/")
 def index():
