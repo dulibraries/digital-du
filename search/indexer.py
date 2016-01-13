@@ -11,6 +11,7 @@ __author__ = "Jeremy Nelson"
 
 import datetime
 import requests
+import sys
 import xml.etree.ElementTree as etree
 from search.mods2json import mods2rdf
 
@@ -98,10 +99,14 @@ class Indexer(object):
         if parent:
             mods_body['inCollection'] = [parent,]
         if not self.__reindex_pid__(pid, mods_body):
-            mods_index_result = self.elastic.index(
-                index="repository",
-                doc_type="mods",
-                body=mods_body)
+            try:
+                mods_index_result = self.elastic.index(
+                    index="repository",
+                    doc_type="mods",
+                    body=mods_body)
+            except:
+                print("Error indexing {},\nError {}".format(pid, sys.exc_info()[0]))
+                return False
             mods_id = mods_index_result
             if mods_id is not None:
                 return True
@@ -120,7 +125,7 @@ WHERE {{
 }}""".format(pid)
         started = datetime.datetime.utcnow()
         print("Started indexing collection {} at {}".format(
-            self.ri_search,
+            pid,
             started.isoformat()))
         children_response = requests.post(
             self.ri_search,
