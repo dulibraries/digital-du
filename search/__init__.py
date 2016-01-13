@@ -1,3 +1,5 @@
+"""Module wraps Elastic Search functionality"""
+
 __author__ = "Jeremy Nelson"
 
 import click
@@ -6,7 +8,6 @@ import requests
 import sys
 
 from elasticsearch import Elasticsearch
-from search.mods2json import mods2rdf
 import xml.etree.ElementTree as etree
 
 etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
@@ -16,27 +17,27 @@ REPO_SEARCH = None
 
 try:
     sys.path.append(BASE_DIR)
-    from instance import conf
-    if hasattr(conf, "ELASTICSEARCH"):
-        REPO_SEARCH = Elasticsearch([conf.get("ELASTICSEARCH"),])
+    from instance import conf as CONF
+    if hasattr(CONF, "ELASTICSEARCH"):
+        REPO_SEARCH = Elasticsearch([CONF.get("ELASTICSEARCH"),])
 except ImportError:
-    conf = dict()
+    CONF = dict()
     print("Failed to import config from instance")
-    pass
-if not REPO_SEARCH:    
+
+if not REPO_SEARCH:
     REPO_SEARCH = Elasticsearch()
 
 def browse(pid):
     """Function takes a pid and runs query to retrieve all of it's children
     pids
-    
+
     Args:
         pid -- PID of Fedora Object
     """
     dsl = {
-        "sort": [ "titlePrincipal" ],
+        "sort": ["titlePrincipal"],
         "query": {
-            "match": { "inCollection": pid }
+            "match": {"inCollection": pid}
         }
     }
     return REPO_SEARCH.search(body=dsl, index="repository")

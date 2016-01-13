@@ -171,6 +171,8 @@ def title2rdf(mods):
     for row in titles:
         title = row.find("{{{0}}}title".format(MODS))
         type_of = row.attrib.get("type", "")
+        if title is None:
+            continue
         if type_of.startswith("alt"):
             output["titleAlternative"] = title.text
         else:
