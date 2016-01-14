@@ -56,7 +56,7 @@ def fedora_object(identifier, value):
     if identifier.startswith("pid"):
         return render_template(
             'discovery/index.html',
-	    pid=value,
+	        pid=value,
             facets=[])
     return "Should return detail for {} {}".format(identifier, value)
 
@@ -65,7 +65,7 @@ def index():
     """Displays Home-page of Digital Repository"""
     return render_template(
         'discovery/index.html',
-	pid="coccc:root",
+	    pid="coccc:root",
         facets=[
             {"name": "Format"},
             {"name": "People"},
