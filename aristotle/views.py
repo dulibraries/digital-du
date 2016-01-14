@@ -1,3 +1,5 @@
+"""This module extends and refactors Aristotle Library Apps projects for 
+Flask using Elasticsearch"""
 __author__ = "Jeremy Nelson"
 
 import json
@@ -10,6 +12,11 @@ from search import browse, get_pid
 
 @app.route("/browse", methods=["POST"])
 def browser():
+    """Browse view for AJAX call from client based on the PID in the 
+    Form
+    Returns:
+        jsonified version of search result
+    """
     if request.method.startswith("POST"):
         pid = request.form["pid"]
         browsed = cache.get(pid)

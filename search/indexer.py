@@ -10,12 +10,19 @@ an ElasticSearch instance either by PID or by Collection.
 __author__ = "Jeremy Nelson"
 
 import datetime
+import logging
+import os
 import requests
 import sys
 import xml.etree.ElementTree as etree
 from search.mods2json import mods2rdf
 
-from . import CONF, REPO_SEARCH
+from . import BASE_DIR, CONF, REPO_SEARCH
+
+logging.basicConfig(
+    filename=os.path.join(BASE_DIR, "index.log"),
+	format='%(asctime)s %(levelname)s:%(message)s',
+    level=logging.INFO)
 
 class Indexer(object):
     """Elasticsearch MODS and PDF full-text indexer for Fedora Repository 3.8"""
@@ -63,6 +70,7 @@ class Indexer(object):
                 index="repository",
                 doc_type="mods",
                 body=body)
+            logging.info("Re-indexed PID=%s, ES-id=%s", pid, mods_id.get('_id')) 
             return True
 
 
@@ -85,11 +93,17 @@ class Indexer(object):
             mods_url,
             auth=self.auth)
         if mods_result.status_code > 399:
+            err_title = "Failed to index PID {}, error={} url={}".format(
+                pid,
+                mods_result.status_code,
+                mods_url)
+            logging.error(err_title)
+            # 404 error assume that MODS datastream doesn't exist for this
+			# pid, return False instead of raising IndexerError exception
+            if mods_result.status_code == 404:
+                return False
             raise IndexerError(
-                "Failed to index PID {}, error={} url={}".format(
-                    pid,
-                    mods_result.status_code,
-                    mods_url),
+                err_title,
                 mods_result.text)
         mods_xml = etree.XML(mods_result.text)
         mods_body = mods2rdf(mods_xml)
@@ -99,16 +113,19 @@ class Indexer(object):
         if parent:
             mods_body['inCollection'] = [parent,]
         if not self.__reindex_pid__(pid, mods_body):
-            try:
-                mods_index_result = self.elastic.index(
+            #try:
+            mods_index_result = self.elastic.index(
                     index="repository",
                     doc_type="mods",
                     body=mods_body)
-            except:
-                print("Error indexing {},\nError {}".format(pid, sys.exc_info()[0]))
-                return False
+            #except:
+            #    err_title = "Error indexing {},\nError {}".format(pid, sys.exc_info()[0])
+            #    logging.error(err_title)
+            #    print(err_title)
+            #    return False
             mods_id = mods_index_result
             if mods_id is not None:
+                logging.info("Indexed PID=%s, ES-id=%s", pid, mods_id.get('_id')) 
                 return True
         return False
 
@@ -157,10 +174,12 @@ WHERE {{
             
 
         else:
+            err_title = "Failed to index collection PID {}, error {}".format(
+                pid,
+               children_response.status_code)
+            logging.error(err_title)
             raise IndexerError(
-                "Failed to index collection PID {}, error {}".format(
-                    pid,
-                    children_response.status_code),
+                err_title,
                 children_response.text)
         end = datetime.datetime.utcnow()
         print("Finished indexing {} at {}, total object {} total time {}".format(

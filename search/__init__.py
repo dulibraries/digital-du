@@ -8,6 +8,7 @@ import requests
 import sys
 
 from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search, Q
 import xml.etree.ElementTree as etree
 
 etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
@@ -34,13 +35,17 @@ def browse(pid):
     Args:
         pid -- PID of Fedora Object
     """
+    search = Search(using=REPO_SEARCH, index="repository") \
+             .filter("term", inCollection=pid) \
+             .sort("titlePrincipal")
+             
     dsl = {
-        "sort": ["titlePrincipal"],
+        "sort": [],
         "query": {
             "match": {"inCollection": pid}
         }
     }
-    return REPO_SEARCH.search(body=dsl, index="repository")
+    return REPO_SEARCH.search(body=dsl, index="repository") 
 
 def get_pid(es_id):
     """Function takes Elastic search id and returns the object's

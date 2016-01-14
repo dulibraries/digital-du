@@ -13,15 +13,7 @@
     <div class="media-left">
       <a data-bind="attr: { href: bib_link }" >
        <img class="media-object" data-bind="attr: { src: thumbnail }" style="width:100px">
-      </a>
-    </div>
-    <div class="media-body">
-    <a data-bind="attr: { href: bib_link }" style="color: #264D85;">
-    <h4 class="media-heading" data-bind="text: title">
-    </h4></a>
-     <p data-bind="text: abstract" style="font-size: .8em; color: #3e332c;"></p> 
-    </div> 
-{# <span data-bind="text: search_prefix"></span>#}
+	  </a>
   <table class="list-record">
     <tbody> 
     <tr class="list-record"  data-bind="foreach: creator">
@@ -30,6 +22,17 @@
     </tr>
    </tbody>
   </table>
+    </div>
+    <div class="media-body">
+    <a data-bind="attr: { href: bib_link }" style="color: #264D85;">
+    <h4 class="media-heading" data-bind="text: title">
+	</h4></a>
+	by <!-- ko foreach: creator --> <span data-bind="text: $data"></span> 
+	<!-- /ko -->
+     <p data-bind="text: abstract" style="font-size: .8em; color: #3e332c;"></p> 
+    </div> 
+{# <span data-bind="text: search_prefix"></span>#}
+
  
   </li>
 </ul>
