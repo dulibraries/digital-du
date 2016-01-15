@@ -37,15 +37,53 @@ def browse(pid):
     """
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", inCollection=pid) \
-             .sort("titlePrincipal")
-             
-    dsl = {
-        "sort": [],
-        "query": {
-            "match": {"inCollection": pid}
-        }
+             .sort("titlePrincipal") 
+               
+    results = search.execute()
+   #return {"hits": results}
+    return results.to_dict()
+
+def get_aggregations(pid=None):
+    """Function takes an optional pid and returns the aggregations
+    scoped by the pid, if pid is None, runs aggregation on full ES
+    index.
+    
+    Args:
+        pid -- PID of Fedora Object, default is None
+    
+    Returns:
+        dictionary of the results
+    """
+    #search = Search(using=REPO_SEARCH, index="repository) \
+    aggs_dsl = {
+	    "size": 0,
+	    "aggs": {
+		    "Format": {
+			    "terms": {
+				    "field": "typeOfResource"
+			    }
+		    },
+		    "Genres": {
+			    "terms": {
+				    "field": "genre"
+			    }
+		    },
+		    "Languages": {
+			    "terms": {
+				    "field": "language"
+			    }
+		    },
+		    "Publication Year": {
+			    "terms": {
+				    "field": "dateCreated"
+			    }
+		    }
+	    }
     }
-    return REPO_SEARCH.search(body=dsl, index="repository") 
+    if pid is not None:
+        aggs_dsl["query"] = {"match": { "inCollection": pid }}
+    return REPO_SEARCH.search(index="repository", body=aggs_dsl)['aggregations']
+        
 
 def get_pid(es_id):
     """Function takes Elastic search id and returns the object's

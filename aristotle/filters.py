@@ -1,5 +1,6 @@
 __author__ = "Jeremy Nelson"
 
+import re
 from . import app, harvest, cache
 
 @app.template_filter('footer')
@@ -29,6 +30,16 @@ def get_scripts(s):
         return scripts
     harvest()
     return cache.get('scripts')
+
+@app.template_filter('slugify')
+def slugify(value):
+    """
+    Converts to lowercase, removes non-word characters (alphanumerics and
+    underscores) and converts spaces to hyphens. Also strips leading and
+    trailing whitespace.
+    """
+    value = re.sub('[^\w\s-]', '', value).strip().lower()
+    return re.sub('[-\s]+', '-', value)
 
 @app.template_filter('styles')
 def get_styles(s):

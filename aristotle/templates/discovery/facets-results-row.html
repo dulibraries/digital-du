@@ -1,12 +1,78 @@
 <div class="row">
  {# comment %}START Facets DIV{% endcomment #}
  <div class="col-md-3">
-  {% include 'discovery/snippets/cc-bootstrap-facets.html' %}
 
- {# comment %}END Facets DIV{% endcomment #}
+{# START facet-listing Accordion #}
+<div class="accordion" id="facet-listing">
+ {% if facets %}
+ {% for facet in facets.items() %}
+  <div class="accordion-group">
+   {# START facet accordion heading #}
+   <div class="accordion-heading facet-heading">
+    <a class="accordion-toggle" 
+       data-toggle="collapse" 
+       data-parent="facet-listing"
+       {# Needs factet.name|slugicy #}
+       href="#{{ facet.0|slugify  }}">{{ facet.0 }}</a>
+   {# END facet accordion heading #}
+   </div>
+   {# START facet accordion body #}
+   <div class="accordion-body collapse {% if loop.index0 < 3 %}in{% endif %}" 
+     id="{{ facet.0|slugify }}">
+     {# START facet accordion inner #}
+     <div class="accordion-inner facet-inner">
+      <ul>
+      {% for row in facet.1.buckets %}
+       <li>
+       {% if facet.name == "Format" %}{# term|get_format_icon #} {% endif %}
+	   <a href="{% if query or limits %}{# add_limit facet.field term #}{% else %}{# new_limit facet.field term %i#}{% endif %}">
+			   {{ row.key|capitalize }}</a> ({{ row.doc_count }})</li>
+      {% endfor %}
+      </ul>
+     {# END facet accordion inner #}
+     </div>
+   {# END facet accordion body #}
+   </div>
+  </div>
+  {% endfor %}
+ {% endif %}
+{# END facet-listing Accordion #}
+</div>
+
  </div>
  <div class="col-md-9 results-block">
- {% include 'discovery/snippets/results-listing.html' %}
+		 <div class="row">
+ <div class="span3">
+  <p>Your search for <em data-bind="text: searchQuery"></em> matched on these records:
+ </div>
+ {# include 'cc-bootstrap-sortby.html' %}
+ {% include 'cc-bootstrap-cart.html' #}
+
+</div>
+<div class="row">
+ <div class="span9">
+ <ul class="media-list" data-bind="foreach: searchResults">
+  <li class="media">
+    <div class="media-left">
+      <a data-bind="attr: { href: bib_link }" >
+       <img class="media-object" data-bind="attr: { src: thumbnail }" style="width:100px">
+	  </a>
+    </div>
+    <div class="media-body">
+    <a data-bind="attr: { href: bib_link }" style="color: #264D85;">
+    <h4 class="media-heading" data-bind="text: title">
+	</h4></a>
+	 <!-- ko foreach: creator --> <span data-bind="text: $data"></span> 
+	<!-- /ko -->
+     <p data-bind="text: abstract" style="font-size: .8em; color: #3e332c;"></p> 
+    </div> 
+{# <span data-bind="text: search_prefix"></span>#}
+
+ 
+  </li>
+</ul>
+</div>
+</div>
 
  {% if docs %}
    {% include 'discovery/snippets/cc-bootstrap-results-list.html' %}

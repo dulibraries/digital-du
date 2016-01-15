@@ -8,7 +8,7 @@ import requests
 from flask import abort, jsonify, render_template, request, Response 
 
 from . import app, cache, REPO_SEARCH
-from search import browse, get_pid
+from search import browse, get_aggregations, get_pid
 
 @app.route("/browse", methods=["POST"])
 def browser():
@@ -57,7 +57,7 @@ def fedora_object(identifier, value):
         return render_template(
             'discovery/index.html',
 	        pid=value,
-            facets=[])
+            facets=get_aggregations(value))
     return "Should return detail for {} {}".format(identifier, value)
 
 @app.route("/")
@@ -66,9 +66,4 @@ def index():
     return render_template(
         'discovery/index.html',
 	    pid="coccc:root",
-        facets=[
-            {"name": "Format"},
-            {"name": "People"},
-            {"name": "Topics"},
-            {"name": "Publication Year"},
-            {"name": "Geographic Location"}])
+        facets=get_aggregations())

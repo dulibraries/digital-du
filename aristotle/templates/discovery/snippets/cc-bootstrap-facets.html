@@ -1,16 +1,17 @@
 {# comment %}START facet-listing Accordion{% endcomment #}
 <div class="accordion" id="facet-listing">
  {% if facets %}
-  {% for facet in facets %}
+ {% for facet in facets %}
+
   <div class="accordion-group">
-   {# comment %}START facet accordion heading{% endcomment #}
+   {# START facet accordion heading #}
    <div class="accordion-heading facet-heading">
     <a class="accordion-toggle" 
        data-toggle="collapse" 
        data-parent="facet-listing"
        {# Needs factet.name|slugicy #}
        href="#{{ facet.name  }}">{{ facet.name }}</a>
-   {# comment %}END facet accordion heading{% endcomment #}
+   {# END facet accordion heading{% endcomment #}
    </div>
    {# comment %}START facet accordion body{% endcomment #}
    <div class="accordion-body collapse {% if loop.index0 < 3 %}in{% endif %}" 

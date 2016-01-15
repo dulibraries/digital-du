@@ -335,18 +335,29 @@ var simpleViewModel = function() {
             method: "POST",
             success: function(data) {
                self.searchResults.removeAll();
-	       for(i in data["hits"]["hits"]) {
+	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
-		 var child_pid = row["_source"]["pid"]; 
-		 var search_result = {"abstract": row["_source"]["abstract"],
+                 var child_pid = row["_source"]["pid"]; 
+		         var search_result = {"abstract": row["_source"]["abstract"],
 			              "bib_link": "/pid/"+child_pid,
 	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
-               	                       "creator": row["_source"]["creator"]};
-	         self.searchResults.push(search_result); 
+               	          "creator": row["_source"]["creator"]};
+	             self.searchResults.push(search_result); 
 
                }
-            }
+		       self.searchResults.sort(function(left,right) {
+					 if(left.title == right.title) {
+							 return 0;
+                     }
+				     if(left.title < right.title) {
+						 return -1;
+					 } else {
+							 return 1;
+					 }
+			 });
+            
+	 }		 
     });
 
   }
