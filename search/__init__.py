@@ -40,7 +40,7 @@ def browse(pid):
              .sort("titlePrincipal") 
                
     results = search.execute()
-   #return {"hits": results}
+ #return {"hits": results}
     return results.to_dict()
 
 def get_aggregations(pid=None):
@@ -84,6 +84,22 @@ def get_aggregations(pid=None):
         aggs_dsl["query"] = {"match": { "inCollection": pid }}
     return REPO_SEARCH.search(index="repository", body=aggs_dsl)['aggregations']
         
+
+def get_detail(pid):
+    """Function takes a pid and returns the detailed dictionary from 
+    the search results.
+
+    Args:
+        pid -- PID of Fedora Object
+    """
+    search = Search(using=REPO_SEARCH, index="repository") \
+             .filter("term", pid=pid)
+    result = search.execute()
+    if len(result) < 1:
+        # Raise 404 error because PID not found
+        abort(404)
+    return result.to_dict()
+ 
 
 def get_pid(es_id):
     """Function takes Elastic search id and returns the object's

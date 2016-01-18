@@ -49,8 +49,8 @@
  {% include 'cc-bootstrap-cart.html' #}
 
 </div>
-<div class="row">
- <div class="span9">
+<div class="row" data-bind="visible: searchResults().length > 1">
+ <div class="col-md-9">
  <ul class="media-list" data-bind="foreach: searchResults">
   <li class="media">
     <div class="media-left">
@@ -58,20 +58,28 @@
        <img class="media-object" data-bind="attr: { src: thumbnail }" style="width:100px">
 	  </a>
     </div>
-    <div class="media-body">
+	<div class="media-body">
+    <small style="float: right; color: #808080" data-bind="text: dateCreated"></small>
+
     <a data-bind="attr: { href: bib_link }" style="color: #264D85;">
-    <h4 class="media-heading" data-bind="text: title">
+			<h4 class="media-heading" data-bind="text: title">
+					
 	</h4></a>
-	 <!-- ko foreach: creator --> <span data-bind="text: $data"></span> 
+	<!-- ko foreach: creator --> <span style="font-size: .75em" data-bind="text: $data"></span> 
 	<!-- /ko -->
+	 
      <p data-bind="text: abstract" style="font-size: .8em; color: #3e332c;"></p> 
     </div> 
-{# <span data-bind="text: search_prefix"></span>#}
-
- 
   </li>
 </ul>
 </div>
+</div>
+{# Detailed View #}
+<div class="row" data-bind="visible: isDetailed">
+
+		<detailed-view params="value: source"></detailed-view>
+
+{# END Detailed View #}
 </div>
 
  {% if docs %}

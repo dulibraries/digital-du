@@ -8,7 +8,7 @@ import requests
 from flask import abort, jsonify, render_template, request, Response 
 
 from . import app, cache, REPO_SEARCH
-from search import browse, get_aggregations, get_pid
+from search import browse, get_aggregations, get_detail, get_pid
 
 @app.route("/browse", methods=["POST"])
 def browser():
@@ -24,6 +24,20 @@ def browser():
             browsed = browse(pid)
             cache.set(pid, browsed)
         return jsonify(browsed)
+
+@app.route("/detail", methods=["POST"])
+def detailer():
+    """Detail view for AJAX call from client based on the PID in
+	the Form.
+
+    Returns:
+        jsonified version of the search result
+    """
+    if request.method.startswith("POST"):
+        pid = request.form["pid"]
+        detailed_info = get_detail(pid)
+        return jsonify(detailed_info)
+
     
 @app.route("/header")
 def header():
@@ -54,6 +68,12 @@ def query():
 @app.route("/<identifier>/<value>")
 def fedora_object(identifier, value):
     if identifier.startswith("pid"):
+        results = browse(value)
+        if results['hits']['count'] == 1:
+            return render_template(
+                'discovery/index.html',
+                pid=value,
+				info=results['hits']['hits'][0])
         return render_template(
             'discovery/index.html',
 	        pid=value,

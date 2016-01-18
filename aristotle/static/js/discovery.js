@@ -294,6 +294,9 @@ function viewSimpleSearchModel() {
    }
 }
 
+
+
+
 var simpleViewModel = function() {
   var self = this;
   self.searchingOptions =  [
@@ -319,8 +322,8 @@ var simpleViewModel = function() {
   self.shouldShowNumber = ko.observable(false);
   self.displayResults = ko.observable();
   self.searchResults = ko.observableArray();
-
-
+  self.isDetailed = ko.observable();
+  self.source = ko.observable();
   self.creatorSearch = function() {
 
 
@@ -335,6 +338,13 @@ var simpleViewModel = function() {
             method: "POST",
             success: function(data) {
                self.searchResults.removeAll();
+               if (data["hits"]["hits"].length === 1) {
+                       self.isDetailed(true);
+                       self.source(data["hits"]["hits"][0]["_source"]);
+					   console.log("Should load detailed view" + self.source());
+					   return;
+                     
+               }
 	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  var child_pid = row["_source"]["pid"]; 
@@ -342,6 +352,7 @@ var simpleViewModel = function() {
 			              "bib_link": "/pid/"+child_pid,
 	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
+                          "dateCreated": row["_source"]["dateCreated"],
                	          "creator": row["_source"]["creator"]};
 	             self.searchResults.push(search_result); 
 

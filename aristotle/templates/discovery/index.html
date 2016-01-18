@@ -1,9 +1,7 @@
 {% extends 'discovery/base.html' %}
 
 {% block more_css %}
- <link href="{{ url_for('static', filename='css/jquery-ui-1.8.13.custom.css') }}" rel="stylesheet" />
- <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
- <link href="{{ url_for('static', filename='css/discovery.css') }}" rel="stylesheet" /> 
+ 
 {% endblock %}
 
 {% block library_breadcrumb %}
@@ -34,7 +32,9 @@
  ko.applyBindings(viewModel);
  if(viewModel.searchResults().length < 1) {
 	 viewModel.initDisplay("{{ pid }}");
- }
+ 
+}
+
 </script>
 {% endblock more_scripts %}
 
