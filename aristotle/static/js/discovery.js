@@ -413,6 +413,7 @@ var simpleViewModel = function() {
 
     
       case "search":
+		  console.log("IN search");
 	  $.ajax({
             url: '/search',
             data: {q: search_query,
@@ -427,7 +428,8 @@ var simpleViewModel = function() {
 			              "bib_link": '/pid/'+pid,
                                       "thumbnail": "http://li-fedora:8080/fedora/objects/"+pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
-               	                       "creator": row["_source"]["creator"]};
+               	                       "creator": row["_source"]["creator"],
+		                   "dateCreated": row["_source"]["dateCreated"]};
 	         self.searchResults.push(search_result); 
 
                }
