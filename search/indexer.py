@@ -16,12 +16,13 @@ import requests
 import sys
 import xml.etree.ElementTree as etree
 from search.mods2json import mods2rdf
+from search.mapping import MAP
 
 from . import BASE_DIR, CONF, REPO_SEARCH
 
 logging.basicConfig(
     filename=os.path.join(BASE_DIR, "index.log"),
-	format='%(asctime)s %(levelname)s:%(message)s',
+    format='%(asctime)s %(levelname)s:%(message)s',
     level=logging.INFO)
 
 class Indexer(object):
@@ -52,6 +53,9 @@ class Indexer(object):
             self.rest_url = "http://localhost:8080/fedora/objects/"
         if not self.ri_search:
             self.ri_search = "http://localhost:8080/fedora/risearch"
+        if not 'repository' in self.elastic.indices.status().get('indices'):
+            # Load mapping
+            self.elastic.indices.put_mapping(index='repository', mapping=MAP)
 
     def __reindex_pid__(self, pid, body):
         """Internal method checks and if pid already exists"""
@@ -62,7 +66,10 @@ class Indexer(object):
                 "term": {"pid": pid}
             }
         }
-        result = self.elastic.search(body=dsl, index='repository', doc_type='mods')
+        result = self.elastic.search(
+            body=dsl,
+            index='repository',
+            doc_type='mods')
         if  result.get('hits').get('total') > 0:
             mods_id = result.get('hits')[0].get('_id')
             self.elastic.index(
@@ -70,7 +77,7 @@ class Indexer(object):
                 index="repository",
                 doc_type="mods",
                 body=body)
-            logging.info("Re-indexed PID=%s, ES-id=%s", pid, mods_id.get('_id')) 
+            logging.info("Re-indexed PID=%s, ES-id=%s", pid, mods_id.get('_id'))
             return True
 
 
@@ -115,17 +122,21 @@ class Indexer(object):
         if not self.__reindex_pid__(pid, mods_body):
             #try:
             mods_index_result = self.elastic.index(
-                    index="repository",
-                    doc_type="mods",
-                    body=mods_body)
+                index="repository",
+                doc_type="mods",
+                body=mods_body)
             #except:
-            #    err_title = "Error indexing {},\nError {}".format(pid, sys.exc_info()[0])
+            #    err_title = "Error indexing {},\nError {}".format(pid,
+			#        sys.exc_info()[0])
             #    logging.error(err_title)
             #    print(err_title)
             #    return False
             mods_id = mods_index_result
             if mods_id is not None:
-                logging.info("Indexed PID=%s, ES-id=%s", pid, mods_id.get('_id')) 
+                logging.info(
+                    "Indexed PID=%s, ES-id=%s",
+                    pid,
+                    mods_id.get('_id'))
                 return True
         return False
 
@@ -171,21 +182,19 @@ WHERE {{
                     auth=self.auth)
                 if len(is_collection_result.json().get('results')) > 0:
                     self.index_collection(child_pid)
-            
-
         else:
             err_title = "Failed to index collection PID {}, error {}".format(
                 pid,
-               children_response.status_code)
+                children_response.status_code)
             logging.error(err_title)
             raise IndexerError(
                 err_title,
                 children_response.text)
         end = datetime.datetime.utcnow()
-        print("Finished indexing {} at {}, total object {} total time {}".format(
+        print("Indexing done {} at {}, total object {} total time {}".format(
             pid,
             end.isoformat(),
-			len(children),
+            len(children),
             (end-started).seconds / 60.0))
 
 

@@ -7,6 +7,7 @@ import os
 import requests
 import sys
 
+from flask import abort
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
 import xml.etree.ElementTree as etree
@@ -26,6 +27,8 @@ except ImportError:
     print("Failed to import config from instance")
 
 if not REPO_SEARCH:
+    # Sets default using Elasticsearch defaults of localhost and ports
+    # 9200 and 9300
     REPO_SEARCH = Elasticsearch()
 
 def browse(pid):
@@ -37,7 +40,7 @@ def browse(pid):
     """
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", inCollection=pid) \
-             .sort("titlePrincipal") 
+             .sort("titlePrincipal")
                
     results = search.execute()
  #return {"hits": results}
@@ -47,10 +50,10 @@ def get_aggregations(pid=None):
     """Function takes an optional pid and returns the aggregations
     scoped by the pid, if pid is None, runs aggregation on full ES
     index.
-    
+
     Args:
         pid -- PID of Fedora Object, default is None
-    
+
     Returns:
         dictionary of the results
     """
@@ -81,7 +84,8 @@ def get_aggregations(pid=None):
 	    }
     }
     if pid is not None:
-        aggs_dsl["query"] = {"match": { "inCollection": pid }}
+        aggs_dsl["query"] = {"match":{"inCollection": pid } }
+						
     return REPO_SEARCH.search(index="repository", body=aggs_dsl)['aggregations']
         
 

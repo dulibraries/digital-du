@@ -1,18 +1,17 @@
-"""This module extends and refactors Aristotle Library Apps projects for 
+"""This module extends and refactors Aristotle Library Apps projects for
 Flask using Elasticsearch"""
 __author__ = "Jeremy Nelson"
 
-import json
 import requests
 
-from flask import abort, jsonify, render_template, request, Response 
+from flask import abort, jsonify, render_template, request, Response
 
 from . import app, cache, REPO_SEARCH
 from search import browse, get_aggregations, get_detail, get_pid
 
 @app.route("/browse", methods=["POST"])
 def browser():
-    """Browse view for AJAX call from client based on the PID in the 
+    """Browse view for AJAX call from client based on the PID in the
     Form
     Returns:
         jsonified version of search result
@@ -38,7 +37,7 @@ def detailer():
         detailed_info = get_detail(pid)
         return jsonify(detailed_info)
 
-    
+
 @app.route("/header")
 def header():
     """Returns HTML doc to be included in iframe"""
@@ -46,6 +45,12 @@ def header():
 
 @app.route("/image/<uid>")
 def image(uid):
+    """View extracts the Thumbnail datastream from Fedora based on the
+    Elasticsearch ID
+
+    Args:
+        uid: Elasticsearch ID
+    """
     pid = get_pid(uid)
     thumbnail_url = "{}{}/datastreams/TN/content".format(
         app.config.get("REST_URL"),
@@ -57,26 +62,43 @@ def image(uid):
             abort(500)
         #raw_thumbnail = result.text
         return Response(result.text, mimetype="image/jpeg")
-    
+
 
 @app.route("/search", methods=["POST", "GET"])
 def query():
+    """View returns Elasticsearch query search results
+
+    Returns:
+        jsonified version of the search result
+    """
     if request.method.startswith("POST"):
         search_result = REPO_SEARCH.search(q=request.form["q"])
         return jsonify(search_result)
 
 @app.route("/<identifier>/<value>")
 def fedora_object(identifier, value):
+    """View routes to a Fedora Object based on type of identifier and
+    a value. Currently only supports routing by PID, should support DOI
+    next.
+
+    Args:
+        identifier: Identifier type, currently supports pid
+        value: Identifier value to search on
+
+    Returns:
+        Rendered HTML from template and Elasticsearch
+    """
     if identifier.startswith("pid"):
         results = browse(value)
-        if results['hits']['count'] == 1:
+        if results['hits']['total'] == 1:
+
             return render_template(
-                'discovery/index.html',
+                'discovery/detail.html',
                 pid=value,
-				info=results['hits']['hits'][0])
+                info=results['hits']['hits'][0])
         return render_template(
             'discovery/index.html',
-	        pid=value,
+            pid=value,
             facets=get_aggregations(value))
     return "Should return detail for {} {}".format(identifier, value)
 
@@ -85,5 +107,5 @@ def index():
     """Displays Home-page of Digital Repository"""
     return render_template(
         'discovery/index.html',
-	    pid="coccc:root",
+        pid="coccc:root",
         facets=get_aggregations())
