@@ -74,7 +74,7 @@ def query():
     if request.method.startswith("POST"):
         search_result = REPO_SEARCH.search(q=request.form["q"])
         return jsonify(search_result)
-    query_str = request.args.get('q')
+    query_str = request.args.get('q', '')
     if len(query_str) < 1:
         query_str = None
     facet = request.args.get('facet')
@@ -96,12 +96,12 @@ def fedora_object(identifier, value):
     """
     if identifier.startswith("pid"):
         results = browse(value)
-        if results['hits']['total'] == 1:
-
+        if results['hits']['total'] < 1:
+            detail_result = get_detail(value)
             return render_template(
                 'discovery/detail.html',
                 pid=value,
-                info=results['hits']['hits'][0])
+                info=detail_result['hits']['hits'][0])
         return render_template(
             'discovery/index.html',
             pid=value,

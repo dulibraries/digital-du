@@ -60,8 +60,8 @@ AGGS_DSL = {
 try:
     sys.path.append(BASE_DIR)
     from instance import conf as CONF
-    if hasattr(CONF, "ELASTICSEARCH"):
-        REPO_SEARCH = Elasticsearch([CONF.get("ELASTICSEARCH"),])
+    if hasattr(CONF, "ELASTIC_SEARCH"):
+        REPO_SEARCH = Elasticsearch([CONF.ELASTIC_SEARCH])
 except ImportError:
     CONF = dict()
     print("Failed to import config from instance")
@@ -125,7 +125,7 @@ def get_aggregations(pid=None):
     """
     #search = Search(using=REPO_SEARCH, index="repository) \
     if pid is not None:
-        AGG_DSL["query"] = {"match":{"inCollection": pid } }
+        AGGS_DSL["query"] = {"match":{"inCollection": pid } }
     return REPO_SEARCH.search(index="repository", body=AGGS_DSL)['aggregations']
         
 

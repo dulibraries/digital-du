@@ -1,4 +1,7 @@
 {% extends 'discovery/base.html' %}
+{% set source = info['_source'] %}
+
+{% block head_title %}Library Search &#8226; {{ source.get('titlePrincipal') }}{% endblock %}
 
 {% block more_css %}
  
@@ -10,13 +13,22 @@
 
 {% block container %}
 <div class="container">
-		 {% include "discovery/search-panel-row.html" %}
-		 <div class="row">
-				 <section class="col-md-4">
+		{% include "discovery/search-panel-row.html" %}
+		<div class="row" style="margin-top: 3em;">
+				<section class="col-md-4">
+                 <img src="http://li-fedora:8080/fedora/objects/{{ source.get('pid') }}/datastreams/TN/content"
+				 {# style="width: 30%"  class="pull-left" #}>
 				 </section>
-				 <section class="col-md-8">
-		<h1>This is a detailed title</h1>
-
+				<section class="col-md-8">
+				
+				 <h1>{{ source.get('titlePrincipal') }}</h1>
+				 <dl class="dl-horizontal">
+						 {% for key, val in source.items() %}
+				 <dt>{{ key }}</dt>
+				 <dd>
+				 {{ val }}</dd>
+				 {% endfor %}
+				</dl>
 				 </section>
 
 		 </div>

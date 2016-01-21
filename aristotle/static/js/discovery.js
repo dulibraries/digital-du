@@ -253,50 +253,6 @@ function toggle_num_search() {
   window.location = "/catalog/search?search_type=" + $("#search_type").val();
 }
 
-function viewSimpleSearchModel() {
-   this.searchingOptions = [
-      { name: "Author", search_type: "author_search" },
-      { name: "Keyword", search_type: "search" },
-      { name: "Title", search_type: "title_search" },
-      { name: "Subject", search_type: "subject_search" },
-      { name: "Number", search_type: "number_search" }
-   ];
-   this.numberOptions = [
-      { name: "LCCN Call Number", number_type: "lccn" },
-      { name: "SuDoc Call Number", number_type: "sudoc" },
-      { name: "Local Call Number", number_type: "local" },
-      { name: "ISBN", number_type: "isbn" },
-      { name: "ISSN", number_type: "issn" },
-      { name: "OCLC", number_type: "oclc" }
-   ];
-
-   this.chosenSearch = ko.observable();
-   this.exactSearch = ko.observable();
-   this.numberSearch = ko.observable(true);
-   this.searchRouting = function() {
-      var text = '';
-      var search_type = this.chosenSearch()["search_type"];
-      if (search_type != "search") {
-        this.exactSearch.enable = true;
-      } else {
-        this.exactSearch.enable = false;
-      }
-      if (search_type == "number_search") {
-        this.numberSearch = ko.observable(true);
-        //for(aKey in numSearch) {
-        //  text += aKey + " = " + numSearch[aKey] + "\n";
-        //}
-//        alert("In number search" + numSearch['visible']);
-      } else {
-        this.numberSearch = ko.observable(false);
-        //alert("Not number search" + search_type);
-      }
-   }
-}
-
-
-
-
 var simpleViewModel = function() {
   var self = this;
   self.searchingOptions =  [
@@ -307,12 +263,8 @@ var simpleViewModel = function() {
       { name: "Number", search_type: "number_search" }
    ];
   self.numberOptions = [
-      { name: "LC Call Number", number_type: "lccn" },
-      { name: "Government Document Call Number", number_type: "sudoc" },
-      { name: "Local Call Number", number_type: "local" },
-      { name: "ISBN", number_type: "isbn" },
-      { name: "ISSN", number_type: "issn" }
-//      { name: "OCLC", number_type: "oclc" }
+      { name: "pid", number_type: "PID" },
+      { name: "doi", number_type: "DOI" }
    ];
   self.chosenNumberOption = ko.observable();
   self.chosenSearch = ko.observable();
@@ -373,6 +325,36 @@ var simpleViewModel = function() {
 
   }
 
+  self.facetQuery = function(facet, value) {
+		  console.log("Event is " + facet + " value is " + value);
+		  $.ajax({
+				  url: "/search",
+				  method: "GET",
+				  data: {
+						  facet: facet,
+				          val: value
+				  },
+				  success: function(data) {
+					   self.searchResults.removeAll();
+         	           for(i in data["hits"]["hits"]) {
+                         var row = data["hits"]["hits"][i];
+                         var child_pid = row["_source"]["pid"]; 
+				         var search_result = {"abstract": row["_source"]["abstract"],
+			              "bib_link": "/pid/"+child_pid,
+	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
+			              "title": row["_source"]["titlePrincipal"],
+                          "dateCreated": row["_source"]["dateCreated"],
+               	          "creator": row["_source"]["creator"]};
+						self.searchResults.push(search_result); 
+
+               }
+
+			      }
+		  });
+  
+
+  }
+
   self.searchCatalog = function(formElement) {
     var search_type = self.chosenSearch()["search_type"];
     var search_query = self.searchQuery();
@@ -382,7 +364,6 @@ var simpleViewModel = function() {
       case "author_search":
           if(exact_search) {
             var data = "q=" + ko.toJS(search_query);
-            alert("Should search Redis Authority Person datastore" + data);
           } else {
             window.location.replace("/catalog/search?search_type=author_search&q=" + search_query);
           }

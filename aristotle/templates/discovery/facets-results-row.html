@@ -25,7 +25,9 @@
       {% for row in facet.1.buckets %}
        <li>
        {% if facet.name == "Format" %}{# term|get_format_icon #} {% endif %}
-	   <a href="{{ url_for('query') }}?facet={{ facet.0 }}&val={{ row.key }}&q=">
+	   <a data-facet="{{ facet.0 }}" data-val="{{ row.key }}"
+		  data-bind="click: facetQuery.bind($data, '{{ facet.0 }}', '{{ row.key }}')" href="#">
+	   
 			   {{ row.key|capitalize }}</a> ({{ row.doc_count }})</li>
       {% endfor %}
       </ul>
