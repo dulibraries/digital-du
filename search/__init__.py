@@ -1,6 +1,6 @@
 """Module wraps Elastic Search functionality"""
 
-__author__ = "Jeremy Nelson"
+__author__ = "Jeremy Nelson, Sarah Bogard"
 
 import click
 import os
