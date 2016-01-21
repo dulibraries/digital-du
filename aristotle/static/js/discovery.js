@@ -276,6 +276,8 @@ var simpleViewModel = function() {
   self.searchResults = ko.observableArray();
   self.isDetailed = ko.observable();
   self.source = ko.observable();
+  self.totalHits = ko.observable();
+
   self.creatorSearch = function() {
 
 
@@ -297,10 +299,12 @@ var simpleViewModel = function() {
 					   return;
                      
                }
+			   self.totalHits(data['hits']['total']);
 	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  var child_pid = row["_source"]["pid"]; 
-		         var search_result = {"abstract": row["_source"]["abstract"],
+		         var search_result = {
+						  "abstract": row["_source"]["abstract"],
 			              "bib_link": "/pid/"+child_pid,
 	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
@@ -335,6 +339,7 @@ var simpleViewModel = function() {
 				          val: value
 				  },
 				  success: function(data) {
+        			   self.totalHits(data['hits']['total']);
 					   self.searchResults.removeAll();
          	           for(i in data["hits"]["hits"]) {
                          var row = data["hits"]["hits"][i];
@@ -402,10 +407,12 @@ var simpleViewModel = function() {
             method: "POST",
             success: function(data) {
                self.searchResults.removeAll();
-	       for(i in data["hits"]["hits"]) {
+			   self.totalHits(data['hits']['total']);
+  	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  var pid = row["_source"]["pid"]; 
-		 var search_result = {"abstract": row["_source"]["abstract"],
+		         var search_result = {
+						  "abstract": row["_source"]["abstract"],
 			              "bib_link": '/pid/'+pid,
                                       "thumbnail": "http://li-fedora:8080/fedora/objects/"+pid+"/datastreams/TN/content",
 			              "title": row["_source"]["titlePrincipal"],
