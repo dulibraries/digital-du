@@ -7,7 +7,7 @@ import requests
 from flask import abort, jsonify, render_template, request, Response
 
 from . import app, cache, REPO_SEARCH
-from search import browse, get_aggregations, get_detail, get_pid
+from search import browse, filter_query, get_aggregations, get_detail, get_pid
 
 @app.route("/browse", methods=["POST"])
 def browser():
@@ -74,6 +74,12 @@ def query():
     if request.method.startswith("POST"):
         search_result = REPO_SEARCH.search(q=request.form["q"])
         return jsonify(search_result)
+    query_str = request.args.get('q')
+    if len(query_str) < 1:
+        query_str = None
+    facet = request.args.get('facet')
+    val = request.args.get('val')
+    return jsonify(filter_query(facet, val, query_str))
 
 @app.route("/<identifier>/<value>")
 def fedora_object(identifier, value):

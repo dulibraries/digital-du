@@ -25,7 +25,7 @@
       {% for row in facet.1.buckets %}
        <li>
        {% if facet.name == "Format" %}{# term|get_format_icon #} {% endif %}
-	   <a href="{% if query or limits %}{# add_limit facet.field term #}{% else %}{# new_limit facet.field term %i#}{% endif %}">
+	   <a href="{{ url_for('query') }}?facet={{ facet.0 }}&val={{ row.key }}&q=">
 			   {{ row.key|capitalize }}</a> ({{ row.doc_count }})</li>
       {% endfor %}
       </ul>

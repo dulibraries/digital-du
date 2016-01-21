@@ -16,6 +16,46 @@ etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 REPO_SEARCH = None
+AGGS_DSL = {
+    "size": 0,
+    "aggs": {
+        "Format": {
+             "terms": {
+                 "field": "typeOfResource"
+            }
+        },
+        "Geographic": {
+            "terms": {
+                "field": "geographic"
+            }
+        },
+        "Genres": {
+            "terms": {
+                "field": "genre"
+            }
+        },
+        "Languages": {
+	        "terms": {
+                "field": "language"
+			}
+        },
+        "Publication Year": {
+            "terms": {
+                "field": "dateCreated"
+			}
+        },
+        "Temporal (Time)": {
+            "terms": {
+                "field": "temporal"
+            }
+        },
+        "Topic": {
+            "terms": {
+                "field": "topic"
+            }
+        }
+    }
+}
 
 try:
     sys.path.append(BASE_DIR)
@@ -46,6 +86,32 @@ def browse(pid):
  #return {"hits": results}
     return results.to_dict()
 
+def filter_query(facet, facet_value, query=None):
+    """Function takes a facet, facet_value, and query string, and constructs
+    filter for Elastic search.
+
+    Args:
+        facet -- Facet name
+        facet_value -- Facet value
+        query -- Query, if blank searches entire index
+    """
+    dsl = {
+        "size": 25,
+        "query": {
+            "filtered":  {
+                "filter": {
+                    "term": {
+							AGGS_DSL["aggs"][facet]["terms"]["field"]: facet_value
+                    }
+                }
+            }
+        }
+    }
+    if query is not None:
+        dsl["query"]["match"] = {"_all": query}
+    results = REPO_SEARCH.search(body=dsl, index="repository")
+    return results
+
 def get_aggregations(pid=None):
     """Function takes an optional pid and returns the aggregations
     scoped by the pid, if pid is None, runs aggregation on full ES
@@ -58,35 +124,9 @@ def get_aggregations(pid=None):
         dictionary of the results
     """
     #search = Search(using=REPO_SEARCH, index="repository) \
-    aggs_dsl = {
-	    "size": 0,
-	    "aggs": {
-		    "Format": {
-			    "terms": {
-				    "field": "typeOfResource"
-			    }
-		    },
-		    "Genres": {
-			    "terms": {
-				    "field": "genre"
-			    }
-		    },
-		    "Languages": {
-			    "terms": {
-				    "field": "language"
-			    }
-		    },
-		    "Publication Year": {
-			    "terms": {
-				    "field": "dateCreated"
-			    }
-		    }
-	    }
-    }
     if pid is not None:
-        aggs_dsl["query"] = {"match":{"inCollection": pid } }
-						
-    return REPO_SEARCH.search(index="repository", body=aggs_dsl)['aggregations']
+        AGG_DSL["query"] = {"match":{"inCollection": pid } }
+    return REPO_SEARCH.search(index="repository", body=AGGS_DSL)['aggregations']
         
 
 def get_detail(pid):

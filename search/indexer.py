@@ -55,7 +55,7 @@ class Indexer(object):
             self.ri_search = "http://localhost:8080/fedora/risearch"
         if not 'repository' in self.elastic.indices.status().get('indices'):
             # Load mapping
-            self.elastic.indices.put_mapping(index='repository', mapping=MAP)
+            self.elastic.indices.create(index='repository', mapping=MAP)
 
     def __reindex_pid__(self, pid, body):
         """Internal method checks and if pid already exists"""

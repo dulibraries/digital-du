@@ -22,6 +22,10 @@ MAP = {"mappings": {
             "dateIssued": {
                 "type": "string"
             },
+			"datePublished": {
+					"index": "not_analyzed",
+					"type": "string"
+			},
             "degreeGrantor": {
                 "type": "string"
             },
@@ -72,15 +76,19 @@ MAP = {"mappings": {
             "subject": {
                 "properties": {
                     "genre": {
+						"index": "not_analyzed",
                         "type": "string"
                     },
                     "geographic": {
+						"index": "not_analyzed",
                         "type": "string"
                     },
                     "temporal": {
+						"index": "not_analyzed",
                         "type": "string"
                     },
                     "topic": {
+						"index": "not_analyzed",
                         "type": "string"
                     }
                 }
