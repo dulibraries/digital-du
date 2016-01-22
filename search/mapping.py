@@ -17,7 +17,9 @@ MAP = {"mappings": {
                 "type": "string"
             },
             "dateCreated": {
+               "index": "not_analyzed",
                 "type": "string"
+				
             },
             "dateIssued": {
                 "type": "string"

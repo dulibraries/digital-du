@@ -26,7 +26,7 @@ AGGS_DSL = {
         },
         "Geographic": {
             "terms": {
-                "field": "geographic"
+                "field": "subject.geographic"
             }
         },
         "Genres": {
@@ -46,12 +46,12 @@ AGGS_DSL = {
         },
         "Temporal (Time)": {
             "terms": {
-                "field": "temporal"
+                "field": "subject.temporal"
             }
         },
         "Topic": {
             "terms": {
-                "field": "topic"
+                "field": "subject.topic"
             }
         }
     }
@@ -154,3 +154,5 @@ def get_pid(es_id):
     """
     es_doc = REPO_SEARCH.get_source(id=es_id, index="repository")
     return es_doc.get("pid")
+
+
