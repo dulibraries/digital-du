@@ -1,0 +1,8 @@
+aristotle:
+    build: .
+    ports:
+     - "5000:5000"
+repoSearch:
+    image: elasticsearch
+    volumes:
+     - /opt/digitalcc/data/elasticsearch/:/usr/share/elasticsearch/data
