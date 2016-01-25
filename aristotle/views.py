@@ -111,7 +111,8 @@ def fedora_object(identifier, value):
 @app.route("/")
 def index():
     """Displays Home-page of Digital Repository"""
+    aggs = get_aggregations()
     return render_template(
         'discovery/index.html',
         pid="coccc:root",
-        facets=get_aggregations())
+        facets=aggs)

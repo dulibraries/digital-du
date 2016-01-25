@@ -1,13 +1,14 @@
 """Module repairs errors with MODS metadata"""
 __author__ = "Jeremy Nelson, Sarah Bogard"
 
-
 import os
 import requests
 import sys
 
 import xml.etree.ElementTree as etree
 import rdflib
+import urllib.parse
+
 MODS = rdflib.Namespace("http://www.loc.gov/mods/v3")
 etree.register_namespace("mods", str(MODS))
 
@@ -34,10 +35,10 @@ def update_mods(pid, field_xpath, old_value, new_value):
 		old_value -- 
 		new_value --
     """
-    mods_base_url = "{}{}/datastreams/MODS/".format(
+    mods_base_url = "{}{}/datastreams/MODS".format(
         CONF.REST_URL,
         pid)
-    get_mods_url = "{}content".format(mods_base_url)
+    get_mods_url = "{}/content".format(mods_base_url)
     mods_result = requests.get(
         get_mods_url,
         auth=CONF.FEDORA_AUTH)
@@ -54,10 +55,17 @@ error={} url={}""".format(
     for element in old_value_elements:
         if element.text == old_value:
             element.text = new_value
-    put_result = requests.put(
+    mods_update_url = "{}?{}".format(
         mods_base_url,
-        files={"file": ('MODS', etree.tostring(mods_xml))},
+        urllib.parse.urlencode({"controlGroup": "M",
+            "dsLabel": "MODS",
+            "mimeType": "text/xml"}))
+    raw_xml = etree.tostring(mods_xml)
+    put_result = requests.post(
+        mods_update_url,
+		files={"content":  raw_xml},
         auth=CONF.FEDORA_AUTH)
+    print(put_result.status_code)
     if put_result.status_code < 300:
         return True
     else:

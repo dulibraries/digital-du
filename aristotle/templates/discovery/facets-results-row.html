@@ -28,7 +28,7 @@
 	   <a data-facet="{{ facet.0 }}" data-val="{{ row.key }}"
 		  data-bind="click: facetQuery.bind($data, '{{ facet.0 }}', '{{ row.key }}')" href="#">
 	   
-			   {{ row.key|capitalize }}</a> ({{ row.doc_count }})</li>
+			   {{ row.key }}</a> ({{ row.doc_count }})</li>
       {% endfor %}
       </ul>
      {# END facet accordion inner #}
@@ -52,7 +52,7 @@
  {% include 'cc-bootstrap-cart.html' #}
 
 </div>
-<div class="row" data-bind="visible: searchResults().length > 1">
+<div class="row" data-bind="visible: searchResults().length > 0">
  <div class="col-md-9">
  <ul class="media-list" data-bind="foreach: searchResults">
   <li class="media">
