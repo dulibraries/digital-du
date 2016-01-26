@@ -35,6 +35,7 @@ def update_mods(pid, field_xpath, old_value, new_value):
 		old_value -- 
 		new_value --
     """
+    start = datetime.datetime.utcnow()
     mods_base_url = "{}{}/datastreams/MODS".format(
         CONF.REST_URL,
         pid)
@@ -51,6 +52,15 @@ error={} url={}""".format(
             mods_result.status_code,
             mods_url)
     mods_xml = etree.XML(mods_result.text)
+    # Create backup of MODS
+    backup_mods_filename = os.path.join(
+        BASE_DIR, 
+        "repairs",
+        "backups",
+        "{}-mods-{}.xml".format(pid, start.strftime("%Y-%m-%d"))
+    if not os.path.exists(backup_mods_filename):
+        with open(backup_mods_filename, "w+") as mods_file:
+            mods_file.write(mods_result.text)
     old_value_elements = mods_xml.findall(field_xpath)
     for element in old_value_elements:
         if element.text == old_value:
@@ -74,3 +84,37 @@ error={} url={}""".format(
             "Failed to update MODS with PUT\nStatus code {}\n{}".format(
                 put_result.status_code,
                 put_result.text))
+
+def update_multiple(
+    pid_list,
+    field_xpath,
+    old_value,
+    new_value):
+    """Function takes a list of PIDs, the MODS field xpath, the old value to be 
+    replaced by the new value.
+
+    Args:
+        pid_list -- Listing of PIDs
+        field_xpath -- Field XPath
+        old_value -- Old string value to be replaced
+        new_value -- New string value
+    """
+    start = datetime.datetime.utcnow()
+    print("Starting MODS update for {} PIDS at {}".format(
+        len(pid_list), 
+        start.isoformat()))
+    errors = []
+    for i, pid in enumerate(pid_list):
+        if not update_mods(pid, field_xpath, old_value, new_value):
+            print("Could update MODS for PID {}".format(pid))
+            errors.append(pid)
+        if not i%25:
+            print(i, end="")
+        elif not i%10:
+            print(".", end="")
+    end = datetime.datetime.utcnow()
+    print("Finished updating MODS for {}, errors {} at {}, total {}".format(
+        len(pid_list),
+        len(errors),
+        end.isoformat()
+        (end-start).seconds / 60.0))
