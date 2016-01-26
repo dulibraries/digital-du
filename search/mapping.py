@@ -16,6 +16,22 @@ MAP = {"mappings": {
             "creator": {
                 "type": "string"
             },
+            "datastreams": {
+               "properties": {
+                       "dsid": {
+                           "index": "not_analyzed",
+                           "type": "string"
+                       },
+					   "label": {
+                           "index": "not_analyzed",
+                           "type": "string"
+                       },
+                       "mimeType": {
+                           "index": "not_analyzed",
+                           "type": "string"
+                       }
+                }
+            },
             "dateCreated": {
                "index": "not_analyzed",
                 "type": "string"

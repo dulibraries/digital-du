@@ -15,10 +15,13 @@ import os
 import requests
 import sys
 import xml.etree.ElementTree as etree
+from rdflib import Namespace
 from search.mods2json import mods2rdf
 from search.mapping import MAP
 
 from . import BASE_DIR, CONF, REPO_SEARCH
+
+FEDORA_ACCESS = Namespace("http://www.fedora.info/definitions/1/0/access/")
 
 logging.basicConfig(
     filename=os.path.join(BASE_DIR, "index.log"),
@@ -56,6 +59,44 @@ class Indexer(object):
         if not self.elastic.indices.exists('repository'):
             # Load mapping
             self.elastic.indices.create(index='repository', body=MAP)
+
+    def __add_datastreams__(self, pid):
+        """Internal method takes a PID and queries Fedora to extract 
+        datastreams and return a list of datastreams names to be indexed
+        into Elasticsearch.
+
+		Args:
+		   pid -- PID
+        """
+        ds_pid_url = "{}{}/datastreams?format=xml".format(
+            self.rest_url,
+            pid)
+        result = requests.get(ds_pid_url)
+        output = []
+        if result.status_code > 399:
+            raise IndexerError(
+                "Failed to retrieve datastreams for {}".format(pid),
+                "Code {} for url {} \nError {}".format(
+						result.status_code,
+                        ds_pid_url,
+                        result.text))
+        result_xml = etree.XML(result.text)
+        datastreams = result_xml.findall(
+            "{{{}}}datastream".format(FEDORA_ACCESS))
+        for row in datastreams:
+            add_ds = False
+            mime_type = row.attrib.get('mimeType')
+            if mime_type.startswith("application/pdf"):
+                add_ds = True
+            if add_ds:
+                output.append({
+                    "label": row.attrib.get('label'),
+					"dsid": row.attrib.get('dsid'),
+                    "mimeType": mime_type})
+
+        return output
+
+
 
     def __reindex_pid__(self, pid, body):
         """Internal method checks and if pid already exists"""
@@ -115,11 +156,14 @@ class Indexer(object):
         mods_xml = etree.XML(mods_result.text)
         mods_body = mods2rdf(mods_xml)
         mods_body['pid'] = pid
-        if self.__reindex_pid__(pid, mods_body):
-            return True
         if parent:
             mods_body['inCollection'] = [parent,]
+       
+        
         if not self.__reindex_pid__(pid, mods_body):
+            # Extract Islandora Content Models from REL-EXT 
+            # Add Datasteams to Index
+            mods_body["datastreams"] = self.__add_datastreams__(pid)
             #try:
             mods_index_result = self.elastic.index(
                 index="repository",

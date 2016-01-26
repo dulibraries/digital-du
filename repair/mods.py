@@ -59,6 +59,8 @@ error={} url={}""".format(
         "repair",
         "backups",
         "{}-mods-{}.xml".format(pid, start.strftime("%Y-%m-%d")))
+    print(backup_mods_filename, os.path.exists(backup_mods_filename))
+    return
     if not os.path.exists(backup_mods_filename):
         with open(backup_mods_filename, "wb+") as mods_file:
             mods_file.write(mods_result.text.encode())

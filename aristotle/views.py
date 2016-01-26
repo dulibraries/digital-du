@@ -81,6 +81,29 @@ def query():
     val = request.args.get('val')
     return jsonify(filter_query(facet, val, query_str))
 
+@app.route("/pid/<pid>/datastream/<dsid>.<ext>")
+def fedora_datastream(pid, dsid, ext):
+    """View returns a specific Fedora Datastream including Images, PDFs,
+    audio, and video datastreams
+
+    Args:
+        pid -- PID
+        dsid -- Datastream ID
+        ext -- Extension for datastream
+    """
+    ds_url = "{}{}/datastream/{}".format(
+        app.config.get("REST_URL"),
+        pid,
+        dsid)
+    result = requests.get(ds_url)
+    if ext.startswith("pdf"):
+        mimetype = 'application/pdf'
+    if ext.startswith("jpg"):
+        mimetype = 'image/jpg'
+    if ext.startswith("mp3"):
+        mimetype = "audio/mpeg"
+    return Response(result.text, mimetype=mimetype) 
+
 @app.route("/<identifier>/<value>")
 def fedora_object(identifier, value):
     """View routes to a Fedora Object based on type of identifier and
