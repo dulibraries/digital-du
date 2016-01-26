@@ -15,12 +15,53 @@
 <div class="container">
 		{% include "discovery/search-panel-row.html" %}
 		<div class="row" style="margin-top: 3em;">
-				<section class="col-md-4">
+				<section class="col-md-6">
                  <img src="http://li-fedora:8080/fedora/objects/{{ source.get('pid') }}/datastreams/TN/content"
 				 {# style="width: 30%"  class="pull-left" #}>
+				 <div class="panel panel-default">
+				<div class="panel-body">
+				<h2>{{ source.get('titlePrincipal') }}</h2>
+				</div>
+				</div>
 				 </section>
-				<section class="col-md-8">
+				<section class="col-md-6">
 				
+				 <div class="panel-group" id="metadataaccordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#metadataaccordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Abstract and Notes
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+        <h3>Abstract</h3>
+		    {% for abstract in source.get("abstract")%}
+			<p>{{ abstract|safe }}</p>
+			{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#metadataaccordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Technical Metadata
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+        <h3>Administrative Notes</h3>
+		    {% for adminNote in source.get("adminNote")%}
+			<p>{{ adminNote|safe }}</p>
+			{% endfor %}			
+      </div>
+    </div>
+  </div>
+</div>  
 				 <h1>{{ source.get('titlePrincipal') }}</h1>
 				 <dl class="dl-horizontal">
 						 {% for key, val in source.items() %}
