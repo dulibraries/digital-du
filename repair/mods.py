@@ -1,6 +1,7 @@
 """Module repairs errors with MODS metadata"""
 __author__ = "Jeremy Nelson, Sarah Bogard"
 
+import datetime
 import os
 import requests
 import sys
@@ -55,12 +56,12 @@ error={} url={}""".format(
     # Create backup of MODS
     backup_mods_filename = os.path.join(
         BASE_DIR, 
-        "repairs",
+        "repair",
         "backups",
-        "{}-mods-{}.xml".format(pid, start.strftime("%Y-%m-%d"))
+        "{}-mods-{}.xml".format(pid, start.strftime("%Y-%m-%d")))
     if not os.path.exists(backup_mods_filename):
-        with open(backup_mods_filename, "w+") as mods_file:
-            mods_file.write(mods_result.text)
+        with open(backup_mods_filename, "wb+") as mods_file:
+            mods_file.write(mods_result.text.encode())
     old_value_elements = mods_xml.findall(field_xpath)
     for element in old_value_elements:
         if element.text == old_value:
