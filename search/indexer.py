@@ -192,6 +192,7 @@ class Indexer(object):
 
         Args:
             pid -- Collection PID
+			children -- List of all children Fedora Object PIDs
         """
         sparql = """SELECT DISTINCT ?s
 WHERE {{
