@@ -86,7 +86,9 @@ class Indexer(object):
         for row in datastreams:
             add_ds = False
             mime_type = row.attrib.get('mimeType')
-            if mime_type.startswith("application/pdf"):
+            if mime_type.startswith("application/pdf") or\
+			   mime_type.startswith("audio/mpeg") or\
+			   mime_type.startswith("video/quicktime") :
                 add_ds = True
             if add_ds:
                 output.append({

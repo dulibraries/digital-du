@@ -80,6 +80,7 @@ def browse(pid):
     """
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", inCollection=pid) \
+             .params(size=50) \
              .sort("titlePrincipal")
                
     results = search.execute()
