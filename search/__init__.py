@@ -7,6 +7,8 @@ import os
 import requests
 import sys
 
+from collections import OrderedDict
+from copy import deepcopy
 from flask import abort
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
@@ -17,6 +19,7 @@ etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 REPO_SEARCH = None
 AGGS_DSL = {
+    "sort": ["titlePrincipal"],
     "size": 0,
     "aggs": {
         "Format": {
@@ -79,7 +82,7 @@ def browse(pid):
         pid -- PID of Fedora Object
     """
     search = Search(using=REPO_SEARCH, index="repository") \
-             .filter("term", inCollection=pid) \
+             .filter("term", parent=pid) \
              .params(size=50) \
              .sort("titlePrincipal")
                
@@ -125,11 +128,16 @@ def get_aggregations(pid=None):
         dictionary of the results
     """
     #search = Search(using=REPO_SEARCH, index="repository) \
+    dsl = deepcopy(AGGS_DSL)
+    print("Pid is {}".format(pid))
     if pid is not None:
-        AGGS_DSL["query"] = {"match":{"inCollection": pid } }
-    return REPO_SEARCH.search(index="repository", body=AGGS_DSL)['aggregations']
+        dsl["query"] = {"term": { "inCollections": pid } }
+    results = REPO_SEARCH.search(index="repository", body=dsl)['aggregations']
+    output = OrderedDict()
+    for key in sorted(results):
+        output[key] = results[key]
+    return output
         
-
 def get_detail(pid):
     """Function takes a pid and returns the detailed dictionary from 
     the search results.

@@ -274,6 +274,7 @@ var simpleViewModel = function() {
   self.shouldShowNumber = ko.observable(false);
   self.displayResults = ko.observable();
   self.searchResults = ko.observableArray();
+  self.searchMessage = ko.observable();
   self.isDetailed = ko.observable();
   self.source = ko.observable();
   self.totalHits = ko.observable();
@@ -300,6 +301,7 @@ var simpleViewModel = function() {
                      
                }
 			   self.totalHits(data['hits']['total']);
+			   self.searchMessage("Browsing <em>" + pid + "</em> contains " + self.totalHits() + " records");
 	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  var child_pid = row["_source"]["pid"]; 

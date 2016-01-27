@@ -15,13 +15,20 @@ import os
 import requests
 import sys
 import xml.etree.ElementTree as etree
-from rdflib import Namespace
+from copy import deepcopy
+from rdflib import Namespace, RDF
 from search.mods2json import mods2rdf
 from search.mapping import MAP
 
 from . import BASE_DIR, CONF, REPO_SEARCH
 
 FEDORA_ACCESS = Namespace("http://www.fedora.info/definitions/1/0/access/")
+FEDORA = Namespace("info:fedora/fedora-system:def/relations-external#")
+FEDORA_MODEL = Namespace("info:fedora/fedora-system:def/model#")
+ISLANDORA = Namespace("http://islandora.ca/ontology/relsext#")
+etree.register_namespace("fedora", str(FEDORA))
+etree.register_namespace("fedora-model", str(FEDORA_MODEL))
+etree.register_namespace("islandora", str(ISLANDORA))
 
 logging.basicConfig(
     filename=os.path.join(BASE_DIR, "index.log"),
@@ -92,13 +99,55 @@ class Indexer(object):
                 add_ds = True
             if add_ds:
                 output.append({
+                    "pid": pid,
                     "label": row.attrib.get('label'),
 					"dsid": row.attrib.get('dsid'),
                     "mimeType": mime_type})
-
         return output
 
 
+    def __index_compound__(self, pid):
+        """Internal method takes a parent PID in a Compound Object and indexes
+        all children.
+
+        Args:
+            pid -- PID of parent Fedora object
+        """
+        output = []
+        return output
+
+    def __process_rels_ext__(self, pid):
+        """Extracts and process RELS-EXT base on PID
+
+        Args:
+            pid -- PID
+        """
+        rels_ext_url = "{}{}/datastreams/RELS-EXT/content".format(
+            self.rest_url,
+            pid)
+        body = {'content_models': []}
+        rels_ext_result = requests.get(rels_ext_url)
+        if rels_ext_result.status_code > 399:
+            raise IndexerError("Cannot get RELS-EXT for {}".format(pid),
+                "Tried URL {} status code {}\n{}".format(
+                    rels_ext_url,
+                    rels_ext_result.status_code,
+                    rels_ext_result.text))
+        rels_ext = etree.XML(rels_ext_result.text)
+        # Extract and add content models
+        content_models = rels_ext.findall(
+            "{{{0}}}Description/{{{1}}}hasModel".format(
+                RDF,
+                FEDORA_MODEL))
+        if len(content_models) > 0:
+            for model in content_models:
+                content_model = model.attrib.get("{{{0}}}resource".format(RDF))
+                # Remove and save to content_models
+                body['content_models'].append(content_model.split("/")[-1])
+        return body
+        
+            
+        
 
     def __reindex_pid__(self, pid, body):
         """Internal method checks and if pid already exists"""
@@ -124,17 +173,22 @@ class Indexer(object):
             return True
 
 
-    def index_pid(self, pid, parent=None):
+    def index_pid(self, pid, parent=None, inCollections=None):
         """Method retrieves MODS and any PDF datastreams and indexes
         into repository's Elasticsearch instance
 
         Args:
             pid: PID to index
-	    parent: PID of parent collection, default is None
+	        parent: PID of parent collection, default is None
 
         Returns:
             boolean: True if indexed, False otherwise
         """
+        # Extract and process based on content model
+        rels_ext = self.__process_rels_ext__(pid)
+        # Extract Islandora Content Models from REL-EXT 
+        if "compoundCModel" in rels_ext["content_models"]:
+            rels_ext["Constituents"] = self.__index_compound__(self, pid)
         # Extract MODS XML Datastream
         mods_url = "{}{}/datastreams/MODS/content".format(
             self.rest_url,
@@ -157,14 +211,16 @@ class Indexer(object):
                 mods_result.text)
         mods_xml = etree.XML(mods_result.text)
         mods_body = mods2rdf(mods_xml)
+        mods_body["content_models"] = rels_ext.get("content_models", [])
         mods_body['pid'] = pid
+        # Used for scoping aggregations
+        if len(inCollections) > 0:
+            mods_body['inCollections'] = inCollections
+        # Used for browsing
         if parent:
-            mods_body['inCollection'] = [parent,]
-       
-        
+            mods_body['parent'] = parent
         if not self.__reindex_pid__(pid, mods_body):
-            # Extract Islandora Content Models from REL-EXT 
-            # Add Datasteams to Index
+           # Add Datasteams to Index
             mods_body["datastreams"] = self.__add_datastreams__(pid)
             #try:
             mods_index_result = self.elastic.index(
@@ -186,13 +242,15 @@ class Indexer(object):
                 return True
         return False
 
-    def index_collection(self, pid):
+    def index_collection(self, pid, parents=[]):
         """Method takes a parent collection PID, retrieves all children, and
         iterates through and indexes all pids
 
         Args:
             pid -- Collection PID
-			children -- List of all children Fedora Object PIDs
+			parents -- List of all Fedora Object PIDs that pid is in the 
+			            collection
+
         """
         sparql = """SELECT DISTINCT ?s
 WHERE {{
@@ -214,7 +272,9 @@ WHERE {{
             for row in children:
                 iri = row.get('s')
                 child_pid = iri.split("/")[-1]
-                self.index_pid(child_pid, parent=pid)
+                child_parents = deepcopy(parents)
+                child_parents.append(pid)
+                self.index_pid(child_pid, pid, child_parents)
                 is_collection_sparql = """SELECT DISTINCT ?o
 WHERE {{
   <info:fedora/{0}> <fedora-model:hasModel> <info:fedora/islandora:collectionCModel> .
@@ -228,7 +288,7 @@ WHERE {{
                           "query": is_collection_sparql},
                     auth=self.auth)
                 if len(is_collection_result.json().get('results')) > 0:
-                    self.index_collection(child_pid)
+                    self.index_collection(child_pid, child_parents)
         else:
             err_title = "Failed to index collection PID {}, error {}".format(
                 pid,

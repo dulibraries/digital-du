@@ -45,8 +45,7 @@
  <div class="col-md-9 results-block">
 		 <div class="row">
  <div class="span3">
-		 <p>Your search for <em data-bind="text: searchQuery"></em> matched on <span data-bind="text: totalHits"></span> total records:
-		 </p>
+		 <p data-bind="html: searchMessage"></p> 
  </div>
  {# include 'cc-bootstrap-sortby.html' %}
  {% include 'cc-bootstrap-cart.html' #}

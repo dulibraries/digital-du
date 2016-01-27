@@ -10,6 +10,10 @@ MAP = {"mappings": {
             "adminNote": {
                 "type": "string"
             },
+            "content_models": {
+              "index": "not_analyzed",
+                       "type": "string"
+            },
             "contributor": {
                 "type": "string"
             },
@@ -65,7 +69,7 @@ MAP = {"mappings": {
             "handle": {
                 "type": "string"
             },
-            "inCollection": {
+            "inCollections": {
                 "index": "not_analyzed",
                 "type": "string"
             },
@@ -73,6 +77,10 @@ MAP = {"mappings": {
                 "type": "string"
             },
             "note": {
+                "type": "string"
+            },
+            "parent": {
+                "index": "not_analyzed",
                 "type": "string"
             },
             "photographer": {
