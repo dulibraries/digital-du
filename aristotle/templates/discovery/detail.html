@@ -15,24 +15,58 @@
 <div class="container">
 		{% include "discovery/search-panel-row.html" %}
 		<div class="row" style="margin-top: 3em;">
-		<h1>{{ source.get('titlePrincipal') }}</h1>
+				<h1>{{ source.get('titlePrincipal') }}</h1>
+				{# include 'discovery/snippets/datastream-carousel.html' #}
+				
 				<section class="col-md-6">
-                 <img src="http://li-fedora:8080/fedora/objects/{{ source.get('pid') }}/datastreams/TN/content"
+				<img src="{{ url_for('get_datastream', pid=source.get('pid'), dsid="TN") }}"
 				 {# style="width: 30%"  class="pull-left" #}>
+                 <br>
+				 <div class="btn-group" role="group">
+                    <a href="#" class="btn btn-default">
+							<i class="glyphicon glyphicon-facetime-video"></i>
+					</a>
+                    <a href="#" class="btn btn-default bg-lg">
+							<i class="glyphicon glyphicon-picture"></i>
+					</a>
+
+				 </div>
 				 <div class="panel panel-default">
-				<div class="panel-body">
-				<h5>Creator</h5>
-				{{ source.get('creator') }}
+						 <div class="panel-body">
+								 {% if 'creator' in source %}
+						<h5>Creator</h5>
+						{{ source.get('creator') }}
+				{% for creator in source.get('creator', []) %}
+				{{ creator }}{% if not loop.last %},{% endif %}
+				{% endfor %}
+				{% endif %}
 				<h5>Date Created</h5>
 				{{ source.get('dateCreated') }}
 				<h5>Place</h5>
 				{{ source.get('place') }}
-				<h5>Language</h5>
-				{{ source.get('language') }}
+				<h5>Language{% if source.get('language')|length > 1%}s{% endif %}</h5>
+				<ul>
+				{% for lang in  source.get('language', []) %}
+				<li>{{ lang }}</li>
+				{% endfor %}
+		        </ul>
 				<h5>Subject</h5>
-				{{ source.get('subject') }}
+				{% for subject, info in source.get('subject').items() %}
+				  {% if info[0] %}
+				  <strong>{{ subject }}</strong>
+                  <ul>
+				  {% for row in info %}
+				  <li>{{ row }}</li>
+				  {% endfor %}
+		          </ul>
+				  {% endif %}	
+				{% endfor %}
 				<h5>Genre</h5>
-				{{ source.get('genre') }}
+				<ul>
+				{% for genre in  source.get('genre') %}
+                <li>{{ genre }}</li>
+				{% endfor %}
+		        </ul>
 				</div>
 				</div>
 				 </section>
