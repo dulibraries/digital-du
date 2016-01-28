@@ -24,6 +24,27 @@ def browser():
             cache.set(pid, browsed)
         return jsonify(browsed)
 
+@app.route("/pid/<pid>/datastream/<dsid>")
+@app.route("/pid/<pid>/datastream/<dsid>.<ext>")
+def get_datastream(pid, dsid, ext=None):
+    """View returns the datastream based on pid and dsid
+
+    Args:
+        pid -- Fedora Object's PID
+        dsid -- Either datastream ID of PID
+    """
+    fedora_url = "{}{}/datastreams/{}/content".format(
+        app.config.get("REST_URL"),
+        pid,
+        dsid)
+    exists_result = requests.get(fedora_url)
+    if exists_result.status_code == 404:
+        abort(404)
+    return Response(
+        exists_result.content, 
+        mimetype=exists_result.headers.get('Content-Type'))
+
+
 @app.route("/detail", methods=["POST"])
 def detailer():
     """Detail view for AJAX call from client based on the PID in
