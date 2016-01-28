@@ -55,9 +55,10 @@
     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
         <h3>Administrative Notes</h3>
-		    {% for adminNote in source.get("adminNote")%}
+		    {% for adminNote in source.get("adminNote",[])%}
 			<p>{{ adminNote|safe }}</p>
-			{% endfor %}			
+			{% endfor %}
+		{{ source.get('useAndReproduction') }}
       </div>
     </div>
   </div>
