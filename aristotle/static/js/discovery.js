@@ -342,6 +342,8 @@ var simpleViewModel = function() {
 				  },
 				  success: function(data) {
         			   self.totalHits(data['hits']['total']);
+					   self.searchMessage("<strong>"+ facet + "</strong> <em>" + value + "</em> has " + self.totalHits() + " records");
+							   
 					   self.searchResults.removeAll();
          	           for(i in data["hits"]["hits"]) {
                          var row = data["hits"]["hits"][i];
@@ -352,9 +354,9 @@ var simpleViewModel = function() {
 			              "title": row["_source"]["titlePrincipal"],
                           "dateCreated": row["_source"]["dateCreated"],
                	          "creator": row["_source"]["creator"]};
-						self.searchResults.push(search_result); 
-
-               }
+						  self.searchResults.push(search_result);
+                       }
+                       console.log("Aggregations " + data['aggregations']);
 
 			      }
 		  });

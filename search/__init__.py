@@ -109,7 +109,8 @@ def filter_query(facet, facet_value, query=None):
                     }
                 }
             }
-        }
+         },
+		"aggs": AGGS_DSL['aggs']
     }
     if query is not None:
         dsl["query"]["match"] = {"_all": query}
