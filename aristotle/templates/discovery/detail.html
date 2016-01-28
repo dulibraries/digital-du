@@ -15,12 +15,24 @@
 <div class="container">
 		{% include "discovery/search-panel-row.html" %}
 		<div class="row" style="margin-top: 3em;">
+		<h1>{{ source.get('titlePrincipal') }}</h1>
 				<section class="col-md-6">
                  <img src="http://li-fedora:8080/fedora/objects/{{ source.get('pid') }}/datastreams/TN/content"
 				 {# style="width: 30%"  class="pull-left" #}>
 				 <div class="panel panel-default">
 				<div class="panel-body">
-				<h2>{{ source.get('titlePrincipal') }}</h2>
+				<h5>Creator</h5>
+				{{ source.get('creator') }}
+				<h5>Date Created</h5>
+				{{ source.get('dateCreated') }}
+				<h5>Place</h5>
+				{{ source.get('place') }}
+				<h5>Language</h5>
+				{{ source.get('language') }}
+				<h5>Subject</h5>
+				{{ source.get('subject') }}
+				<h5>Genre</h5>
+				{{ source.get('genre') }}
 				</div>
 				</div>
 				 </section>
@@ -29,48 +41,87 @@
 				 <div class="panel-group" id="metadataaccordion" role="tablist" aria-multiselectable="true">
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingOne">
-      <h4 class="panel-title">
+      <h3 class="panel-title">
         <a role="button" data-toggle="collapse" data-parent="#metadataaccordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
           Abstract and Notes
         </a>
-      </h4>
+      </h3>
     </div>
     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
       <div class="panel-body">
-        <h3>Abstract</h3>
+        <h5>Abstract</h5>
 		    {% for abstract in source.get("abstract")%}
 			<p>{{ abstract|safe }}</p>
+			{% endfor %}
+		<h5>Note</h5>
+			{% for note in source.get("note")%}
+			<p>{{ note|safe }}</p>
 			{% endfor %}
       </div>
     </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
+      <h3 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#metadataaccordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
           Technical Metadata
         </a>
-      </h4>
+      </h3>
     </div>
     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
-        <h3>Administrative Notes</h3>
+        <h5>Administrative Notes</h5>
 		    {% for adminNote in source.get("adminNote",[])%}
 			<p>{{ adminNote|safe }}</p>
 			{% endfor %}
-		{{ source.get('useAndReproduction') }}
+		<h5>Copyright</h5>
+			{{ source.get('useAndReproduction') }}
+		<h5>Publisher</h5>
+			{{ source.get('publisher') }}
+		<h5>PID</h5>
+			{{ source.get('pid') }}	
+		<h5>Handle</h5>
+			{{ source.get('handle') }}
+		<h5>Digital Origin</h5>
+			{{ source.get('digitalOrigin') }}
+		<h5>Extent</h5>
+			{{ source.get('extent') }}
+		<h5>In Collections</h5>
+			{{ source.get('inCollections') }}
+		<h5>Date Issued</h5>
+			{{ source.get('dateIssued') }}
+		<h5>Parent</h5>
+			{{ source.get('parent') }}
+      </div>
+    </div>
+	{%if 'thesis' in source%}
+	<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h3 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#metadataaccordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Thesis
+        </a>
+      </h3>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+      <div class="panel-body">
+		<h5>Thesis</h5>
+			{{ source.get('thesis') }}
+		<h5>Thesis Advisor</h5>
+			{{ source.get('thesisAdvisor') }}
+		<h5>Sponsor</h5>
+			{{ source.get('sponsor') }}
+		<h5>Degree Name</h5>
+			{{ source.get('degreeName') }}	
+		<h5>Degree Type</h5>
+			{{ source.get('degreeType') }}
+		<h5>Degree Grantor</h5>
+			{{ source.get('degreeGrantor') }}
       </div>
     </div>
   </div>
+  	{% endif %}
 </div>  
-				 <h1>{{ source.get('titlePrincipal') }}</h1>
-				 <dl class="dl-horizontal">
-						 {% for key, val in source.items() %}
-				 <dt>{{ key }}</dt>
-				 <dd>
-				 {{ val }}</dd>
-				 {% endfor %}
-				</dl>
 				 </section>
 
 		 </div>
