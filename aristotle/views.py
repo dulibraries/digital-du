@@ -140,6 +140,7 @@ def fedora_object(identifier, value):
     """
     if identifier.startswith("pid"):
         results = browse(value)
+        print("In results")
         if results['hits']['total'] < 1:
             detail_result = get_detail(value)
             return render_template(

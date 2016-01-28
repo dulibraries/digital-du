@@ -293,13 +293,6 @@ var simpleViewModel = function() {
             method: "POST",
             success: function(data) {
                self.searchResults.removeAll();
-               if (data["hits"]["hits"].length === 1) {
-                       self.isDetailed(true);
-                       self.source(data["hits"]["hits"][0]["_source"]);
-					   console.log("Should load detailed view" + self.source());
-					   return;
-                     
-               }
 			   self.totalHits(data['hits']['total']);
 			   self.searchMessage("Browsing <em>" + pid + "</em> contains " + self.totalHits() + " records");
 	           for(i in data["hits"]["hits"]) {

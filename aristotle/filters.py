@@ -64,7 +64,7 @@ def get_tabs(s):
     return cache.get('tabs')
 
 
-AUDIO_TEMPLATE = """<audio src="{0}" controls>
+AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
  <a href="{0}">Download</a>
 </audio>"""
 

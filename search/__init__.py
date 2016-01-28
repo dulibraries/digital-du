@@ -136,7 +136,9 @@ def get_aggregations(pid=None):
     results = REPO_SEARCH.search(index="repository", body=dsl)['aggregations']
     output = OrderedDict()
     for key in sorted(results):
-        output[key] = results[key]
+        aggregation = results[key]
+        if len(aggregation.get('buckets')) > 0:
+            output[key] = aggregation
     return output
         
 def get_detail(pid):
