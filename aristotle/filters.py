@@ -24,6 +24,25 @@ def get_header(s):
     harvest()
     return cache.get('header')
 
+
+@app.template_filter('icon')
+def get_icon(datastream):
+    """Filter returns the glyphicon CSS class for a datastream
+
+    Args:
+	    datastream -- Datastream dict
+    """
+    mime_type = datastream.get('mimeType')
+    if mime_type.endswith("pdf"):
+        return "glyphicon-file"
+    if mime_type.endswith("mp4"):
+        return "glyphicon-facetime-video"
+    if mime_type.endswith("mp3") or\
+       mime_type.endswith("wav"):
+        return "glyphicon-headphones"
+    if mime_type.endswith("jpg"):
+        return "glyphicon-picture"
+
 @app.template_filter('scripts')
 def get_scripts(s):
     scripts = cache.get('scripts')
@@ -68,7 +87,7 @@ AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
  <a href="{0}">Download</a>
 </audio>"""
 
-PDF_TEMPLATE = """<object data="{0}" type="application/pdf" width="640" height="480">
+PDF_TEMPLATE = """<object data="{0}" type="application/pdf" width="100%" height="600px">
         alt : <ahref="{0}">{1}</a> 
 </object>"""
 
