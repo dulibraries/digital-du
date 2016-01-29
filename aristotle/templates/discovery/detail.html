@@ -122,12 +122,11 @@
 			{{ source.get('extent') }}
 		<h5>In Collections</h5>
 			{{ source.get('inCollections') }}
-		<h5>Date Issued</h5>
-			{{ source.get('dateIssued') }}
 		<h5>Parent</h5>
 			{{ source.get('parent') }}
       </div>
     </div>
+	</div>
 	{%if 'thesis' in source%}
 	<div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingThree">
@@ -140,17 +139,31 @@
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
 		<h5>Thesis</h5>
-			{{ source.get('thesis') }}
+			{% for thesis in source.get("thesis")%}
+			{{ thesis|safe }}
+			{% endfor %}
 		<h5>Thesis Advisor</h5>
-			{{ source.get('thesisAdvisor') }}
+			{% for thesisAdvisor in source.get("thesisAdvisor")%}
+			{{ thesisAdvisor|safe}}
+			{% endfor %}
 		<h5>Sponsor</h5>
-			{{ source.get('sponsor') }}
+			{% for sponsor in source.get("sponsor")%}
+			{{ sponsor|safe}}
+			{% endfor %}
 		<h5>Degree Name</h5>
-			{{ source.get('degreeName') }}	
+			{% for degreeName in source.get("degreeName")%}
+			{{ degreeName|safe}}
+			{% endfor %}	
 		<h5>Degree Type</h5>
-			{{ source.get('degreeType') }}
+			{% for degreeType in source.get("degreeType")%}
+			{{ degreeType|safe}}
+			{% endfor %}
 		<h5>Degree Grantor</h5>
-			{{ source.get('degreeGrantor') }}
+			{% for degreeGrantor in source.get("degreeGrantor")%}
+			{{ degreeGrantor|safe}}
+			{% endfor %}
+		<h5>Date Issued</h5>
+			{{ source.get('dateIssued') }}
       </div>
     </div>
   </div>
