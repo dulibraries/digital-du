@@ -97,7 +97,7 @@ class Indexer(object):
 			   mime_type.startswith("audio/mpeg") or\
 			   mime_type.startswith("video/quicktime") or\
 			   mime_type.startswith("video/mp4") or\
-               mime_type.startswith("image/jpg"):
+               mime_type.startswith("image/jpeg"):
                 add_ds = True
             if add_ds:
                 output.append({

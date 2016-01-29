@@ -41,7 +41,8 @@ def get_icon(datastream):
     if mime_type.endswith("mp3") or\
        mime_type.endswith("wav"):
         return "glyphicon-headphones"
-    if mime_type.endswith("jpg"):
+    if mime_type.endswith("jpg") or\
+       mime_type.endswith("jpeg"):
         return "glyphicon-picture"
 
 @app.template_filter('scripts')
@@ -93,18 +94,18 @@ def get_title(pid):
     return search.get_title(pid)
 
 AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
- <a href="{0}">Download</a>
+ <a href="{0}" class="center-block">Download</a>
 </audio>"""
 
 PDF_TEMPLATE = """<object data="{0}" type="application/pdf" width="100%" height="600px">
         alt : <ahref="{0}">{1}</a> 
 </object>"""
 
-QT_TEMPLATE = """<embed src="{}" width="640" height="480" 
+QT_TEMPLATE = """<embed src="{}" width="640" height="480" class="center-block" 
 controller="true" loop="false" pluginspage="http://www.apple.com/quicktime/"></embed>"""
 
 VIDEO_TEMPLATE = """<video src="{0}" controls poster="poster.jpg" width="640" height="480">
-<a href="{0}">Download video</a>
+<a href="{0}" class="center-block">Download video</a>
 </video>"""
 
 
@@ -130,6 +131,8 @@ def generate_viewer(datastream):
         return QT_TEMPLATE.format(ds_url)
     if mime_type.endswith('mp4'):
         return VIDEO_TEMPLATE.format(ds_url)
+    if mime_type.endswith('jpeg'):
+        return """<img src="{}" class="center-block img-thumbnail">""".format(ds_url)
 
         
 
