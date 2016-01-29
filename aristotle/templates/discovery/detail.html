@@ -15,7 +15,23 @@
 <div class="container">
 		{% include "discovery/search-panel-row.html" %}
 		<div class="row" style="margin-top: 3em;">
+				<ol class="breadcrumb">
+						{% for row in source.get('inCollections') %}
+						<li {% if loop.last %}class="active"{% endif %}>
+						<a href="{{ url_for('fedora_object', identifier='pid', value=row) }}">
+								{{ row|title_principal|truncate(30, True) }}</a>
+						</li>
+                        {% endfor %}
+                </ol>
+				
 				<h1>{{ source.get('titlePrincipal') }}</h1>
+				{% if 'creator' in source %}
+				<h3>by 
+				{% for creator in source.get('creator', []) %}
+				{{ creator }}{% if not loop.last %},{% endif %}
+				{% endfor %}
+		        </h3>
+				{% endif %}
 				{# include 'discovery/snippets/datastream-carousel.html' #}
 				
 				<section class="col-md-6">

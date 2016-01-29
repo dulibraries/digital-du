@@ -80,7 +80,7 @@ def image(uid):
     if not raw_thumbnail:
         result = requests.get(thumbnail_url)
         if result.status_code > 399:
-            abort(500)
+           abort(500)
         #raw_thumbnail = result.text
         return Response(result.text, mimetype="image/jpeg")
 

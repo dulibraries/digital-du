@@ -167,4 +167,15 @@ def get_pid(es_id):
     es_doc = REPO_SEARCH.get_source(id=es_id, index="repository")
     return es_doc.get("pid")
 
+def get_title(pid):
+    """Function takes a pid and returns the titlePrincipal as a string
 
+    Args:
+        pid -- PID of Fedora Object
+    """
+    result = REPO_SEARCH.search(body={"query": {"term": {"pid": pid }},
+			                          "fields": ["titlePrincipal"]},
+                                index='repository')
+    if result.get('hits').get('total') == 1:
+        return result['hits']['hits'][0]['fields']['titlePrincipal'][0]
+    return "Home"

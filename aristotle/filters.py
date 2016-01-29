@@ -3,6 +3,7 @@ __author__ = "Jeremy Nelson"
 import re
 from . import app, harvest, cache
 from flask import url_for
+import search
 
 @app.template_filter('footer')
 def get_footer(s):
@@ -82,6 +83,14 @@ def get_tabs(s):
     harvest()
     return cache.get('tabs')
 
+@app.template_filter('title_principal')
+def get_title(pid):
+    """Filter takes a pid and attempts to return the titlePrincipal
+
+    Args:
+        pid -- Fedora Object PID
+    """
+    return search.get_title(pid)
 
 AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
  <a href="{0}">Download</a>
