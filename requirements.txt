@@ -3,3 +3,4 @@ Flask-login
 requests
 elasticsearch
 elasticsearch_dsl
+beautifulsoup4
