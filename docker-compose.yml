@@ -8,7 +8,7 @@ search:
 aristotle:
     build: .
     ports:
-     - "7000:5000"
+     - "80:5000"
     links:
      - search
 
