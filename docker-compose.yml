@@ -1,8 +1,14 @@
+search:
+    image: elasticsearch
+    ports:
+     - "9200:9200"
+     - "9300:9300"
+    volumes:
+     - /opt/dacc_search:/usr/share/elasticsearch/data
 aristotle:
     build: .
     ports:
-     - "5000:5000"
-search:
-    image: elasticsearch
-    volumes:
-     - /opt/digitalcc/data/elasticsearch/:/usr/share/elasticsearch/data
+     - "7000:5000"
+    links:
+     - search
+
