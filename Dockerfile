@@ -16,5 +16,10 @@ RUN apt-get update && apt-get install -y && \
 RUN git clone $DIGCC_GIT $DIGCC_HOME && \
   cd $DIGCC_HOME && \
   mkdir instance && \
-  pip3 install -r requirements.txt && \
-  python -c "import os,sys; sys.stout.write('SECRET_KEY=\"{}\"'.format(os.urandom()))" >> instance/conf.py
+  pip3 install -r requirements.txt 
+#  python -c "import os,sys; sys.stout.write('SECRET_KEY=\"{}\"'.format(os.urandom()))" >> instance/conf.py
+
+COPY instance/conf.py $DIGCC_HOME/instance/conf.py
+EXPOSE 5000
+
+CMD ["python", "run.py"]
