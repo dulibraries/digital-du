@@ -43,14 +43,25 @@
 
  </div>
  <div class="col-md-9 results-block">
+		{% if info %}
+		<ol class="breadcrumb" style="font-size: .8em">
+						{% for row in info.get('inCollections') %}
+						<li {% if loop.last %}class="active"{% endif %}>
+						<a href="{{ url_for('fedora_object', identifier='pid', value=row) }}">
+								{{ row|title_principal|truncate(30, True) }}</a>
+						</li>
+						{% endfor %}
+						<li>{{ info.get('titlePrincipal')|truncate(45, True) }}</li>
+				</ol>
+           <h3></h3>
+		   {% endif %}
 		 <div class="row">
- <div class="span3">
-		 <p data-bind="html: searchMessage"></p> 
- </div>
- {# include 'cc-bootstrap-sortby.html' %}
- {% include 'cc-bootstrap-cart.html' #}
+            <div class="span3">
+					<p data-bind="html: searchMessage"></p> 
+					
+		</div>
 
-</div>
+         </div>
 <div class="row" data-bind="visible: searchResults().length > 0">
  <div class="col-md-9">
  <ul class="media-list" data-bind="foreach: searchResults">
@@ -76,21 +87,7 @@
 </ul>
 </div>
 </div>
-{# Detailed View #}
-<div class="row" data-bind="visible: isDetailed">
 
-		<detailed-view params="value: source"></detailed-view>
-
-{# END Detailed View #}
-</div>
-
- {% if docs %}
-   {% include 'discovery/snippets/cc-bootstrap-results-list.html' %}
- {% else %}
-  {% if spellcheck %}
-    {{ spellcheck }}
-  {% endif %}
- {% endif %}
  </div>
  </div>
 </div>

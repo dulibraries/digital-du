@@ -84,6 +84,7 @@ def get_tabs(s):
     harvest()
     return cache.get('tabs')
 
+
 @app.template_filter('title_principal')
 def get_title(pid):
     """Filter takes a pid and attempts to return the titlePrincipal

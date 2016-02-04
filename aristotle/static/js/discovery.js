@@ -301,7 +301,7 @@ var simpleViewModel = function() {
 		         var search_result = {
 						  "abstract": row["_source"]["abstract"],
 			              "bib_link": "/pid/"+child_pid,
-	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
+	                              "thumbnail": "/thumbnail/"+child_pid,
 			              "title": row["_source"]["titlePrincipal"],
                           "dateCreated": row["_source"]["dateCreated"],
                	          "creator": row["_source"]["creator"]};
@@ -343,7 +343,7 @@ var simpleViewModel = function() {
                          var child_pid = row["_source"]["pid"]; 
 				         var search_result = {"abstract": row["_source"]["abstract"],
 			              "bib_link": "/pid/"+child_pid,
-	                              "thumbnail": "http://li-fedora:8080/fedora/objects/"+child_pid+"/datastreams/TN/content",
+                          "thumbnail": "/thumbnail/"+child_pid,
 			              "title": row["_source"]["titlePrincipal"],
                           "dateCreated": row["_source"]["dateCreated"],
                	          "creator": row["_source"]["creator"]};
@@ -411,7 +411,7 @@ var simpleViewModel = function() {
 		         var search_result = {
 						  "abstract": row["_source"]["abstract"],
 			              "bib_link": '/pid/'+pid,
-                                      "thumbnail": "http://li-fedora:8080/fedora/objects/"+pid+"/datastreams/TN/content",
+                                      "thumbnail": "/thumbnail/"+pid,
 			              "title": row["_source"]["titlePrincipal"],
                	                       "creator": row["_source"]["creator"],
 		                   "dateCreated": row["_source"]["dateCreated"]};

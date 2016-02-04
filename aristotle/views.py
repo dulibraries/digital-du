@@ -140,7 +140,6 @@ def fedora_object(identifier, value):
     """
     if identifier.startswith("pid"):
         results = browse(value)
-        print("In results")
         if results['hits']['total'] < 1:
             detail_result = get_detail(value)
             return render_template(
@@ -150,7 +149,27 @@ def fedora_object(identifier, value):
         return render_template(
             'discovery/index.html',
             pid=value,
+            info=get_detail(value)['hits']['hits'][0]['_source'],
             facets=get_aggregations(value))
+    if identifier.startswith("thumbnail"):
+        thumbnail_url = "{}{}/datastreams/TN/content".format(
+            app.config.get("REST_URL"),
+            value)
+        tn_result = requests.get(thumbnail_url)
+        if tn_result.status_code == 404:
+            thumbnail = cache.get('default-thumbnail')
+            if not thumbnail:
+                with app.open_resource(
+                    "static/images/CCSquareLogo100.png") as fo:
+                    thumbnail = fo.read()
+                    cache.set('default-thumbnail', thumbnail)
+            mime_type = "image/png"
+        else:
+            thumbnail = tn_result.content
+            mime_type = "image/jpg"
+        return Response(thumbnail, mimetype=mime_type)
+
+
     return "Should return detail for {} {}".format(identifier, value)
 
 @app.route("/")
