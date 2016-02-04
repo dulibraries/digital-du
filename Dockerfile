@@ -22,4 +22,5 @@ RUN git clone $DIGCC_GIT $DIGCC_HOME && \
 COPY instance/conf.py $DIGCC_HOME/instance/conf.py
 EXPOSE 5000
 
+WORKDIR $DIGCC_HOME
 CMD ["python", "run.py"]
