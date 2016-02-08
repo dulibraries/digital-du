@@ -146,6 +146,8 @@ def fedora_object(identifier, value):
                 'discovery/detail.html',
                 pid=value,
                 info=detail_result['hits']['hits'][0])
+        if value.startswith("coccc:root"):
+            return index()
         return render_template(
             'discovery/index.html',
             pid=value,

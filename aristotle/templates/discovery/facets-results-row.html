@@ -26,7 +26,7 @@
        <li>
        {% if facet.name == "Format" %}{# term|get_format_icon #} {% endif %}
 	   <a data-facet="{{ facet.0 }}" data-val="{{ row.key }}"
-		  data-bind="click: facetQuery.bind($data, '{{ facet.0 }}', '{{ row.key }}')" href="#">
+		  data-bind="click: facetQuery.bind($data, "{{ facet.0 }}", "{{ row.key }}")" href="#">
 	   
 			   {{ row.key }}</a> ({{ row.doc_count }})</li>
       {% endfor %}
