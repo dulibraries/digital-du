@@ -12,6 +12,7 @@ log
 site_media
 sitestatic
 _build
+repair/backups
 parts/
 bin/
 eggs/

@@ -5,6 +5,7 @@ from . import app, harvest, cache
 from flask import url_for
 import search
 
+
 @app.template_filter('footer')
 def get_footer(s):
     footer = cache.get('footer')

@@ -63,6 +63,7 @@ class Indexer(object):
             self.rest_url = "http://localhost:8080/fedora/objects/"
         if not self.ri_search:
             self.ri_search = "http://localhost:8080/fedora/risearch"
+        print("Elastic search repository index exists {}".format(self.elastic.indices.exists('repository')))
         if not self.elastic.indices.exists('repository'):
             # Load mapping
             self.elastic.indices.create(index='repository', body=MAP)

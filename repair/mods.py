@@ -52,18 +52,20 @@ error={} url={}""".format(
             pid,
             mods_result.status_code,
             mods_url)
-    mods_xml = etree.XML(mods_result.text)
+    raw_xml = mods_result.text
+    mods_xml = etree.XML(raw_xml)
     # Create backup of MODS
-    backup_mods_filename = os.path.join(
+    backup_filename = "{}-mods-{}.xml".format(
+        pid, 
+		start.strftime("%Y-%m-%d")).replace(":", "_")
+    backup_mods_filepath = os.path.join(
         BASE_DIR, 
         "repair",
         "backups",
-        "{}-mods-{}.xml".format(pid, start.strftime("%Y-%m-%d")))
-    print(backup_mods_filename, os.path.exists(backup_mods_filename))
-    return
-    if not os.path.exists(backup_mods_filename):
-        with open(backup_mods_filename, "wb+") as mods_file:
-            mods_file.write(mods_result.text.encode())
+        backup_filename)
+    if not os.path.exists(backup_mods_filepath):
+        with open(backup_mods_filepath, "wb+") as mods_file:
+            mods_file.write(raw_xml.encode())
     old_value_elements = mods_xml.findall(field_xpath)
     for element in old_value_elements:
         if element.text == old_value:
@@ -78,7 +80,6 @@ error={} url={}""".format(
         mods_update_url,
 		files={"content":  raw_xml},
         auth=CONF.FEDORA_AUTH)
-    print(put_result.status_code)
     if put_result.status_code < 300:
         return True
     else:
