@@ -130,7 +130,6 @@ def get_aggregations(pid=None):
     """
     #search = Search(using=REPO_SEARCH, index="repository) \
     dsl = deepcopy(AGGS_DSL)
-    print("Pid is {}".format(pid))
     if pid is not None:
         dsl["query"] = {"term": { "inCollections": pid } }
     results = REPO_SEARCH.search(index="repository", body=dsl)['aggregations']

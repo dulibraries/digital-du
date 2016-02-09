@@ -4,8 +4,8 @@ __author__ = "Jeremy Nelson"
 
 import requests
 
-from flask import abort, jsonify, render_template, request, Response
-
+from flask import abort, jsonify, render_template, redirect, request,\
+    Response, url_for
 from . import app, cache, REPO_SEARCH
 from search import browse, filter_query, get_aggregations, get_detail, get_pid
 
@@ -142,12 +142,14 @@ def fedora_object(identifier, value):
         results = browse(value)
         if results['hits']['total'] < 1:
             detail_result = get_detail(value)
-            return render_template(
-                'discovery/detail.html',
-                pid=value,
-                info=detail_result['hits']['hits'][0])
-        if value.startswith("coccc:root"):
-            return index()
+            if not 'islandora:collectionCModel' in\
+                detail_result['hits']['hits'][0]['_source']['content_models']:
+                return render_template(
+                    'discovery/detail.html',
+                    pid=value,
+                    info=detail_result['hits']['hits'][0])
+        if value.endswith("root"):
+            return redirect(url_for('index'))
         return render_template(
             'discovery/index.html',
             pid=value,
