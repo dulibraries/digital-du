@@ -123,7 +123,7 @@ def get_aggregations(pid=None):
     index.
 
     Args:
-        pid -- PID of Fedora Object, default is None
+        pid -- PID of Fedora Object, default is NoneBASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
     Returns:
         dictionary of the results
@@ -178,3 +178,6 @@ def get_title(pid):
     if result.get('hits').get('total') == 1:
         return result['hits']['hits'][0]['fields']['titlePrincipal'][0]
     return "Home"
+
+if __name__ == "__main__":
+    print

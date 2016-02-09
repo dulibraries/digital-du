@@ -45,6 +45,7 @@
 						 </a>
 						 {% endfor %}
 				 </div>
+				 {{ source }}
 				 </section>
 				<section class="col-md-6">
 				
@@ -112,7 +113,7 @@
     <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
       <div class="panel-body">
         <h5>Abstract</h5>
-		    {% for abstract in source.get("abstract")%}
+		    {% for abstract in source.get("abstract", [])%}
 			<p>{{ abstract|safe }}</p>
 			{% endfor %}
 		<h5>Note</h5>

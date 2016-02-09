@@ -325,7 +325,6 @@ var simpleViewModel = function() {
   }
 
   self.facetQuery = function(facet, value) {
-		  console.log("Event is " + facet + " value is " + value);
 		  $.ajax({
 				  url: "/search",
 				  method: "GET",
@@ -361,6 +360,11 @@ var simpleViewModel = function() {
     var search_type = self.chosenSearch()["search_type"];
     var search_query = self.searchQuery();
     var exact_search = self.exactSearch();
+	console.log("IN SearchCatalog " + search_query.length);
+    if (search_query.length < 1) {
+       location.reload();
+	   return;
+    }
     switch(search_type) {
 
       case "author_search":
@@ -396,8 +400,7 @@ var simpleViewModel = function() {
 
     
       case "search":
-		  console.log("IN search");
-	  $.ajax({
+	      $.ajax({
             url: '/search',
             data: {q: search_query,
                    type: search_type},
@@ -405,6 +408,7 @@ var simpleViewModel = function() {
             success: function(data) {
                self.searchResults.removeAll();
 			   self.totalHits(data['hits']['total']);
+               self.searchMessage("Your search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
   	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  var pid = row["_source"]["pid"]; 

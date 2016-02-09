@@ -17,9 +17,9 @@ import sys
 import xml.etree.ElementTree as etree
 from copy import deepcopy
 from rdflib import Namespace, RDF
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 from search.mods2json import mods2rdf
 from search.mapping import MAP
-
 from . import BASE_DIR, CONF, REPO_SEARCH
 
 FEDORA_ACCESS = Namespace("http://www.fedora.info/definitions/1/0/access/")
@@ -48,7 +48,7 @@ class Indexer(object):
 			elasticsearch -- Instance of Elasticsearch Python Client, defaults
 			                 to REPO_SEARCH from indexer
 
-            rest_url -- REST URL for Fedora 3.x, defaults to Fedora's stanard
+            rest_url -- REST URL for Fedora 3.x, defaults to Fedora's El contrabando de El Pasostanard
 			ri_url -- SPARQL Endpoint, defaults to Fedora's standard search URL
 
 		"""
@@ -326,3 +326,4 @@ class IndexerError(Exception):
         """Returns string representation of the object using the instance's
 		title"""
         return repr(self.title)
+
