@@ -117,7 +117,68 @@ class Indexer(object):
             pid -- PID of parent Fedora object
         """
         output = []
+        sparql = """SELECT DISTINCT ?s
+WHERE {{
+   ?s <fedora-rels-ext:isConstituentOf> <info:fedora/{0}> .
+}}""".format(pid)
+        result = requests.post(
+            self.ri_search,
+            data={"type": "tuples",
+                  "lang": "sparql",
+                  "format": "json",
+                  "query": is_collection_sparql},
+            auth=self.auth)
+        if result.status_code > 399:
+            raise IndexerError(
+                "Could not retrieve {} constituent PIDS".format(pid),
+                "Error code {} for pid {}\n{}".format(
+                    result.status_code,
+                    pid,
+                    result.text))
+        for row in result.json().get('results'):
+            constituent_pid = row.get('s').split("/")[-1]
+            pid_as_ds = self.__process_constituent__(constituent_pid)
         return output
+
+    def __process_constituent__(self, pid):
+        """Returns constituent PID and returns dictionary compatible with datastream
+
+		Args:
+		    pid -- PID
+        """
+        rels_ext_url = "{}{}/datastreams/RELS-EXT/content".format(
+            self.rest_url,
+            pid)
+        rels_ext_result = requests.get(rels_ext_url)
+        if rels_ext_result.status_code > 399:
+            raise IndexerError("Cannot get RELS-EXT for {}".format(constituent_pid),
+                "Tried URL {} status code {}\n{}".format(
+                    rels_ext_url,
+                    rels_ext_result.status_code,
+                    rels_ext_result.text))
+        rels_ext = etree.XML(rels_ext_result.text)
+        content_models = rels_ext.findall(
+            "{{{0}}}Description/{{{1}}}hasModel".format(
+                RDF,
+                FEDORA_MODEL))
+        dc_url = "{}{}/datastreams/DC/content".format(
+            self.rest_url,
+            pid)
+        dc_result = requests.get(dc_url)
+        dc_doc = etree.XML(dc_result.text)
+        title = dc_doc.find("{{{0}}}title")
+        if title:
+            label = title.text
+        if "info:fedora/islandora:sp_pdf" in content_models:
+            dsid = "OBJ"
+            mime_type = "application/pdf"
+        return {
+            "pid": pid,
+            "dsid": dsid,
+            "label": label,
+			"mimeType": mime_type
+        }
+       
 
     def __process_rels_ext__(self, pid):
         """Extracts and process RELS-EXT base on PID
@@ -176,22 +237,21 @@ class Indexer(object):
             return True
 
 
-    def index_pid(self, pid, parent=None, inCollections=None):
+    def index_pid(self, pid, parent=None, inCollections=[]):
         """Method retrieves MODS and any PDF datastreams and indexes
         into repository's Elasticsearch instance
 
         Args:
             pid: PID to index
 	        parent: PID of parent collection, default is None
+			inCollections: List of pids that this object belongs int, used for
+			    aggregations.
 
         Returns:
             boolean: True if indexed, False otherwise
         """
         # Extract and process based on content model
         rels_ext = self.__process_rels_ext__(pid)
-        # Extract Islandora Content Models from REL-EXT 
-        if "compoundCModel" in rels_ext["content_models"]:
-            rels_ext["Constituents"] = self.__index_compound__(self, pid)
         # Extract MODS XML Datastream
         mods_url = "{}{}/datastreams/MODS/content".format(
             self.rest_url,
@@ -223,8 +283,12 @@ class Indexer(object):
         if parent:
             mods_body['parent'] = parent
         if not self.__reindex_pid__(pid, mods_body):
-           # Add Datasteams to Index
-            mods_body["datastreams"] = self.__add_datastreams__(pid)
+            # Add Datasteams to Index
+            # Extract Islandora Content Models from REL-EXT 
+            if "islandora:compoundCModel" in rels_ext["content_models"]:
+                rels_ext["datastreams"] = self.__index_compound__(pid)
+            else: 
+                mods_body["datastreams"] = self.__add_datastreams__(pid)
             #try:
             mods_index_result = self.elastic.index(
                 index="repository",
