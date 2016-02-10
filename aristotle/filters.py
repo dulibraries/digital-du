@@ -45,6 +45,8 @@ def get_icon(datastream):
     if mime_type.endswith("jpg") or\
        mime_type.endswith("jpeg"):
         return "glyphicon-picture"
+    if mime_type.endswith("octet-stream"):
+        return "glyphicon-stats"
 
 @app.template_filter('scripts')
 def get_scripts(s):
