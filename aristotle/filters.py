@@ -102,7 +102,8 @@ AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
  <a href="{0}" class="center-block">Download</a>
 </audio>"""
 
-DATASET_TEMPLATE = """Download Dataset <a href="{0}">{1}</a>"""
+DATASET_TEMPLATE = """Download Dataset <em>{1}</em> <a href="{0}" class="btn btn-primary">
+<i class="glyphicon-stats glyphicon"></i></a>"""
 
 PDF_TEMPLATE = """<object data="{0}" type="application/pdf" width="100%" height="600px">
         alt : <ahref="{0}">{1}</a> 

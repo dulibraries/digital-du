@@ -285,6 +285,24 @@ var simpleViewModel = function() {
   };
 
 
+  self.processResult = function(source) {
+      var child_pid = source["pid"];
+      var abstract_ = String(source["abstract"]);
+	  var abstract_display = abstract_;
+      if (abstract_display.length > 0) {
+          var abstract_display = abstract_display.substring(0, 400);
+		  abstract_display += "<a href='#' onclick='alert(" + '"' + abstract_ +'")' + "'>&hellip;</a>";
+      }
+	  return {
+		 "abstract": abstract_display,
+         "bib_link": "/pid/"+child_pid,
+         "thumbnail": "/thumbnail/"+child_pid,
+         "title": source["titlePrincipal"],
+         "dateCreated": source["dateCreated"],
+         "creator": source["creator"]
+      }
+   }
+
   self.initDisplay = function(pid) {
      self.searchResults.removeAll();
      $.ajax({
@@ -297,15 +315,7 @@ var simpleViewModel = function() {
 			   self.searchMessage("Browsing <em>" + pid + "</em> contains " + self.totalHits() + " records");
 	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
-                 var child_pid = row["_source"]["pid"]; 
-		         var search_result = {
-						  "abstract": row["_source"]["abstract"],
-			              "bib_link": "/pid/"+child_pid,
-	                              "thumbnail": "/thumbnail/"+child_pid,
-			              "title": row["_source"]["titlePrincipal"],
-                          "dateCreated": row["_source"]["dateCreated"],
-               	          "creator": row["_source"]["creator"]};
-	             self.searchResults.push(search_result); 
+                 self.searchResults.push(self.processResult(row['_source'])); 
 
                }
 		       self.searchResults.sort(function(left,right) {
@@ -339,16 +349,8 @@ var simpleViewModel = function() {
 					   self.searchResults.removeAll();
          	           for(i in data["hits"]["hits"]) {
                          var row = data["hits"]["hits"][i];
-                         var child_pid = row["_source"]["pid"]; 
-				         var search_result = {"abstract": row["_source"]["abstract"],
-			              "bib_link": "/pid/"+child_pid,
-                          "thumbnail": "/thumbnail/"+child_pid,
-			              "title": row["_source"]["titlePrincipal"],
-                          "dateCreated": row["_source"]["dateCreated"],
-               	          "creator": row["_source"]["creator"]};
-						  self.searchResults.push(search_result);
+                         self.searchResults.push(self.processResult(row['_source'])); 
                        }
-                       console.log("Aggregations " + data['aggregations']);
 
 			      }
 		  });
@@ -387,12 +389,8 @@ var simpleViewModel = function() {
                  self.searchResults.removeAll();
                  for(row_num in data["results"]) {
                      var row = data["results"][row_num];
-                     var search_result = {"abstract": row["_source"]["abstract"],
-                                          "bib_link": "/catalog/record/" + row["ils-bib-numbers"][0],
-                                          
-                                          "title":row["title"],
-                                          "creator": row["creator"]};
-                     self.searchResults.push(search_result)
+                     self.searchResults.push(self.processResult(row['_source'])); 
+
                  }
              }
           });
@@ -411,15 +409,7 @@ var simpleViewModel = function() {
                self.searchMessage("Your search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
   	           for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
-                 var pid = row["_source"]["pid"]; 
-		         var search_result = {
-						  "abstract": row["_source"]["abstract"],
-			              "bib_link": '/pid/'+pid,
-                                      "thumbnail": "/thumbnail/"+pid,
-			              "title": row["_source"]["titlePrincipal"],
-               	                       "creator": row["_source"]["creator"],
-		                   "dateCreated": row["_source"]["dateCreated"]};
-	         self.searchResults.push(search_result); 
+                 self.searchResults.push(self.processResult(row['_source'])); 
 
                }
             }
