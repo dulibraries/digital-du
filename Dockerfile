@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y && \
 
 # Clone master branch of Tutt Library Digitial CC repository,
 # setup Python env, run 
-RUN git clone $DIGCC_GIT && \
+RUN git clone $DIGCC_GIT $DIGCC_HOME && \
   cd $DIGCC_HOME && \
   mkdir instance && \
   pip3 install -r requirements.txt 
