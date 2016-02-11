@@ -170,7 +170,6 @@ WHERE {{
         record = dict() 
         for datastream in datastreams:
             dsid = datastream.get('dsid')
-            print("datastream dsid={}".format(dsid))
             if dsid.startswith("OBJ") or\
                dsid.startswith("FILE"):
                 record = datastream
@@ -265,7 +264,7 @@ WHERE {{
         is_constituent = rels_ext.find(xpath)
         # Skip and don't index if pid is a constituent of another compound 
 		# object
-        if is_constituent:
+        if is_constituent is not None:
             return False
         # Extract MODS XML Datastream
         mods_url = "{}{}/datastreams/MODS/content".format(
