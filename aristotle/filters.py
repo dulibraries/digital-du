@@ -40,7 +40,8 @@ def get_icon(datastream):
     if mime_type.endswith("mp4"):
         return "glyphicon-facetime-video"
     if mime_type.endswith("mp3") or\
-       mime_type.endswith("wav"):
+       mime_type.endswith("wav") or\
+       mime_type.endswith("mpeg"):
         return "glyphicon-headphones"
     if mime_type.endswith("jpg") or\
        mime_type.endswith("jpeg"):
@@ -101,6 +102,8 @@ AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
  <a href="{0}" class="center-block">Download</a>
 </audio>"""
 
+DATASET_TEMPLATE = """Download Dataset <a href="{0}">{1}</a>"""
+
 PDF_TEMPLATE = """<object data="{0}" type="application/pdf" width="100%" height="600px">
         alt : <ahref="{0}">{1}</a> 
 </object>"""
@@ -131,6 +134,8 @@ def generate_viewer(datastream):
              datastream.get('label'))
     if mime_type.endswith('audio/mpeg'):
         return AUDIO_TEMPLATE.format(ds_url)
+    if mime_type.endswith("octet-stream"):
+        return DATASET_TEMPLATE.format(ds_url, datastream.get('label'))
     if mime_type.endswith('quicktime'):
         return QT_TEMPLATE.format(ds_url)
     if mime_type.endswith('mp4'):

@@ -40,7 +40,7 @@
 				 <br>
 				 <div class="btn-group" role="group">
 						 {% for datastream in source.get('datastreams') %}	 
-						 <a data-toggle="modal" href="#" data-target="#dialog-{{ datastream.dsid }}" class="btn btn-default">
+						 <a data-toggle="modal" href="#" data-target="#dialog-{{ datastream.pid|slugify }}" class="btn btn-default btn-lg">
 								 <i class="glyphicon {{ datastream|icon }}"></i> 
 						 </a>
 						 {% endfor %}
@@ -143,7 +143,7 @@
 		<h5>PID</h5>
 			{{ source.get('pid') }}	
 		<h5>Handle</h5>
-			{{ source.get('handle') }}
+  		<a href="{{ source.get('handle') }}">{{ source.get('handle') }}</a>
 		<h5>Digital Origin</h5>
 			{{ source.get('digitalOrigin') }}
 		<h5>Extent</h5>
@@ -170,10 +170,12 @@
 			{% for thesisAdvisor in source.get("thesisAdvisor")%}
 			{{ thesisAdvisor|safe}}
 			{% endfor %}
+        {% if "sponsor" in source %}
 		<h5>Department/Program</h5>
 			{% for sponsor in source.get("sponsor")%}
 			{{ sponsor|safe}}
 			{% endfor %}
+        {% endif %}
 		<h5>Degree Name</h5>
 			{% for degreeName in source.get("degreeName")%}
 			{{ degreeName|safe}}
@@ -182,10 +184,12 @@
 			{% for degreeType in source.get("degreeType")%}
 			{{ degreeType|safe}}
 			{% endfor %}
+        {% if "degreeGrantor" in source %}
 		<h5>Degree Grantor</h5>
 			{% for degreeGrantor in source.get("degreeGrantor")%}
 			{{ degreeGrantor|safe}}
 			{% endfor %}
+        {% endif %}
 		<h5>Date Issued</h5>
 			{{ source.get('dateIssued') }}
       </div>
@@ -201,7 +205,7 @@
 
  {% block dialogs %}
  {% for datastream in source.get('datastreams') %}
- <div class="modal fade" tabindex="-1" role="dialog" id="dialog-{{ datastream.dsid }}">
+ <div class="modal fade" tabindex="-1" role="dialog" id="dialog-{{ datastream.pid|slugify }}">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
