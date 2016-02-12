@@ -285,13 +285,21 @@ var simpleViewModel = function() {
   };
 
 
+  self.showAbstract = function(abstract_) {
+     console.log(abstract_);
+     //$(this.parent).html(abstract_);
+  }
+
   self.processResult = function(source) {
+      var summary_limit = 400;
       var child_pid = source["pid"];
-      var abstract_ = String(source["abstract"]);
-	  var abstract_display = abstract_;
-      if (abstract_display.length > 0) {
-          var abstract_display = abstract_display.substring(0, 400);
-		  abstract_display += "<a href='#' onclick='alert(" + '"' + abstract_ +'")' + "'>&hellip;</a>";
+      var abstract_display = "";
+      if (source["abstract"]) {
+        var abstract_display = String(source["abstract"]);
+	  }
+      if (abstract_display.length >= summary_limit) {
+          var firstChars = abstract_display.substring(0, summary_limit);
+		  abstract_display = firstChars + "<a href='#' data-bind='click: showAbstract.bind($data, '" + abstract_display + "')'>&hellip;</a>";
       }
 	  return {
 		 "abstract": abstract_display,
