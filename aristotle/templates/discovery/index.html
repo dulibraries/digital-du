@@ -33,8 +33,30 @@
  if(viewModel.searchResults().length < 1) {
 	 viewModel.initDisplay("{{ pid }}");
  
-}
+ }
 
+ $(window).scroll(function() {
+		 if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+				 var new_offset = viewModel.fromOffset() + viewModel.searchResults().length;
+                 if (new_offset >= viewModel.totalHits()) {
+                     console.log("No more hits");
+					 return;
+                 }
+				 $.ajax({
+						 method: "GET",
+						 data: { from: new_offset,
+								 size: viewModel.shardSize(),
+								 query: viewModel.searchQuery() },
+						 url: "/search",
+						 success: function(data) {
+                             console.log("Successful search " + data);
+
+						 }
+				
+
+				 });
+    }
+});
 </script>
 {% endblock more_scripts %}
 

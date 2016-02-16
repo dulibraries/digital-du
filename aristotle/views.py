@@ -9,7 +9,7 @@ from flask import abort, jsonify, render_template, redirect, request,\
 from . import app, cache, REPO_SEARCH
 from search import browse, filter_query, get_aggregations, get_detail, get_pid
 
-@app.route("/browse", methods=["POST"])
+@app.route("/browse", methods=["POST", "GET"])
 def browser():
     """Browse view for AJAX call from client based on the PID in the
     Form
@@ -18,11 +18,16 @@ def browser():
     """
     if request.method.startswith("POST"):
         pid = request.form["pid"]
-        browsed = cache.get(pid)
-        if not browsed:
-            browsed = browse(pid)
-            cache.set(pid, browsed)
-        return jsonify(browsed)
+        from_ = request.form.get("from", 0)
+    else:
+        pid = request.args.get('pid')
+        from_ = request.args.get('from', 0)
+    cache_key = "{}-{}".format(pid, from_)
+    browsed = cache.get(cache_key)
+    if not browsed:
+        browsed = browse(pid, from_)
+        cache.set(cache_key, browsed)
+    return jsonify(browsed)
 
 @app.route("/pid/<pid>/datastream/<dsid>")
 @app.route("/pid/<pid>/datastream/<dsid>.<ext>")

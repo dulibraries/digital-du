@@ -278,6 +278,9 @@ var simpleViewModel = function() {
   self.isDetailed = ko.observable();
   self.source = ko.observable();
   self.totalHits = ko.observable();
+  self.fromOffset = ko.observable(0);
+  self.shardSize = ko.observable(15);
+  self.searchMode = ko.observable("search"); // Should be either search or browse
 
   self.creatorSearch = function() {
 
@@ -313,8 +316,9 @@ var simpleViewModel = function() {
 
   self.initDisplay = function(pid) {
      self.searchResults.removeAll();
+	 self.searchMode("browse");
      $.ajax({
-            url: '/browse',
+            url: "/" + self.searchMode(),
             data: {pid: pid},
             method: "POST",
             success: function(data) {
@@ -343,8 +347,9 @@ var simpleViewModel = function() {
   }
 
   self.facetQuery = function(facet, value) {
+     	  self.searchMode("search");
 		  $.ajax({
-				  url: "/search",
+				  url: "/" + self.searchMode(),
 				  method: "GET",
 				  data: {
 						  facet: facet,
@@ -406,8 +411,9 @@ var simpleViewModel = function() {
 
     
       case "search":
+		  self.searchMode("search");
 	      $.ajax({
-            url: '/search',
+            url: '/' + self.searchMode(),
             data: {q: search_query,
                    type: search_type},
             method: "POST",
@@ -420,6 +426,7 @@ var simpleViewModel = function() {
                  self.searchResults.push(self.processResult(row['_source'])); 
 
                }
+			   self.fromOffset(self.fromOffset() + self.searchResults().length);
             }
 	  });
           break;
@@ -480,5 +487,3 @@ var simpleViewModel = function() {
     }
   }
 }
-
-

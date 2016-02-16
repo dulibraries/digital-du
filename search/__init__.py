@@ -74,7 +74,7 @@ if not REPO_SEARCH:
     # 9200 and 9300
     REPO_SEARCH = Elasticsearch()
 
-def browse(pid):
+def browse(pid, from_=0):
     """Function takes a pid and runs query to retrieve all of it's children
     pids
 
@@ -83,7 +83,7 @@ def browse(pid):
     """
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", parent=pid) \
-             .params(size=50) \
+             .params(size=50, from_=from_) \
              .sort("titlePrincipal")
                
     results = search.execute()
