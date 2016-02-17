@@ -120,5 +120,5 @@ def update_multiple(
     print("Finished updating MODS for {}, errors {} at {}, total {}".format(
         len(pid_list),
         len(errors),
-        end.isoformat()
+        end.isoformat(),
         (end-start).seconds / 60.0))
