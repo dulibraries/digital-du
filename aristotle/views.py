@@ -98,14 +98,38 @@ def query():
         jsonified version of the search result
     """
     if request.method.startswith("POST"):
-        search_result = REPO_SEARCH.search(q=request.form["q"])
-        return jsonify(search_result)
-    query_str = request.args.get('q', '')
-    if len(query_str) < 1:
-        query_str = None
-    facet = request.args.get('facet')
-    val = request.args.get('val')
-    return jsonify(filter_query(facet, val, query_str))
+        mode = request.form.get('mode', 'keyword')
+        facet = request.form.get('facet')
+        facet_val = request.form.get('val')
+        from_ = request.form.get('from', 0)
+        size = request.form.get('size', 25)
+        query = request.form["q"]
+    else:
+        mode = request.args.get('mode', 'keyword')
+        facet = request.args.get('facet')
+        from_ = request.args.get('from', 0)
+        size = request.args.get('size', 25)
+        facet_val = request.args.get('val')
+        query = request.args.get('q', None)
+    if mode.startswith("facet"):
+        print("in facet {} {} {} {}".format(facet, facet_val, query, size))
+        return jsonify(
+            filter_query(
+            facet, 
+            facet_val, 
+            query,
+            size,
+		    from_
+            ))
+    search_result = REPO_SEARCH.search(
+        q=query, 
+        index='repository',
+        from_=from_,
+        size=size)
+    return jsonify(search_result)
+
+   
+    
 
 @app.route("/pid/<pid>/datastream/<dsid>.<ext>")
 def fedora_datastream(pid, dsid, ext):

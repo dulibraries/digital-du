@@ -41,14 +41,26 @@
                  if (new_offset >= viewModel.totalHits()) {
                      console.log("No more hits");
 					 return;
-                 }
+			 }
+				var data = { from: new_offset,
+							 mode: viewModel.searchMode(),
+							 size: viewModel.shardSize(),
+							 q: viewModel.searchQuery() };
+                 if(viewModel.searchMode() === "facet") {
+						 data["facet"] = viewModel.activeFacet();
+					 data["val"] = viewModel.activeFacetValue();	 
+				 }
 				 $.ajax({
 						 method: "GET",
-						 data: { from: new_offset,
-								 size: viewModel.shardSize(),
-								 query: viewModel.searchQuery() },
+						 data: data,
 						 url: "/search",
 						 success: function(data) {
+							  for(i in data["hits"]["hits"]) {
+                                  var row = data["hits"]["hits"][i];
+                                  viewModel.searchResults.push(viewModel.processResult(row['_source'])); 
+
+               }
+
                              console.log("Successful search " + data);
 
 						 }

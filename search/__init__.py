@@ -90,7 +90,7 @@ def browse(pid, from_=0):
  #return {"hits": results}
     return results.to_dict()
 
-def filter_query(facet, facet_value, query=None):
+def filter_query(facet, facet_value, query=None, size=25, from_=0):
     """Function takes a facet, facet_value, and query string, and constructs
     filter for Elastic search.
 
@@ -98,9 +98,12 @@ def filter_query(facet, facet_value, query=None):
         facet -- Facet name
         facet_value -- Facet value
         query -- Query, if blank searches entire index
+		size -- Size of result set, defaults to 25
+		from_ -- From location, used for infinite browse
     """
     dsl = {
-        "size": 25,
+        "size": size,
+		"from": from_,
         "query": {
             "filtered":  {
                 "filter": {

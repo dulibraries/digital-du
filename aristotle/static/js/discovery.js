@@ -266,6 +266,9 @@ var simpleViewModel = function() {
       { name: "pid", number_type: "PID" },
       { name: "doi", number_type: "DOI" }
    ];
+
+  self.activeFacet = ko.observable();
+  self.activeFacetValue = ko.observable();
   self.chosenNumberOption = ko.observable();
   self.chosenSearch = ko.observable();
   self.chosenNumberOption = ko.observable();
@@ -280,7 +283,7 @@ var simpleViewModel = function() {
   self.totalHits = ko.observable();
   self.fromOffset = ko.observable(0);
   self.shardSize = ko.observable(15);
-  self.searchMode = ko.observable("search"); // Should be either search or browse
+  self.searchMode = ko.observable("search"); // Should be either search, facet, or browse
 
   self.creatorSearch = function() {
 
@@ -318,7 +321,7 @@ var simpleViewModel = function() {
      self.searchResults.removeAll();
 	 self.searchMode("browse");
      $.ajax({
-            url: "/" + self.searchMode(),
+            url: "/browse",
             data: {pid: pid},
             method: "POST",
             success: function(data) {
@@ -347,11 +350,14 @@ var simpleViewModel = function() {
   }
 
   self.facetQuery = function(facet, value) {
-     	  self.searchMode("search");
+     	  self.searchMode("facet");
+		  self.activeFacet(facet);
+		  self.activeFacetValue(value);
 		  $.ajax({
-				  url: "/" + self.searchMode(),
+				  url: "/search", 
 				  method: "GET",
 				  data: {
+						  mode: self.searchMode(),
 						  facet: facet,
 				          val: value
 				  },
@@ -375,7 +381,6 @@ var simpleViewModel = function() {
     var search_type = self.chosenSearch()["search_type"];
     var search_query = self.searchQuery();
     var exact_search = self.exactSearch();
-	console.log("IN SearchCatalog " + search_query.length);
     if (search_query.length < 1) {
        location.reload();
 	   return;
@@ -411,10 +416,11 @@ var simpleViewModel = function() {
 
     
       case "search":
-		  self.searchMode("search");
+		  self.searchMode("keyword");
 	      $.ajax({
-            url: '/' + self.searchMode(),
+            url: '/search',
             data: {q: search_query,
+				   mode: self.searchMode(),	
                    type: search_type},
             method: "POST",
             success: function(data) {
