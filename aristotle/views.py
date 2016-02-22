@@ -29,6 +29,18 @@ def browser():
         cache.set(cache_key, browsed)
     return jsonify(browsed)
 
+@app.route("/contribute")
+def view_contribute():
+    return render_template("discovery/Contribute.html")
+	
+@app.route("/takedownpolicy")
+def view_takedownpolicy():
+    return render_template("discovery/Takedown.html")	
+
+@app.route("/needhelp")
+def view_takedownpolicy():
+    return render_template("discovery/Help.html")	
+	
 @app.route("/pid/<pid>/datastream/<dsid>")
 @app.route("/pid/<pid>/datastream/<dsid>.<ext>")
 def get_datastream(pid, dsid, ext=None):

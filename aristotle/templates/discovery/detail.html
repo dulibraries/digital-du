@@ -45,6 +45,21 @@
 						 </a>
 						 {% endfor %}
 				 </div>
+				 <br>
+				 <br>
+				 <div>
+					
+					<h5>Media Files</h5>
+					<ul> {% for datastream in source.get('datastreams') %} 
+						<li> 
+						 <a data-toggle="modal" href="#" data-target="#dialog-{{ datastream.pid|slugify }}">
+								 {{datastream.get('label')}}
+								 <i class="glyphicon {{ datastream|icon }}"></i>
+						 </a>
+						 </li>	
+							{% endfor %}
+					</ul>
+				 </div>			
 				 </section>
 				<section class="col-md-6">
 				

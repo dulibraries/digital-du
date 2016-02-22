@@ -24,10 +24,9 @@ Colorado College's Institutional Repository</h1>
    {% if search_history %}
     <li><a href="#search_dialog" data-toggle="modal" id="search_display">Search History</a></li>
 	{% endif %}
-	<li><a href="#">Contribute</a></li>
-	<li><a href="#">Take-Down Policy</a></li>
-    <li><a href="#" onclick="$('#discovery_help').modal('show')">Need Help?</a></li>
-    {% include "discovery/snippets/help.html" %}
+	<li><a href="{{ url_for('view_contribute')}}">Contribute</a></li>
+	<li><a href="{{ url_for('view_takedownpolicy')}}">Take-Down Policy</a></li>
+    <li><a href="{{ url_for('view_help')}}">Need Help</a></li>
   </ul>
  {% if not is_advanced_search %}
   {% include "discovery/snippets/simple-search.html" %}
