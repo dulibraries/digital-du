@@ -183,4 +183,4 @@ def get_title(pid):
     return "Home"
 
 if __name__ == "__main__":
-    print
+    print()
