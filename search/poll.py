@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Module polls repository and indexes any new Fedora objects"""
 __author__ = "Jeremy Nelson"
 

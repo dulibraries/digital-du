@@ -9,7 +9,8 @@ ENV DIGCC_HOME /opt/digital-cc
 # Update and install Python3 setuptool and pip
 RUN apt-get update && apt-get install -y && \
   apt-get install -y python3-setuptools &&\
-  apt-get install -y python3-pip
+  apt-get install -y python3-pip && \
+  apt-get install -y cron
 
 # Clone master branch of Tutt Library Digitial CC repository,
 # setup Python env, run 
