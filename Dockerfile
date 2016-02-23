@@ -19,7 +19,7 @@ RUN git clone $DIGCC_GIT $DIGCC_HOME && \
   mkdir instance && \
   pip3 install -r requirements.txt && \
   chmod +x $DIGCC_HOME/search/poll.py && \
-  crontab -e 5 * * $DIGCC_HOME/search/poll.py
+  crontab crontab.txt
 
 COPY instance/conf.py $DIGCC_HOME/instance/conf.py
 EXPOSE 5000
