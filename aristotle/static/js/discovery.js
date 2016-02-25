@@ -273,6 +273,7 @@ var simpleViewModel = function() {
   self.chosenSearch = ko.observable();
   self.chosenNumberOption = ko.observable();
   self.exactSearch = ko.observable();
+  self.facets = ko.observableArray();
   self.searchQuery = ko.observable();
   self.shouldShowNumber = ko.observable(false);
   self.displayResults = ko.observable();
@@ -294,6 +295,20 @@ var simpleViewModel = function() {
   self.showAbstract = function(abstract_) {
      console.log(abstract_);
      //$(this.parent).html(abstract_);
+  }
+
+  self.processAggregation = function(name, agg) {
+    var facetSlug = name.toLowerCase()
+                         .replace(/[^a-zA-Z0-9]+/g, "-");
+    var buckets = ko.observableArray();
+   for(j in agg["buckets"]) {
+     var bucket = agg["buckets"][j];
+     buckets.push({"bucketName": bucket["key"],
+                   "bucketCount": bucket["doc_count"]});
+   }
+   return {"facetSlug": facetSlug,
+           "facetName": name,
+           "buckets": buckets}
   }
 
   self.processResult = function(source) {
@@ -388,35 +403,96 @@ var simpleViewModel = function() {
     switch(search_type) {
 
       case "author_search":
-          if(exact_search) {
-            var data = "q=" + ko.toJS(search_query);
-          } else {
-            window.location.replace("/catalog/search?search_type=author_search&q=" + search_query);
-          }
+          self.searchMode("creator")
+	  $.ajax({
+            url: '/search',
+            data: {q: search_query,
+				   mode: self.searchMode(),	
+                   type: search_type},
+            method: "POST",
+            success: function(data) {
+               self.searchResults.removeAll();
+               self.facets.removeAll();
+               self.totalHits(data['hits']['total']);
+               self.searchMessage("Author search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
+  	       for(i in data["hits"]["hits"]) {
+                 var row = data["hits"]["hits"][i];
+                 self.searchResults.push(self.processResult(row['_source'])); 
+
+               }
+               for(i in data["aggregations"]) {
+                    var agg = data["aggregations"][i];
+                    self.facets.push(self.processAggregation(i, agg)); 
+               }
+	       self.fromOffset(self.fromOffset() + self.searchResults().length);
+            }
+		  });
           break;
 
       case "number_search":
-          var number_type = self.chosenNumberOption()["number_type"];
-          var data = "type="+number_type+"&q=" + ko.toJS(search_query)
-          $.ajax({
-             url: '/apps/call_number/discovery',
-             data: data,
-             dataType: 'json',
-             type: 'GET',
-             success: function(data) {
-                 self.searchResults.removeAll();
-                 for(row_num in data["results"]) {
-                     var row = data["results"][row_num];
-                     self.searchResults.push(self.processResult(row['_source'])); 
-
-                 }
-             }
-          });
-          break;
+           break;
 
     
       case "search":
-		  self.searchMode("keyword");
+	  self.searchMode("keyword");
+          $.ajax({
+            url: '/search',
+            data: {q: search_query,
+				   mode: self.searchMode(),	
+                   type: search_type},
+            method: "POST",
+            success: function(data) {
+               self.searchResults.removeAll();
+               self.facets.removeAll();
+	       self.totalHits(data['hits']['total']);
+               self.searchMessage("Your search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
+  	           for(i in data["hits"]["hits"]) {
+                 var row = data["hits"]["hits"][i];
+                 self.searchResults.push(self.processResult(row['_source'])); 
+
+               }
+               for(i in data["aggregations"]) {
+                    var agg = data["aggregations"][i];
+                    self.facets.push(self.processAggregation(i, agg)); 
+               }
+	      self.fromOffset(self.fromOffset() + self.searchResults().length);
+            }
+	      });
+          break;
+
+      case "subject_search":
+          self.searchMode("subject")
+          console.log("In subject seach");
+       	  $.ajax({
+            url: '/search',
+            data: {q: search_query,
+		   mode: self.searchMode(),	
+                   type: search_type},
+            method: "POST",
+            success: function(data) {
+               self.searchResults.removeAll();
+               self.facets.removeAll();
+               self.totalHits(data['hits']['total']);
+               self.searchMessage("Subject search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
+
+  	           for(i in data["hits"]["hits"]) {
+                 var row = data["hits"]["hits"][i];
+                 self.searchResults.push(self.processResult(row['_source'])); 
+
+               }
+               for(i in data["aggregations"]) {
+                    var agg = data["aggregations"][i];
+                    self.facets.push(self.processAggregation(i, agg)); 
+               }
+
+			   self.fromOffset(self.fromOffset() + self.searchResults().length);
+            }
+		  });
+
+          break;
+
+      case "title_search":
+          self.searchMode("title");
 	      $.ajax({
             url: '/search',
             data: {q: search_query,
@@ -425,50 +501,23 @@ var simpleViewModel = function() {
             method: "POST",
             success: function(data) {
                self.searchResults.removeAll();
-			   self.totalHits(data['hits']['total']);
-               self.searchMessage("Your search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
-  	           for(i in data["hits"]["hits"]) {
+               self.facets.removeAll();
+               self.totalHits(data['hits']['total']);
+               self.searchMessage("Title search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
+
+  	       for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  self.searchResults.push(self.processResult(row['_source'])); 
-
                }
-			   self.fromOffset(self.fromOffset() + self.searchResults().length);
+               for(i in data["aggregations"]) {
+                    var agg = data["aggregations"][i];
+                    self.facets.push(self.processAggregation(i, agg)); 
+               }
+
+	       self.fromOffset(self.fromOffset() + self.searchResults().length);
             }
-	  });
-          break;
-
-      case "subject_search":
-          window.location.replace("/catalog/search?search_type=subject_search&q=" + search_query);
-          break;
-
-      case "title_search":
-          if(exact_search) {
-            var data = "q=" + ko.toJS(search_query);
-            $.ajax({
-               url: '/apps/title_search/search',
-               data: data,
-               dataType: 'json',
-               type: 'GET',
-               success: function(data) {
-                 var search_results = [];
-                 var all_titles = "";
-                 self.searchResults.removeAll();
-                 for(row_num in data["results"]) {
-                   var row = data["results"][row_num];
-                   var search_result = {"search_prefix": row["search_prefix"],
-                                        "title": row["title"],
-                                        "bib_link": "/catalog/record/" + row["ils-bib-numbers"][0],
-                                        "creator": row["creator"]};
-                   self.searchResults.push(search_result);
-
-                 }
-               //  self.displayResults(true);
-               }
-             });
-
-          } else {
-            window.location.replace("/catalog/search?search_type=title_search&q=" + search_query);
-          }
+		  });
+	  
           break;
 
 
@@ -492,4 +541,5 @@ var simpleViewModel = function() {
 
     }
   }
+  
 }

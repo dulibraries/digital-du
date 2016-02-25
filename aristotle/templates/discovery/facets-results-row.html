@@ -1,45 +1,7 @@
 <div class="row">
  {# comment %}START Facets DIV{% endcomment #}
  <div class="col-md-3">
-
-{# START facet-listing Accordion #}
-<div class="accordion" id="facet-listing">
- {% if facets %}
- {% for facet in facets.items() %}
- <div class="accordion-group">
-   {# START facet accordion heading #}
-   <div class="accordion-heading facet-heading">
-    <a class="accordion-toggle" 
-       data-toggle="collapse" 
-       data-parent="facet-listing"
-       {# Needs factet.name|slugicy #}
-       href="#{{ facet.0|slugify  }}">{{ facet.0 }}</a>
-   {# END facet accordion heading #}
-   </div>
-   {# START facet accordion body #}
-   <div class="accordion-body collapse {% if loop.index0 < 3 %}in{% endif %}" 
-     id="{{ facet.0|slugify }}">
-     {# START facet accordion inner #}
-     <div class="accordion-inner facet-inner">
-      <ul>
-      {% for row in facet.1.buckets %}
-       <li>
-       {% if facet.name == "Format" %}{# term|get_format_icon #} {% endif %}
-	   <a data-facet="{{ facet.0 }}" data-val="{{ row.key|replace("'", "\\'") }}"
-		  data-bind="click: facetQuery.bind($data, '{{ facet.0 }}', '{{ row.key|replace("'", "\\'") }}')" href="#">
-	   
-			   {{ row.key }}</a> ({{ row.doc_count }})</li>
-      {% endfor %}
-      </ul>
-     {# END facet accordion inner #}
-     </div>
-   {# END facet accordion body #}
-   </div>
-  </div>
-  {% endfor %}
- {% endif %}
-{# END facet-listing Accordion #}
-</div>
+  {% include 'Discovery/snippets/facets-ko.html' %}
 
  </div>
  <div class="col-md-9 results-block">

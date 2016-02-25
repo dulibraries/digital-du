@@ -7,7 +7,8 @@ import requests
 from flask import abort, jsonify, render_template, redirect, request,\
     Response, url_for
 from . import app, cache, REPO_SEARCH
-from search import browse, filter_query, get_aggregations, get_detail, get_pid
+from search import browse, filter_query, get_aggregations, get_detail, get_pid,\
+    specific_search
 
 @app.route("/browse", methods=["POST", "GET"])
 def browser():
@@ -123,8 +124,14 @@ def query():
         size = request.args.get('size', 25)
         facet_val = request.args.get('val')
         query = request.args.get('q', None)
+    if mode in ["creator", "title", "subject", "number"]:
+        return jsonify(
+            specific_search(
+                query,
+                mode,
+                size,
+                from_))
     if mode.startswith("facet"):
-        print("in facet {} {} {} {}".format(facet, facet_val, query, size))
         return jsonify(
             filter_query(
             facet, 
@@ -133,15 +140,13 @@ def query():
             size,
 		    from_
             ))
-    search_result = REPO_SEARCH.search(
-        q=query, 
-        index='repository',
-        from_=from_,
-        size=size)
-    return jsonify(search_result)
-
-   
-    
+    return jsonify(
+       specific_search(
+           query,
+           "keyword",
+           size,
+           from_)
+    )
 
 @app.route("/pid/<pid>/datastream/<dsid>.<ext>")
 def fedora_datastream(pid, dsid, ext):

@@ -11,7 +11,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from flask import abort
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl import Search, Q, A
 import xml.etree.ElementTree as etree
 
 etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
@@ -79,7 +79,7 @@ def browse(pid, from_=0):
     pids
 
     Args:
-        pid -- PID of Fedora Object
+		pid: PID of Fedora Object
     """
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", parent=pid) \
@@ -95,11 +95,11 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
     filter for Elastic search.
 
     Args:
-        facet -- Facet name
-        facet_value -- Facet value
-        query -- Query, if blank searches entire index
-		size -- Size of result set, defaults to 25
-		from_ -- From location, used for infinite browse
+		facet: Facet name
+		facet_value: Facet value
+		query: Query, if blank searches entire index
+		size: size of result set, defaults to 25
+		from_: From location, used for infinite browse
     """
     dsl = {
         "size": size,
@@ -119,6 +119,44 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
         dsl["query"]["match"] = {"_all": query}
     results = REPO_SEARCH.search(body=dsl, index="repository")
     return results
+
+
+def specific_search(query, type_of, size=25, from_=0):
+    """Function takes a query and fields list and runs a search on those
+    specific fields.
+
+    Args:
+        query: query terms to search on
+        type_of: Type of query, choices should be creator, title, subject,
+                 and number
+
+    Returns:
+	    A dict of the search results
+    """
+    search = Search(using=REPO_SEARCH, index="repository")
+    if type_of.startswith("creator"):
+        search = search.query("match_phrase", creator=query)
+    elif type_of.startswith("number"):
+        search = search.query(
+            Q("match_phrase", pid=query) | Q("phrase_match", doi=query))
+    elif type_of.startswith("title"):
+        search = search.query("match_phrase", titlePrincipal=query)
+    elif type_of.startswith("subject"):
+        search = search.query(Q("match_phrase", **{"subject.topic": query}) |\
+                     Q("match_phrase", **{"subject.geographic": query}) |\
+                     Q("match_phrase", **{"subject.temporal": query}))
+    else:
+        search = search.query(Q("match_phrase", _all=query))
+    search.params(size=size, from_=from_)
+    search.aggs.bucket("Format", A("terms", field="typeOfResource"))
+    search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
+    search.aggs.bucket("Genres", A("terms", field="genre"))
+    search.aggs.bucket("Languages", A("terms", field="language"))
+    search.aggs.bucket("Publication Year", A("terms", field="dateCreated"))
+    search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
+    search.aggs.bucket("Topic", A("terms", field="subject.topic"))
+    results = search.execute()
+    return results.to_dict()
 
 def get_aggregations(pid=None):
     """Function takes an optional pid and returns the aggregations
