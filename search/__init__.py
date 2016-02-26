@@ -85,10 +85,21 @@ def browse(pid, from_=0):
              .filter("term", parent=pid) \
              .params(size=50, from_=from_) \
              .sort("titlePrincipal")
-               
     results = search.execute()
- #return {"hits": results}
-    return results.to_dict()
+    output = results.to_dict()
+    search = Search(using=REPO_SEARCH, index="repository") \
+             .filter("term", inCollections=pid) \
+             .params(size=0)
+    search.aggs.bucket("Format", A("terms", field="typeOfResource"))
+    search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
+    search.aggs.bucket("Genres", A("terms", field="genre"))
+    search.aggs.bucket("Languages", A("terms", field="language"))
+    search.aggs.bucket("Publication Year", A("terms", field="dateCreated"))
+    search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
+    search.aggs.bucket("Topic", A("terms", field="subject.topic"))
+    facets = search.execute()
+    output['aggregations'] = facets.to_dict()["aggregations"]
+    return output
 
 def filter_query(facet, facet_value, query=None, size=25, from_=0):
     """Function takes a facet, facet_value, and query string, and constructs
@@ -101,6 +112,8 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
 		size: size of result set, defaults to 25
 		from_: From location, used for infinite browse
     """
+    print(facet, facet_value, query, size, from_)
+    
     dsl = {
         "size": size,
 		"from": from_,
@@ -138,7 +151,7 @@ def specific_search(query, type_of, size=25, from_=0):
         search = search.query("match_phrase", creator=query)
     elif type_of.startswith("number"):
         search = search.query(
-            Q("match_phrase", pid=query) | Q("phrase_match", doi=query))
+            Q("match_phrase", pid=query) | Q("match_phrase", doi=query))
     elif type_of.startswith("title"):
         search = search.query("match_phrase", titlePrincipal=query)
     elif type_of.startswith("subject"):

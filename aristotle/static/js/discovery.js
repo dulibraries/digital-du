@@ -340,24 +340,29 @@ var simpleViewModel = function() {
             data: {pid: pid},
             method: "POST",
             success: function(data) {
-               self.searchResults.removeAll();
-			   self.totalHits(data['hits']['total']);
-			   self.searchMessage("Browsing <em>" + pid + "</em> contains " + self.totalHits() + " records");
-	           for(i in data["hits"]["hits"]) {
+              self.searchResults.removeAll();
+              self.facets.removeAll();
+	      self.totalHits(data['hits']['total']);
+	      self.searchMessage("Browsing <em>" + pid + "</em> contains " + self.totalHits() + " records");
+	      for(i in data["hits"]["hits"]) {
                  var row = data["hits"]["hits"][i];
                  self.searchResults.push(self.processResult(row['_source'])); 
-
-               }
-		       self.searchResults.sort(function(left,right) {
-					 if(left.title == right.title) {
-							 return 0;
-                     }
-				     if(left.title < right.title) {
-						 return -1;
-					 } else {
-							 return 1;
-					 }
-			 });
+              }
+	     self.searchResults.sort(function(left,right) {
+		 if(left.title == right.title) {
+		   return 0;
+                  }
+		   if(left.title < right.title) {
+			 return -1;
+		   } else {
+			 return 1;
+		   }
+	     });
+             for(i in data["aggregations"]) {
+               var agg = data["aggregations"][i];
+               self.facets.push(self.processAggregation(i, agg)); 
+             }
+            
             
 	 }		 
     });
@@ -366,28 +371,27 @@ var simpleViewModel = function() {
 
   self.facetQuery = function(facet, value) {
      	  self.searchMode("facet");
-		  self.activeFacet(facet);
-		  self.activeFacetValue(value);
-		  $.ajax({
-				  url: "/search", 
-				  method: "GET",
-				  data: {
-						  mode: self.searchMode(),
-						  facet: facet,
-				          val: value
-				  },
-				  success: function(data) {
-        			   self.totalHits(data['hits']['total']);
-					   self.searchMessage("<strong>"+ facet + "</strong> <em>" + value + "</em> has " + self.totalHits() + " records");
-							   
-					   self.searchResults.removeAll();
-         	           for(i in data["hits"]["hits"]) {
-                         var row = data["hits"]["hits"][i];
-                         self.searchResults.push(self.processResult(row['_source'])); 
-                       }
+          var data = {
+              mode: self.searchMode(),
+              facet: facet,
+	      val: value
+	  }
+          var search_query = self.searchQuery();
+          if(search_query) {
+             data['q'] = search_query;
+          }
 
-			      }
-		  });
+	  self.activeFacet(facet);
+	  self.activeFacetValue(value);
+          var msg = "<strong>" + facet + "</strong> <em>" + value  + "</em>";
+	  $.ajax({
+		  url: "/search", 
+		  method: "GET",
+		  data: data,
+		  success: function(data) {
+                    self.successfulResponse(data, msg);
+            }
+	  });
   
 
   }
@@ -411,25 +415,24 @@ var simpleViewModel = function() {
                    type: search_type},
             method: "POST",
             success: function(data) {
-               self.searchResults.removeAll();
-               self.facets.removeAll();
-               self.totalHits(data['hits']['total']);
-               self.searchMessage("Author search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
-  	       for(i in data["hits"]["hits"]) {
-                 var row = data["hits"]["hits"][i];
-                 self.searchResults.push(self.processResult(row['_source'])); 
-
-               }
-               for(i in data["aggregations"]) {
-                    var agg = data["aggregations"][i];
-                    self.facets.push(self.processAggregation(i, agg)); 
-               }
-	       self.fromOffset(self.fromOffset() + self.searchResults().length);
+                self.successfulResponse(data, "Author search");
             }
-		  });
+	   });
           break;
 
       case "number_search":
+           self.searchMode("number");
+       	   $.ajax({
+            url: '/search',
+            data: {q: search_query,
+		   mode: self.searchMode(),	
+                   type: search_type},
+            method: "POST",
+            success: function(data) {
+               self.successfulResponse(data, "Number search");
+            }
+            });
+    
            break;
 
     
@@ -438,31 +441,17 @@ var simpleViewModel = function() {
           $.ajax({
             url: '/search',
             data: {q: search_query,
-				   mode: self.searchMode(),	
+		   mode: self.searchMode(),	
                    type: search_type},
             method: "POST",
             success: function(data) {
-               self.searchResults.removeAll();
-               self.facets.removeAll();
-	       self.totalHits(data['hits']['total']);
-               self.searchMessage("Your search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
-  	           for(i in data["hits"]["hits"]) {
-                 var row = data["hits"]["hits"][i];
-                 self.searchResults.push(self.processResult(row['_source'])); 
-
-               }
-               for(i in data["aggregations"]) {
-                    var agg = data["aggregations"][i];
-                    self.facets.push(self.processAggregation(i, agg)); 
-               }
-	      self.fromOffset(self.fromOffset() + self.searchResults().length);
+                self.successfulResponse(data, "Your search");
             }
-	      });
+	  });
           break;
 
       case "subject_search":
           self.searchMode("subject")
-          console.log("In subject seach");
        	  $.ajax({
             url: '/search',
             data: {q: search_query,
@@ -470,54 +459,24 @@ var simpleViewModel = function() {
                    type: search_type},
             method: "POST",
             success: function(data) {
-               self.searchResults.removeAll();
-               self.facets.removeAll();
-               self.totalHits(data['hits']['total']);
-               self.searchMessage("Subject search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
-
-  	           for(i in data["hits"]["hits"]) {
-                 var row = data["hits"]["hits"][i];
-                 self.searchResults.push(self.processResult(row['_source'])); 
-
-               }
-               for(i in data["aggregations"]) {
-                    var agg = data["aggregations"][i];
-                    self.facets.push(self.processAggregation(i, agg)); 
-               }
-
-			   self.fromOffset(self.fromOffset() + self.searchResults().length);
+               self.successfulResponse(data, "Subject search");
             }
-		  });
+            });
 
           break;
 
       case "title_search":
           self.searchMode("title");
-	      $.ajax({
+	  $.ajax({
             url: '/search',
             data: {q: search_query,
 				   mode: self.searchMode(),	
                    type: search_type},
             method: "POST",
             success: function(data) {
-               self.searchResults.removeAll();
-               self.facets.removeAll();
-               self.totalHits(data['hits']['total']);
-               self.searchMessage("Title search <em>" + search_query + "</em> returned " + self.totalHits() + " records");
-
-  	       for(i in data["hits"]["hits"]) {
-                 var row = data["hits"]["hits"][i];
-                 self.searchResults.push(self.processResult(row['_source'])); 
-               }
-               for(i in data["aggregations"]) {
-                    var agg = data["aggregations"][i];
-                    self.facets.push(self.processAggregation(i, agg)); 
-               }
-
-	       self.fromOffset(self.fromOffset() + self.searchResults().length);
+                self.successfulResponse(data, "Title search");
             }
-		  });
-	  
+          });
           break;
 
 
@@ -541,5 +500,29 @@ var simpleViewModel = function() {
 
     }
   }
+
+  self.successfulResponse = function(data, msg) {
+     var search_query = self.searchQuery();
+     if(!search_query) {
+        search_query = "";
+     } 
+     self.searchResults.removeAll();
+     self.facets.removeAll();
+     self.totalHits(data['hits']['total']);
+     self.searchMessage(msg + " <em>" + search_query + "</em> returned " + self.totalHits() + " records");
+      for(i in data["hits"]["hits"]) {
+        var row = data["hits"]["hits"][i];
+        self.searchResults.push(self.processResult(row['_source'])); 
+      }
+      for(i in data["aggregations"]) {
+           var agg = data["aggregations"][i];
+           self.facets.push(self.processAggregation(i, agg)); 
+      }
+
+      self.fromOffset(self.fromOffset() + self.searchResults().length);
+  }
+
+
+  
   
 }

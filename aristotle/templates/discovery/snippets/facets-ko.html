@@ -22,7 +22,7 @@
        	   <a
 		data-bind="attr: { 'data-facet': $parent.facetName, 
                                    'data-val': bucketName},
-                          click: $root.facetQuery.bind($parent.facetName, bucketName),
+                          click: $root.facetQuery.bind($data, $parent.facetName, bucketName),
                           text: bucketName" href="#">
 			   </a> (<span data-bind="text: bucketCount"></span>) </li>
       </ul>

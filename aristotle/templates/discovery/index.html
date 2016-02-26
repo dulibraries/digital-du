@@ -30,11 +30,16 @@
  });
  var viewModel = new simpleViewModel();
  ko.applyBindings(viewModel);
- if(viewModel.searchResults().length < 1) {
-	 viewModel.initDisplay("{{ pid }}");
- 
- }
+ {% if q and mode %}
 
+  viewModel.searchQuery("{{ q }}");
+  viewModel.chosenSearch()["search_type"] = "{{ mode }}";
+  viewModel.searchCatalog();
+ {% else %}
+  if(viewModel.searchResults().length < 1) {
+    viewModel.initDisplay("{{ pid }}");
+   }
+ {% endif %}
  $(window).scroll(function() {
 		 if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
 				 var new_offset = viewModel.fromOffset() + viewModel.searchResults().length;
