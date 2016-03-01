@@ -33,14 +33,13 @@
 		        </h3>
 				{% endif %}
 				{# include 'discovery/snippets/datastream-carousel.html' #}
-				
 				<section class="col-md-6">
 				<img src="{{ url_for('fedora_object', value=source.get('pid'), identifier="thumbnail") }}"
 				 {# style="width: 30%"  class="pull-left" #}>
 				 <br>
 				 <div class="btn-group" role="group">
 						 {% for datastream in source.get('datastreams') %}	 
-						 <a data-toggle="modal" href="#" data-target="#dialog-{{ datastream.pid|slugify }}" class="btn btn-default btn-lg">
+						 <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}" class="btn btn-default btn-lg">
 								 <i class="glyphicon {{ datastream|icon }}"></i> 
 						 </a>
 						 {% endfor %}
@@ -52,7 +51,7 @@
 					<h5>Media Files</h5>
 					<ul> {% for datastream in source.get('datastreams') %} 
 						<li> 
-						 <a data-toggle="modal" href="#" data-target="#dialog-{{ datastream.pid|slugify }}">
+						 <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}">
 								 {{datastream.get('label')}}
 								 <i class="glyphicon {{ datastream|icon }}"></i>
 						 </a>
@@ -220,7 +219,7 @@
 
  {% block dialogs %}
  {% for datastream in source.get('datastreams') %}
- <div class="modal fade" tabindex="-1" role="dialog" id="dialog-{{ datastream.pid|slugify }}">
+ <div class="modal fade" tabindex="-1" role="dialog" id="dialog-{{ loop.index }}">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">

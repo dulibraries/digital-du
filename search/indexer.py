@@ -96,19 +96,23 @@ class Indexer(object):
         for row in datastreams:
             add_ds = False
             mime_type = row.attrib.get('mimeType')
+            if mime_type.startswith("image/tif"):
+                output = self.__process_tiff__(pid, datastreams)
+                break
             if mime_type.startswith("application/pdf") or\
-			   mime_type.startswith("audio/mpeg") or\
-			   mime_type.startswith("video/quicktime") or\
-			   mime_type.startswith("video/mp4") or\
+               mime_type.startswith("audio/mpeg") or\
+               mime_type.startswith("video/quicktime") or\
+               mime_type.startswith("video/mp4") or\
                mime_type.startswith("image/jpeg") or\
-			   mime_type.startswith("audio/x-wav") or\
-			   mime_type.startswith("application/octet-stream"):
+               mime_type.startswith("image/jp2") or\
+               mime_type.startswith("audio/x-wav") or\
+               mime_type.startswith("application/octet-stream"):
                 add_ds = True
             if add_ds:
                 output.append({
                     "pid": pid,
                     "label": row.attrib.get('label'),
-					"dsid": row.attrib.get('dsid'),
+                    "dsid": row.attrib.get('dsid'),
                     "mimeType": mime_type})
         return output
 
@@ -143,7 +147,8 @@ WHERE {{
             constituent_pid = row.get('s').split("/")[-1]
             self.skip_pids.append(constituent_pid)
             pid_as_ds = self.__process_constituent__(constituent_pid)
-            output.append(pid_as_ds)
+            if pid_as_ds is not None:
+                output.extend(pid_as_ds)
         return output
 
     def __process_constituent__(self, pid, rels_ext=None):
@@ -167,17 +172,35 @@ WHERE {{
         sequence_number = rels_ext.find(xpath)
         order = sequence_number.text
         datastreams = self.__add_datastreams__(pid)
-        record = dict() 
         for datastream in datastreams:
-            dsid = datastream.get('dsid')
-            if dsid.startswith("OBJ") or\
-               dsid.startswith("FILE"):
-                record = datastream
-                break
-        record['order'] = order 
-        return record
+            datastream['order'] = order
+        return datastreams
        
+    def  __process_tiff__(self, pid, datastreams):
+        """Takes a list of datastreams for an object that contains TIFF
+        and attempts to retrieve jpeg derivatives.
 
+        Args:
+            pid: PID of Fedora Object with TIFF datastreams
+            datastreams: List of datastreams
+
+        Returns: 
+            List of datastreams
+        """
+        output = []
+        for row in datastreams:
+            mime_type = row.attrib.get('mimeType')
+            dsid = row.attrib.get('dsid')
+            if mime_type.startswith("image/tif") or \
+               dsid.startswith("JPG"):
+                output.append(    {"pid": pid,
+                    "label": row.attrib.get('label'),
+                    "dsid": dsid,
+                    "mimeType": mime_type
+                    })
+        return output
+        
+        
     def __get_rels_ext__(self, pid):
         """Extracts and returns RELS-EXT base on PID
 
@@ -198,7 +221,6 @@ WHERE {{
         return etree.XML(rels_ext_result.text)
 
     def __get_content_models__(self, pid, rels_ext=None):
-
         """Extracts and adds content models
         
 		Args:
