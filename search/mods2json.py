@@ -267,6 +267,7 @@ def title2rdf(mods):
         type_of = row.attrib.get("type", "")
         if title is None:
             continue
+        output["titleRaw"] = title.text
         if type_of.startswith("alt"):
             output["titleAlternative"] = title.text
         else:

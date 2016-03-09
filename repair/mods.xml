@@ -1,0 +1,100 @@
+{% autoescape off %}
+<mods xmlns:mods="http://www.loc.gov/mods/v3" 
+           xmlns="http://www.loc.gov/mods/v3" 
+           xmlns:xlink="http://www.w3.org/1999/xlink" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  {% if abstract %}
+  <abstract>
+   {{ abstract|escape }}
+  </abstract>
+  {% endif %}
+  <note type="admin">
+  {% if rights %}
+  {{ rights|escape }}
+  {% else %}
+  The author has given permission for this work to be deposited in the Digital Archive of Colorado College.
+  {% endif %}
+  </note>
+  {% if honor_code %}
+  <note type="admin">Colorado College Honor Code upheld.</note>
+  {% endif %}
+  {% if additional_note %}
+  <note>{{ additional_note }}</note>
+  {% endif %}
+  {% if type_of_resource %}
+  <typeOfResource>{{ type_of_resource|escape }}</typeOfResource>
+  {% endif %}
+  <accessCondition type="useAndReproduction">Copyright restrictions apply.</accessCondition>
+  <physicalDescription>
+    {% if extent %}
+    <extent>{{ extent }}</extent>
+    {% endif %}
+  </physicalDescription>
+  {% if creator %}
+  <name type="personal">
+    <role>
+      <roleTerm type="text" authority="marcrelator">creator</roleTerm>
+    </role>
+    <namePart>{{ creator }}</namePart>
+  </name>
+  {% endif %}
+  {% if department %}
+  <name type="corporate">
+    <role>
+      <roleTerm type="text" authority="marcrt">sponsor</roleTerm>
+    </role>
+    <namePart>{{ department }}</namePart>
+  </name>
+  {% endif %}
+  {% if institution  %}
+  <name type="corporate">
+    <namePart>{{ institution.get('name') }}</namePart>
+    <role>
+      <roleTerm type="text" authority="marcrt">degree grantor</roleTerm>
+    </role>
+  </name>
+  {% endif %}
+  {% for keyword in topics %}
+  <subject>
+    <topic>{{ keyword|escape }}</topic>
+  </subject>
+  {% endfor %}
+  {% if title %}
+  <titleInfo>
+    <title>{{ title|escape }}</title>
+  </titleInfo>
+  {% endif %}
+  <originInfo>
+    {% if institution %}
+    <publisher>{{ institution.get('name') }}</publisher>
+    {% endif %}
+    {% if date_str %}
+    <dateIssued keyDate="yes">{{ date_str }}</dateIssued>
+    {% endif %}
+    {% if date_created %}
+    <dateCreated>{{ date_created }}</dateCreated>
+    {% endif %}
+    {% if date_captured %}
+    <dateCaptured>{{ date_created }}</dateCaptured>
+    {% endif %}
+    {% if institution %}
+    <place>
+      <placeTerm>{{ institution.get('address').get('addressLocality') }},
+                  {{ institution.get('address').get('addressRegion') }}
+     </placeTerm>
+    </place>
+    {% endif %}
+  </originInfo>
+  {% if languages %}
+  {% for language in languages %}
+  <language>
+    <languageTerm>{{ language }}</languageTerm>
+  </language>
+  {% endfor %}
+  {% else %}
+  <language>
+    <languageTerm>English</languageTerm>
+  </language>
+  {% endif %}
+</mods>
+{% endautoescape %}

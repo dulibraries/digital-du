@@ -131,6 +131,10 @@ MAP = {"mappings": {
             "titlePrincipal": {
                 "type": "string"
             },
+            "titleRaw": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
             "typeOfResource": {
                 "index": "not_analyzed",
                 "type": "string"
