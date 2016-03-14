@@ -1,4 +1,3 @@
-{% autoescape off %}
 <mods xmlns:mods="http://www.loc.gov/mods/v3" 
            xmlns="http://www.loc.gov/mods/v3" 
            xmlns:xlink="http://www.w3.org/1999/xlink" 
@@ -35,8 +34,14 @@
     <role>
       <roleTerm type="text" authority="marcrelator">creator</roleTerm>
     </role>
+    {% if photographer %}
+    <role>
+      <roleTerm type="text" authority="marcrelator">photographer</roleTerm>
+    </role>
+    {% endif %}
     <namePart>{{ creator }}</namePart>
   </name>
+  {% endif %}
   {% endif %}
   {% if department %}
   <name type="corporate">
@@ -97,4 +102,3 @@
   </language>
   {% endif %}
 </mods>
-{% endautoescape %}
