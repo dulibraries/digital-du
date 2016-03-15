@@ -42,7 +42,6 @@
     <namePart>{{ creator }}</namePart>
   </name>
   {% endif %}
-  {% endif %}
   {% if department %}
   <name type="corporate">
     <role>
