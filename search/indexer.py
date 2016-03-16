@@ -308,7 +308,11 @@ WHERE {{
             raise IndexerError(
                 err_title,
                 mods_result.text)
-        mods_xml = etree.XML(mods_result.text)
+        try:
+            mods_xml = etree.XML(mods_result.text)
+        except etree.ParseError:
+            msg = "Could not parse pid {}".format(pid)
+            return False
         mods_body = mods2rdf(mods_xml)
         # Extract and process based on content model
         mods_body["content_models"] = self.__get_content_models__(pid, rels_ext)

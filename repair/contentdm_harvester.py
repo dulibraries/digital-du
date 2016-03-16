@@ -8,10 +8,12 @@ import requests
 import rdflib
 import sys
 import urllib.parse
+import xml.etree.ElementTree as etree
 
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
 from jinja2 import Template
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(BASE_DIR)
@@ -37,11 +39,13 @@ WHERE {{
 }}
 """
 
-GEOSCIML_BASIC = rdflib.Namespace("")
-GEOSCIML_EXT = rdflib.Namespace("http://xmlns.geosciml.org/GeoSciML-Extension/4.0")
-GEOSCIML_PORTRAYAL = rdflib.Namespace("http://xmlns.geosciml.org/geosciml-portrayal/4.0")
+GEOSCIML_BASIC = rdflib.Namespace("http://xmlns.geosciml.org/GeoSciML-Basic/4.0/")
+GEOSCIML_EXT = rdflib.Namespace("http://xmlns.geosciml.org/GeoSciML-Extension/4.0/")
+GEOSCIML_PORTRAYAL = rdflib.Namespace("http://xmlns.geosciml.org/geosciml-portrayal/4.0/")
 GEOCONTAT_TYPE = rdflib.Namespace("http://resource.geosciml.org/classifierscheme/cgi/201211/contacttype/")
 GEOSTR_RANK = rdflib.Namespace("http://resource.geosciml.org/classifier/cgi/stratigraphicrank/")
+SCHEMA_ORG = rdflib.Namespace("https://schema.org/")
+
 def _add_datastream(pid, raw_datastream, ident, label, mime_type):
     add_file_url = "{}{}/datastreams/{}?{}".format(
         CONF.REST_URL,
@@ -164,54 +168,73 @@ class GeologyThinSlices(Harvester):
         geo_subject = rdflib.URIRef(
             "https://digitalcc.coloradocollege.edu/pid/{}".format(pid))
         geo_graph = rdflib.Graph()
-        topics = []
-        locations = []
-        notes = []
-        names = []
+        geo_graph.namespace_manager.bind("gsmlb", GEOSCIML_BASIC)
+        geo_graph.namespace_manager.bind("gsmle", GEOSCIML_EXT)
+        geo_graph.namespace_manager.bind("gsmlp", GEOSCIML_PORTRAYAL)
+        geo_graph.namespace_manager.bind("gsmct", GEOCONTAT_TYPE)
+        geo_graph.namespace_manager.bind("gsmsr", GEOSTR_RANK)
+        geo_graph.namespace_manager.bind("schema", SCHEMA_ORG)
+        output = {
+            "topics": [],
+            "locations": [],
+            "notes": [],
+            "names":  []
+        }
         if len(row['Collector Name']) > 0:
-            names.append({"role": "Collector",
-                           "type": "personal",
-                           "name": row['Collector Name']})
+            collectors = row['Collector Name'].split(";")
+            for collector in collectors:
+                output['names'].append(
+                    {"role": "Collector",
+                     "type": "personal",
+                     "name": collector.strip()})
         if len(row['Collection Company']) > 0:
-            names.append({"role": "Collector",
-                           "type": "corporate",
-                          "name": row['Collector Company']})
+            output['names'].append(
+                {"role": "Collector",
+                 "type": "corporate",
+                 "name": row['Collector Company']})
         if len(row['Course ID and Name']) > 0:
             parts = row['Course ID and Name'].split(";")
             for course in parts:
-                notes.append({"displayLabel": "Course ID and Name",
-                              "text": course.strip()})        
+                output['notes'].append(
+                    {"displayLabel": "Course ID and Name",
+                      "text": course.strip()})        
         if len(row['Exact Sample Location']) > 0:
-            notes.append({"displayLabel": 'Exact Sample Location',
-                          "text": row['Exact Sample Location']})
+            output['notes'].append(
+                {"displayLabel": 'Exact Sample Location',
+                 "text": row['Exact Sample Location']})
         if len(row['Geographic Sample Location']) > 0:
-            locations.append(row['Geographic Sample Location'])
+            output['locations'].append(row['Geographic Sample Location'])
             geo_graph.add((geo_subject,
                            GEOSCIML_PORTRAYAL.siteName,
                            rdflib.Literal(row['Geographic Sample Location'])))    
 
         if len(row['Formation Name']) > 0:
-            topics.append(row['Formation Name'])
+            output['topics'].append(row['Formation Name'])
             geo_graph.add((geo_subject,
                            GEOSTR_RANK.formation,
                            rdflib.Literal(row['Formation Name'])))
         if len(row['Instructor Name']) > 0:
             instructors = row['Instructor Name'].split(";")
             for teacher in instructors:
-                names.append({"role": "Teacher",
-                              "type": "personal",
-                              "name": teacher})
+                output['names'].append(
+                    {"role": "Teacher",
+                     "type": "personal",
+                      "name": teacher})
         if len(row['Literature Citation']) > 0:
             geo_graph.add((geo_subject,
                            GEOSCIML_PORTRAYAL.source,
                            rdflib.Literal(row['Literature Citation'])))
         if len(row['Microscopic Description']) > 0:
-            notes.append({"displayLabel": "Microscopic Description",
-                          "text": row['Microscopic Description']})
+            output['abstract'] = row['Microscopic Description']
+            geo_graph.add((geo_subject,
+                           SCHEMA_ORG.description,
+                           rdflib.Literal("{}\n{}".format(
+                               'Microscopic Description',
+                               row['Microscopic Description']))))
         if len(row['Mineral Assemblage']) > 0:
             parts = row['Mineral Assemblage'].split(";")
             for name in parts:
-                topics.append(name.strip())
+                output['topics'].append(name.strip())
                 geo_graph.add(
                     (geo_subject,
                      GEOCONTAT_TYPE.mineralisation_assemblage_contact,
@@ -219,27 +242,36 @@ class GeologyThinSlices(Harvester):
         if len(row['Microstructures']) > 0:
             parts = row['Microstructures'].split(";")
             for struct in parts:
-                topics.append(struct.strip())
+                output['topics'].append(struct.strip())
                 geo_graph.add(
                     (geo_subject,
                      GEOSCIML_EXT.CompoundMaterialDescriptionType,
                      rdflib.Literal(struct.strip())))
         if len(row["Rock Name"]) > 0 and \
             not row["Rock Name"] in ["na", "???"]:
-            topics.append(row["Rock Name"])
+            output['topics'].append(row["Rock Name"])
             geo_graph.add(
                 (geo_subject,
                  GEOSCIML_PORTRAYAL.label,
                  rdflib.Literal(row["Rock Name"])))
         if len(row['Rock Class']) > 0:
-            topics.append(row['Rock Class'])
+            output['topics'].append(row['Rock Class'])
             geo_graph.add((geo_subject,
                            GEOSCIML_BASIC.RockMaterialType,
                            rdflib.Literal(row['Rock Class'])))
+        if len(row["Reason For Use"]) > 0:
+            output["notes"].append({"displayLabel": "Reason For Use",
+                                    "text": row["Reason For Use"]})
         if len(row['Storage Location']) > 0:
             geo_graph.add((geo_subject,
                            GEOSCIML_PORTRAYAL.currentLocation,
                            rdflib.Literal(row['Storage Location'])))
+        if len(row["Quantity"]) > 0:
+            geo_graph.add((geo_subject,
+                           SCHEMA_ORG.quantity,
+                           rdflib.Literal(row["Quantity"])))
+        output["graph-rdf"] = geo_graph.serialize(format='xml')
+        return output 
         
 
 
@@ -247,7 +279,72 @@ class GeologyThinSlices(Harvester):
         title = row.get("Thin Section ID")
         ref_url = row.get('Reference URL')
         filename = row.get('CONTENTdm file name')
+        if filename.endswith('jpg'):
+            # Skip processing record should card
+            return
         new_pid = self.__new_fedora_object__(title)
+        _add_rels_ext(
+            new_pid,  
+            self.collection_pid,
+            "islandora:sp_large_image_cmodel")
+        ld_result = self.__geo_linked_data__(new_pid, row)
+        _add_datastream(
+            new_pid,
+            ld_result.get('graph-rdf'),
+            "GEO_LD",
+            "Geology Linked Data",
+            "application/rdf+xml")
+        mods_xml = MODS_TEMPLATE.render(
+            abstract=ld_result.get('abstract', None),
+            names=ld_result.get('names', []),
+            department="Geology Department",
+            notes=ld_result.get('notes', []),
+            topics=ld_result.get('topics', []),
+            date_captured=row.get('Year Collected', None),
+            date_created=row.get('Date created'),
+            title=title)
+        _add_datastream(
+            new_pid,
+            mods_xml,
+            "MODS",
+            "Metadata Object Description Schema",
+            "text/xml")
+        collection_frag = ref_url.split("collection/")[-1]
+        page_collection = collection_frag.split("id/")[0]
+        postcard_url = "{}{}/filename/{}".format(GET_FILE_URL, 
+            collection_frag,
+            filename)
+        postcard_result = requests.get(postcard_url)
+        raw_postcard = postcard_result.content
+        postcard = etree.XML(raw_postcard)
+        pages = postcard.findall("page")
+        for i, page in enumerate(pages):
+            obj_id = "OBJ"
+            if i > 0:
+                obj_id = "{}{}".format(obj_id, i)
+            pagefile = page.find('pagefile')
+            page_img = pagefile.text
+            title = page.find('pagetitle')
+            page_id = page_img.split(".")[0]
+            file_url = "{}{}id/{}/filename/{}".format(
+                GET_FILE_URL,
+                page_collection,
+                page_id,
+                page_img)
+            raw_request = requests.get(file_url)
+            if raw_request.status_code > 399:
+                print("Failed to get {}".format(file_url))
+                continue
+            raw_file = raw_request.content
+            _add_datastream(
+                new_pid, 
+                raw_file, 
+                obj_id,
+                "{}-{}".format(title.text,
+                              page_img), 
+                mimetypes.guess_type(page_img)[0])
+ 
+              
 
           
 class GypsyAmes(Harvester):

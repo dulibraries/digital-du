@@ -14,6 +14,12 @@
   The author has given permission for this work to be deposited in the Digital Archive of Colorado College.
   {% endif %}
   </note>
+  {% for note in notes %}
+  <note {% if note.get('type') %}type="{{ note.get('type') }}"{% endif %}
+        {% if note.get('displayLabel') %}displayLabel="{{ note.get('displayLabel') }}"{% endif %}>
+    {{ note.get('text')|escape }}
+  </note>
+  {% endfor %}
   {% if honor_code %}
   <note type="admin">Colorado College Honor Code upheld.</note>
   {% endif %}
@@ -42,6 +48,16 @@
     <namePart>{{ creator }}</namePart>
   </name>
   {% endif %}
+  {% for name in names %}
+  <name type="{% if name.get('type') %}{{ name.get('type') }}{% else %}personl{% endif %}">
+    {% if name.get('role') %}
+    <role>
+        <roleTerm type="text" authority="marcrelator">{{ name.get('role') }}</roleTerm>
+    </role>
+    {% endif %}
+    <namePart>{{ name.get('name') }}</namePart>
+  </name>
+  {% endfor %}
   {% if department %}
   <name type="corporate">
     <role>
@@ -61,6 +77,11 @@
   {% for keyword in topics %}
   <subject>
     <topic>{{ keyword|escape }}</topic>
+  </subject>
+  {% endfor %}
+  {% for location in locations %}
+  <subject>
+    <geographic>{{ location }}</geographic>
   </subject>
   {% endfor %}
   {% if title %}
