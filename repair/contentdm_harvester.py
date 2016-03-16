@@ -298,6 +298,7 @@ class GeologyThinSlices(Harvester):
             abstract=ld_result.get('abstract', None),
             names=ld_result.get('names', []),
             department="Geology Department",
+            locations=ld_result.get('locations', []),
             notes=ld_result.get('notes', []),
             topics=ld_result.get('topics', []),
             date_captured=row.get('Year Collected', None),
