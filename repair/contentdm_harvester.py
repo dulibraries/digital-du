@@ -2,12 +2,14 @@ __author__ = "Jeremy Nelson, Sarah Bogard"
 
 import csv
 import datetime
+import logging
 import mimetypes
 import os
 import requests
 import rdflib
 import sys
 import urllib.parse
+import warnings
 import xml.etree.ElementTree as etree
 
 from elasticsearch import Elasticsearch
@@ -18,6 +20,8 @@ from jinja2 import Template
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(BASE_DIR)
 from instance import conf as CONF
+
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 if hasattr(CONF, "ELASTIC_SEARCH"):
     REPO_SEARCH = Elasticsearch([CONF.ELASTIC_SEARCH])
@@ -145,12 +149,16 @@ class Harvester(object):
 
     def harvest(self):
         start = datetime.datetime.utcnow()
+        warnings.filterwarnings("ignore")
         print("Starting {} Harvester at {} for {} records".format(
             Harvester.__name__,
             start,
             len(self.records)))  
         for i, row in enumerate(self.records):
-            self.__process_record__(row)
+            try:
+                self.__process_record__(row)
+            except:
+                print("Error {} with {}".format(sys.exc_info()[0], i))
             if not i%10 and i > 0:
                 print(".", end="")
             if not i%100:
@@ -191,7 +199,7 @@ class GeologyThinSlices(Harvester):
             output['names'].append(
                 {"role": "Collector",
                  "type": "corporate",
-                 "name": row['Collector Company']})
+                 "name": row['Collection Company']})
         if len(row['Course ID and Name']) > 0:
             parts = row['Course ID and Name'].split(";")
             for course in parts:
@@ -272,11 +280,13 @@ class GeologyThinSlices(Harvester):
                            rdflib.Literal(row["Quantity"])))
         output["graph-rdf"] = geo_graph.serialize(format='xml')
         return output 
-        
 
 
     def __process_record__(self, row):
         title = row.get("Thin Section ID")
+        existing_ = _check_existing(title, None)
+        if existing_ is not None:
+            self.existing_pids.append(existing_)
         ref_url = row.get('Reference URL')
         filename = row.get('CONTENTdm file name')
         if filename.endswith('jpg'):
