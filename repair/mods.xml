@@ -84,6 +84,11 @@
     <geographic>{{ location }}</geographic>
   </subject>
   {% endfor %}
+  {% for time in temporal %}
+   <subject>
+     <temporal>{{ time }}</temporal>
+   </subject>
+  {% endfor %}
   {% if title %}
   <titleInfo>
     <title>{{ title|escape }}</title>
@@ -93,6 +98,11 @@
     {% if institution %}
     <publisher>{{ institution.get('name') }}</publisher>
     {% endif %}
+    {% for row in dates %}
+     <{{ row.tag }} {% if row.keyDate %}keyDate="yes"{% endif %}>
+      {{ row.value }}
+     </{{ row.tag }}>
+    {% endfor %}
     {% if date_str %}
     <dateIssued keyDate="yes">{{ date_str }}</dateIssued>
     {% endif %}

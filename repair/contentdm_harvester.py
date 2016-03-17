@@ -5,6 +5,7 @@ import datetime
 import logging
 import mimetypes
 import os
+import re
 import requests
 import rdflib
 import sys
@@ -402,23 +403,167 @@ class GypsyAmes(Harvester):
             self.collection_pid,
             "islandora:sp_large_image_cmodel")
 
-    
+   
+ 
 class IDEASMerged(Harvester):
+    AUDIO_RE = re.compile(r"audio", re.IGNORECASE)
+    CREATOR_DL_RE = re.compile(r"[^\d*];")
+    PDF_RE = re.compile(r"pdf", re.IGNORECASE)
+    VIDEO_RE = re.compile(r"video", re.IGNORECASE)
+
+    def __guess_format__(self, row):
+        format_raw = row.get('Format')
+        format_val = 'still image'
+        if IDEASMerged.PDF_RE.search(format_raw):
+            format_val = 'text'
+        if IDEASMerged.AUDIO_RE.search(format_raw):
+            format_val = 'sound recording'
+        if IDEASMerged.VIDEO_RE.search(format_raw):
+            format_val = 'moving image'
+        return format_val
+ 
+    def __handle_creator__(self, row):
+        raw_creator = row.get('Artist/Creator')
+        names, notes = [], []
+        if IDEASMerged.CREATOR_DL_RE.search(raw_creator):
+            creator_list = raw_creator.split(";")
+            for creator in creator_list:
+                 # Any row length > 30, assume to be a note
+                 if len(creator) >= 30:
+                     notes.append(
+                         {"type": "biographical/historical",
+                          "text": creator})
+                 else:
+                     names.append(
+                         {"role": "creator",
+                          "type": "personal",
+                           "name": creator})
+        else:
+            names.append(
+                {"role": "creator",
+                 "type": "personal",
+                 "name": raw_creator})
+        return names, notes
+
+    def __handle_collection_editor__(self, row, names, topics):
+        editors = row['Collection Editor']
+        for row1 in editors.split(";"):
+            if "," in row1: # Assumes people in last name, first name
+                names.append({"role": "Editor",
+                              "type": "personal",
+                              "name": row1})
+            else:
+                topics.append(row1)
+
+    def __handle_dates__(self, row):
+        dates, temporal = [], []
+        if row['Accession Date'] and len(row['Accession Date']) > 0:
+            dates.append({"tag": "dateOther",
+                          "value":  row['Accession Date']})
+        if row['Date Digital'] and len(row['Date Digital']) > 0:
+            dates.append({"tag": "dateOther",
+                          "value": row["Date Digital"]})
+        if row['Date Photographed/Recorded'] and \
+           len(row['Date Photographed/Recorded']) > 0:
+            dates.append({"tag": "dateCaptured",
+                          "value": row['Date Photographed/Recorded']})
+            temporal.append(row['Date Photographed/Recorded'])
+        if row['Date created'] and len(row['Date created']) > 0:
+            dates.append({"tag": "dateCreated",
+                          "keyDate": "yes",
+                          "value": row['Date created']})
+            temporal.append(row['Date created'])
+        if row["Date modified"] and len(row["Date modified"]) > 0:
+            dates.append({"tag": "dateModified",
+                          "value": row["Date modified"]})
+        if row['Date of Content'] and len(row['Date of Content']) > 0:
+            dates.append({"tag": "dateValid",
+                          "value": row['Date of Content']})
+            temporal.append(row['Date of Content'])
+        if row['Historical Period'] and len(row['Historical Period']) > 0:
+            temporal.append(row['Historical Period'])
+        return dates, temporal
+        
+
+        
+
+    def __handle_locations__(self, row):
+        def __test_add__(name):
+            if row[name] and len(row[name]) > 0:
+                locations.append(row[name])
+        locations = []
+        __test_add__('Associated Places')
+        __test_add__('Country')
+        __test_add__('Work of Art, Original Location')
+        __test_add__('Work of Art, Present Location') 
+        if row['Latitude'] and len(row['Latitude']) > 0 and\
+           row['Longitude'] and len(row['Longitude']) > 0:
+           locations.add("Latitude {}, Longitude {}".format(
+               row['Latitude'],
+               row['Longitude']))
+         
+        return locations 
+
+    def __handle_notes__(self, row, notes):
+        if row['Notes'] and len(row['Notes']) > 0:
+            notes.append({"type": "admin",
+                          "text": row['Notes']})
+        if row['Pedagogical Note'] and \
+           len(row['Pedagogical Note']) > 0:
+            notes.append({"displayLabel": "Pedagogical Note",
+                          "text": row['Pedagogical Note']})
+        if row['Source'] and len(row['Source']) > 0:
+            notes.append({"type": "source note",
+                          "text": row['Source']})
+        if row['Work of Art, Original Location'] and \
+           len(row['Work of Art, Original Location']) > 0:
+            notes.append({"type": "original location",
+                          "text": row['Work of Art, Original Location']})
+        
+
+    def __handle_topics__(self, row):
+        topics = []
+        for field_name in ['IDEAS Topic', 'Subject']:
+            raw_field = row[field_name]
+            if raw_field and len(raw_field) > 0:
+                topics.extend([s.strip() for s in raw_field.split(";")])
+        return topics
+        
 
     def __process_record__(self, row):
+        abstract = None
         title = row.get('Title')
-        creator = row.get('Artist/Creator')
+        names, notes = self.__handle_creator__(row)
+        locations = self.__handle_locations__(row)
+        topics = self.__handle_topics__(row)
+        dates, temporal = self.__handle_dates__(row)
+        self.__handle_collection_editor__(row, names, topics)
+        if row.get("Description") and len(row.get("Description")) > 0:
+            abstract = row.get("Description")
         photographer = row.get('Photographer/Recorder')
-        if len(creator) < 1:
-            creator = photographer
+        if photographer is not None and len(photographer) > 0: 
+            names.append({"role": "photographer",
+                          "type": "personal",
+                          "name": photographer})
+        self.__handle_collection_editor__(row, names, topics)
+        self.__handle_dates__(row, topics)
+        rights = row.get("Permissions")
+        if rights and len(rights) < 1:
+            rights = None
         ref_url = row.get('Reference URL')
-        topics = [r.strip() for r in rows.get('IDEAS Topic').split(";")]
         mods = MODS_TEMPLATE.render(
-            abstract=row.get('Description'),
-            creator=creator,
-            photographer=photographer,
+            abstract=abstract,
+            dates=dates,
+            locations=locations,
+            names=names,
+            notes=notes,
+            rights=rights,
+            temporal=temporal,
             topics=topics,
-            title=title)
+            title=title,
+            type_of_resource=self.__guess_format__(row))
+        etree.XML(mods) # Parse to insure valid MODS
+        return mods
 
        
 

@@ -105,7 +105,7 @@
 				{% endfor %}
 				<h5>Genre</h5>
 				<ul>
-				{% for genre in  source.get('genre') %}
+				{% for genre in  source.get('genre', []) %}
                 <li>{{ genre }}</li>
 				{% endfor %}
 		        </ul>
