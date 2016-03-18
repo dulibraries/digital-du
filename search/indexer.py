@@ -36,6 +36,8 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s:%(message)s',
     level=logging.INFO)
 
+logging.getLogger("requests").setLevel(logging.WARNING)
+
 class Indexer(object):
     """Elasticsearch MODS and PDF full-text indexer for Fedora Repository 3.8"""
 
