@@ -7,6 +7,12 @@
    {{ abstract|escape }}
   </abstract>
   {% endif %}
+  {% for ident in identifiers %}
+  <identifier type="{{ ident.type }}"
+    {% if ident.displayLabel %}displayLabel="{{ ident.displayLabel }}"{% endif %}>
+   {{ ident.value }}
+  </identifier>
+  {% endfor %}
   <note type="admin">
   {% if rights %}
   {{ rights|escape }}
@@ -69,9 +75,6 @@
   {% if institution  %}
   <name type="corporate">
     <namePart>{{ institution.get('name') }}</namePart>
-    <role>
-      <roleTerm type="text" authority="marcrt">degree grantor</roleTerm>
-    </role>
   </name>
   {% endif %}
   {% for keyword in topics %}
@@ -114,8 +117,8 @@
     {% endif %}
     {% if institution %}
     <place>
-      <placeTerm>{{ institution.get('address').get('addressLocality') }},
-                  {{ institution.get('address').get('addressRegion') }}
+      <placeTerm>{{ institution.get('address', {}).get('addressLocality') }},
+                  {{ institution.get('address', {}).get('addressRegion') }}
      </placeTerm>
     </place>
     {% endif %}

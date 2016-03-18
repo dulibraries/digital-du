@@ -484,8 +484,66 @@ class IDEASMerged(Harvester):
             temporal.append(row['Historical Period'])
         return dates, temporal
         
+    def __handle_identifiers__(self, row):
+        identifiers = []
+        if row["Getty Geographic ID"] and len(row["Getty Geographic ID"]) > 0:
+            identifiers.append(
+                {"type": "getty-geographic",
+                 "displayLabel": "Getty Geographic ID",
+                 "value": row["Getty Geographic ID"]})
+        if row["IDEAS Identifier"] and len(row["IDEAS Identifier"]) > 0:
+            identifiers.append(
+                {"type": "ideas-local",
+                 "displayLabel": "IDEAS Identifier",
+                 "value": row["IDEAS Identifier"] })
+        if row["OCLC number"] and len(row["OCLC number"]) > 0: 
+            identifiers.append(
+                {"type": "oclc",
+                 "displayLabel": "OCLC number",
+                 "value": row["OCLC number"]})
+              
 
-        
+    def __handle_languages__(self, row):
+        raw_language = row.get('Language')
+        languages = []
+        if "ara" in raw_language:
+            languages.append("Arabic")
+        if "chn" in raw_language or \
+           "Chinese" in raw_language:
+           languages.append("Chinese")
+        if "Dutch" in raw_language:
+            languages.append("Dutch")
+        if "eng" in raw_language or \
+           "English" in raw_language:
+            languages.append("English")
+        if "hin" in raw_language:
+            languages.append("Hindi")
+        if "jpn" in raw_language or \
+           "Japanese" in raw_language:
+            languages.append("Japanese")
+        if "kor" in raw_language or\
+           "Korean" in raw_language:
+            languages.append("Korean")
+        if "Latin" in raw_language:
+            languages.append("Latin")
+        if "Mandarin" in raw_language or\
+           "Manchu" in raw_language:
+            languages.append("Chinese")
+            languages.append("Mandarin")
+        if "mar" in raw_language:
+            languages.append("Marathi")
+        if "Nepalese" in raw_language:
+            languages.append("Nepalese")
+        if "Pali" in raw_language:
+            languages.append("Pali")
+        if "san" in raw_language or\
+           "Sanskrit" in raw_language:
+            languages.append("Sanskrit")
+        if "Tibetan" in raw_language:
+            languages.append("Tibetan")
+        if "tsubo" in raw_language:
+            languages.append("Tsubo")
+        return list(set(languages))
 
     def __handle_locations__(self, row):
         def __test_add__(name):
@@ -498,10 +556,9 @@ class IDEASMerged(Harvester):
         __test_add__('Work of Art, Present Location') 
         if row['Latitude'] and len(row['Latitude']) > 0 and\
            row['Longitude'] and len(row['Longitude']) > 0:
-           locations.add("Latitude {}, Longitude {}".format(
+           locations.append("Latitude {}, Longitude {}".format(
                row['Latitude'],
                row['Longitude']))
-         
         return locations 
 
     def __handle_notes__(self, row, notes):
@@ -545,15 +602,22 @@ class IDEASMerged(Harvester):
             names.append({"role": "photographer",
                           "type": "personal",
                           "name": photographer})
-        self.__handle_collection_editor__(row, names, topics)
-        self.__handle_dates__(row, topics)
+        dates, temporal = self.__handle_dates__(row)
         rights = row.get("Permissions")
         if rights and len(rights) < 1:
             rights = None
+        if row.get('Institution Name') and \
+           len(row.get('Institution Name')) > 0:
+               institution = {"name": row.get('Institution Name')}
         ref_url = row.get('Reference URL')
-        mods = MODS_TEMPLATE.render(
+        type_of_resource = self.__guess_format__(row)
+        mods_xml = MODS_TEMPLATE.render(
             abstract=abstract,
             dates=dates,
+            department="Asian Studies Program",
+            extent=row.get('Extent'),
+            institution=institution,
+            languages=self.__handle_languages__(row),
             locations=locations,
             names=names,
             notes=notes,
@@ -561,11 +625,43 @@ class IDEASMerged(Harvester):
             temporal=temporal,
             topics=topics,
             title=title,
-            type_of_resource=self.__guess_format__(row))
-        etree.XML(mods) # Parse to insure valid MODS
-        return mods
-
-       
+            type_of_resource=type_of_resource)
+        etree.XML(mods_xml) # Parse to insure valid MODS
+        # First create new fedora obj
+        new_pid = self.__new_fedora_object__(title)
+        # Add MODS
+        _add_datastream(
+            new_pid,
+            mods_xml,
+            "MODS",
+            "Metadata Object Description Schema",
+            "text/xml")
+        content_model = "islandora:sp_large_image_cmodel"
+        if type_of_resource.startswith('sound recording'):
+            content_model = "islandora:sp-audioCModel"
+        if type_of_resource.startswith('moving image'):
+            content_model = "islandora:sp_videoCModel"
+        if type_of_resource.startswith("text"):
+            content_model = "islandora:sp_document"
+        # Add RELS-EXT datastream
+        _add_rels_ext(
+            new_pid,  
+            self.collection_pid,
+            "islandora:sp_large_image_cmodel")
+        filename = row.get("CONTENTdm file name")
+        collection_frag = ref_url.split("collection/")[-1]
+        file_url = "{}{}/filename/{}".format(GET_FILE_URL, 
+            collection_frag,
+            filename)
+        file_result = requests.get(file_url)
+        raw_file = file_result.content
+        # Add Object
+        _add_datastream(
+            new_pid, 
+            raw_file, 
+            "OBJ",
+            filename,               
+            mimetypes.guess_type(file_url)[0])
 
 if __name__ == "__main__":
     harvest()
