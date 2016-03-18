@@ -433,12 +433,12 @@ class IDEASMerged(Harvester):
                      notes.append(
                          {"type": "biographical/historical",
                           "text": creator})
-                 else:
+                 elif len(creator) > 0:
                      names.append(
                          {"role": "creator",
                           "type": "personal",
                            "name": creator})
-        else:
+        elif raw_creator and len(raw_creator) > 0:
             names.append(
                 {"role": "creator",
                  "type": "personal",
@@ -501,6 +501,7 @@ class IDEASMerged(Harvester):
                 {"type": "oclc",
                  "displayLabel": "OCLC number",
                  "value": row["OCLC number"]})
+        return identifiers
               
 
     def __handle_languages__(self, row):
@@ -609,6 +610,8 @@ class IDEASMerged(Harvester):
         if row.get('Institution Name') and \
            len(row.get('Institution Name')) > 0:
                institution = {"name": row.get('Institution Name')}
+        else:
+               institution = None
         ref_url = row.get('Reference URL')
         type_of_resource = self.__guess_format__(row)
         mods_xml = MODS_TEMPLATE.render(
@@ -616,6 +619,7 @@ class IDEASMerged(Harvester):
             dates=dates,
             department="Asian Studies Program",
             extent=row.get('Extent'),
+            identifiers=self.__handle_identifiers__(row),
             institution=institution,
             languages=self.__handle_languages__(row),
             locations=locations,

@@ -75,6 +75,9 @@
   {% if institution  %}
   <name type="corporate">
     <namePart>{{ institution.get('name') }}</namePart>
+    <role>
+      <roleTerm type="text" authority="marcrt">sponsor</roleTerm>
+    </role>
   </name>
   {% endif %}
   {% for keyword in topics %}
