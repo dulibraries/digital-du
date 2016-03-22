@@ -5,9 +5,42 @@ Elasticsearch document body.
 """
 __author__ = "Jeremy Nelson"
 
+import datetime
 import rdflib
 MODS = rdflib.Namespace("http://www.loc.gov/mods/v3")
 
+
+def calculate_pubyear(rdf_json):
+    """Helper function takes RDF json and attempts to extract the 
+    publication year based on the date values
+
+    Args:
+        rdf_json: RDF JSON dict
+    """
+    raw_created_date = rdf_json.get("dateCreated")
+    try:
+        pubdate = datetime.datetime.strptime(raw_created_date, "%Y-%m-%d")
+        rdf_json["publicationYear"] = pubdate.year
+        return True
+    except ValueError:
+        if len(raw_created_date) == 4:
+            rdf_json["publicationYear"] = raw_created_date
+            return True
+    except TypeError:
+        if raw_created_date is None:
+            pass
+    if "copyrightYear" in rdf_json and len(rdf_json.get('copyrightYear')) == 4:
+        rdf_json["publicationYear"] = rdf_json["copyrightYear"]
+        return True
+
+    if raw_created_date.lower().startswith("unknown"):
+        rdf_json["publicationYear"] = raw_created_date.title()
+             
+
+            
+    
+    if raw_created_date and len(raw_created_date) ===
+    
 
 def generate_field_name(text):
     """Helper function takes text, removes spaces, lowercase for first term,
@@ -89,7 +122,7 @@ def names2rdf(mods):
     return output
 
 def notes2rdf(mods):
-    """Function takes MODS XML document and processes mods:notes
+    3470 Centennial Blvd, Suite 205"""Function takes MODS XML document and processes mods:notes
 
 	Args:
         mods: MODS etree Document
@@ -310,4 +343,5 @@ def mods2rdf(mods):
     rdf_json.update(title2rdf(mods))
     rdf_json.update(singleton2rdf(mods, "typeOfResource"))
     rdf_json.update(url2rdf(mods))
+    calculate_pubyear(rdf_json)
     return rdf_json

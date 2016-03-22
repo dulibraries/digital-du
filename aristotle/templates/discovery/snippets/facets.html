@@ -7,13 +7,16 @@
        data-toggle="collapse" 
        data-parent="facet-listing"
        data-bind="attr: { href: '#'+facetSlug}, 
-                 text: facetName"></a>
+                 text: facetName,
+                 visible: buckets().length > 0
+                 "></a> 
    {# END facet accordion heading #}
    </div>
    {# START facet accordion body #}
    <div {#class="accordion-body collapse" #}
      data-bind="attr: { id: facetSlug }, 
-                css: { in: $index < 3 }">
+                css: { in: $index < 3 }
+                visible: buckets().length > 0">
 
      {# START facet accordion inner #}
      <div class="accordion-inner facet-inner">

@@ -39,15 +39,14 @@ MAP = {"mappings": {
             "dateCreated": {
                "index": "not_analyzed",
                 "type": "string"
-				
             },
             "dateIssued": {
                 "type": "string"
             },
-			"datePublished": {
-					"index": "not_analyzed",
-					"type": "string"
-			},
+            "datePublished": {
+                "index": "not_analyzed",
+                "type": "string"
+	    },
             "degreeGrantor": {
                 "type": "string"
             },
@@ -86,6 +85,7 @@ MAP = {"mappings": {
             "photographer": {
                 "type": "string"
             },
+
             "pid": {
                 "index": "not_analyzed",
                 "type": "string"
@@ -94,6 +94,10 @@ MAP = {"mappings": {
                 "type": "string"
             },
             "publisher": {
+                "type": "string"
+            },
+            "publicationYear": {             
+                "index": "not_analyzed",
                 "type": "string"
             },
             "sponsor": {

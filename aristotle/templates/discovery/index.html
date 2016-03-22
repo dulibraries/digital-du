@@ -80,6 +80,16 @@
 				 });
     }
 });
+
+window.onbeforeunload = function(e) {
+  if(viewModel.searchMode() === 'browse') {
+    console.log("Browse mode");
+  } else {
+    console.log("View model search Mode " + viewModel.searchMode());
+  }
+
+}
+
 </script>
 {% endblock more_scripts %}
 
