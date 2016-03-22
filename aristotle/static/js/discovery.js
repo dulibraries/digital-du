@@ -411,7 +411,7 @@ var simpleViewModel = function() {
 	  $.ajax({
             url: '/search',
             data: {q: search_query,
-				   mode: self.searchMode(),	
+		   mode: self.searchMode(),	
                    type: search_type},
             method: "POST",
             success: function(data) {

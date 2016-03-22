@@ -158,6 +158,10 @@ def specific_search(query, type_of, size=25, from_=0):
         search = search.query(Q("match_phrase", **{"subject.topic": query}) |\
                      Q("match_phrase", **{"subject.geographic": query}) |\
                      Q("match_phrase", **{"subject.temporal": query}))
+    elif query is None:
+        search = search.filter("term", parent=pid) \
+                 .params(size=50, from_=from_) \
+                 .sort("titlePrincipal")
     else:
         search = search.query(Q("match_phrase", _all=query))
     search.params(size=size, from_=from_)
