@@ -25,7 +25,6 @@ cache = FileSystemCache(
                 os.path.abspath(os.path.curdir))[0],
                 "cache")))
 
-
 def harvest():
     """ Harvests Header, Tabs, and Footer from Library Website"""
     def update_links(element, type_="href"):
@@ -36,7 +35,6 @@ def harvest():
             base_url,
             existing_href)
         element.attrs['target'] = '_top'
-
     base_url = app.config.get("BASE_URL")
     if not base_url:
         url_parse = urllib.parse.urlparse(

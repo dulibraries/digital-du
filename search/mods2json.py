@@ -36,10 +36,6 @@ def calculate_pubyear(rdf_json):
     if raw_created_date.lower().startswith("unknown"):
         rdf_json["publicationYear"] = raw_created_date.title()
              
-
-            
-    
-    if raw_created_date and len(raw_created_date) ===
     
 
 def generate_field_name(text):
