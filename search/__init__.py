@@ -44,7 +44,7 @@ AGGS_DSL = {
         },
         "Publication Year": {
             "terms": {
-                "field": "dateCreated"
+                "field": "publicationYear"
 			}
         },
         "Temporal (Time)": {
@@ -94,7 +94,7 @@ def browse(pid, from_=0):
     search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
     search.aggs.bucket("Genres", A("terms", field="genre"))
     search.aggs.bucket("Languages", A("terms", field="language"))
-    search.aggs.bucket("Publication Year", A("terms", field="dateCreated"))
+    search.aggs.bucket("Publication Year", A("terms", field="publicationYear"))
     search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
     search.aggs.bucket("Topic", A("terms", field="subject.topic"))
     facets = search.execute()

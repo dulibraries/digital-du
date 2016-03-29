@@ -32,8 +32,7 @@ def calculate_pubyear(rdf_json):
     if "copyrightYear" in rdf_json and len(rdf_json.get('copyrightYear')) == 4:
         rdf_json["publicationYear"] = rdf_json["copyrightYear"]
         return True
-
-    if raw_created_date.lower().startswith("unknown"):
+    if raw_created_date and raw_created_date.lower().startswith("unknown"):
         rdf_json["publicationYear"] = raw_created_date.title()
              
     
@@ -118,8 +117,8 @@ def names2rdf(mods):
     return output
 
 def notes2rdf(mods):
-    3470 Centennial Blvd, Suite 205"""Function takes MODS XML document and processes mods:notes
-
+    """Function takes MODS XML document and processes mods:notes
+    
 	Args:
         mods: MODS etree Document
 
