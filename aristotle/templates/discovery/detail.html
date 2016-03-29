@@ -35,7 +35,7 @@
 				{# include 'discovery/snippets/datastream-carousel.html' #}
 				<section class="col-md-6">
 				<img src="{{ url_for('fedora_object', value=source.get('pid'), identifier="thumbnail") }}"
-				 {# style="width: 30%"  class="pull-left" #}>
+				 class="img-responsive img-thumbnail">
 				 <br>
 				 <div class="btn-group" role="group">
 						 {% for datastream in source.get('datastreams') %}	 
