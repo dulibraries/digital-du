@@ -131,7 +131,9 @@
 			{% endfor %}
 		<h5>Note</h5>
 			{% for note in source.get("note")%}
+                        {% if note %}
 			<p>{{ note|safe }}</p>
+                        {% endif %}
 			{% endfor %}
       </div>
     </div>
@@ -230,7 +232,8 @@
 			  {{ datastream|viewer|safe }}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="#" onclick="closeAll()" class="btn btn-default">Close2</a>
+        <button type="button" data-bind="click: $parent.closePlayers" class="btn btn-default" {#data-dismiss="modal"#}>Close</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -244,6 +247,11 @@
  var detailViewModel = function() {
    var self = this;
    self.chosenSearch = ko.observable();
+
+   self.closePlayers = function() {
+       console.log("Close any players");
+   }
+
    self.searchingOptions =  [
       { name: "Keyword", search_type: "search" },
       { name: "Author", search_type: "author_search" },
@@ -265,5 +273,8 @@
  var viewModel = new detailViewModel();
  ko.applyBindings(viewModel);
 
+ function closeAll () {
+      console.log("Close any players");
+ }
 </script>
 {% endblock %}
