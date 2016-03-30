@@ -85,7 +85,7 @@
 				<h5>Date Created</h5>
 				{{ source.get('dateCreated') }}
 				<h5>Place</h5>
-				{{ source.get('place') }}
+                                {{ source.get('place') }}
 				<h5>Language{% if source.get('language', [])|length > 1%}s{% endif %}</h5>
 				<ul>
 				{% for lang in  source.get('language', []) %}
@@ -158,12 +158,18 @@
 			{{ source.get('publisher') }}
 		<h5>PID</h5>
 			{{ source.get('pid') }}	
+                {% if source.get('handle') %}
 		<h5>Handle</h5>
   		<a href="{{ source.get('handle') }}">{{ source.get('handle') }}</a>
+                {% endif %}
+                {% if source.get('digitalOrigin')  %}
 		<h5>Digital Origin</h5>
 			{{ source.get('digitalOrigin') }}
+                {% endif %}
+                {% if source.get('extent')  %}
 		<h5>Extent</h5>
 			{{ source.get('extent') }}
+                {% endif %}
       </div>
     </div>
 	</div>
