@@ -312,7 +312,10 @@ WHERE {{
                 err_title,
                 mods_result.text)
         try:
-            mods_xml = etree.XML(mods_result.text)
+            if not isinstance(mods_result.text, str):
+                mods_xml = etree.XML(mods_result.text.decode())
+            else:
+                mods_xml = etree.XML(mods_result.text)
         except etree.ParseError:
             msg = "Could not parse pid {}".format(pid)
             return False
