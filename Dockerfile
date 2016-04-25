@@ -25,4 +25,5 @@ COPY instance/conf.py $DIGCC_HOME/instance/conf.py
 EXPOSE 5000
 
 WORKDIR $DIGCC_HOME
-CMD ["python", "run.py"]
+#CMD ["python", "run.py"]
+CMD ["nohup", "uwsgi", "-s", "0.0.0.0:5000", "-w", "run:app"]

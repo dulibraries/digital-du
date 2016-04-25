@@ -8,7 +8,13 @@ search:
 aristotle:
     build: .
     ports:
-     - "80:5000"
+     - "5000"
     links:
      - search
-
+web:
+    build: .
+    dockerfile: DockerNginx
+    links:
+     - aristotle:aristotle
+    ports:
+     - 80:80
