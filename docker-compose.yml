@@ -13,7 +13,7 @@ aristotle:
      - search
 web:
     build: .
-    dockerfile: DockerNginx
+    dockerfile: DockerApache2
     links:
      - aristotle:aristotle
     ports:
