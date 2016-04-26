@@ -2,14 +2,10 @@
 FROM httpd:2.4
 MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
 
-RUN apt-get update && \
-    apt-get install -y libapache2-mod-wsgi
 # Dockerfile for DigitalCC Apache2 web server
-FROM httpd:2.4
-MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
-
 COPY ./vhosts.conf /usr/local/apache2/conf/vhosts.conf
 
-RUN echo "LoadModule proxy_module modules/mod_proxy.so" >> /usr/local/apache2/conf/httpd.conf 
-   && \ echo "IncludeOptional conf/*.conf" >> /usr/local/apache2/conf/httpd.conf 
+RUN apt-get update && \
+    echo "LoadModule proxy_module modules/mod_proxy.so" >> /usr/local/apache2/conf/httpd.conf && \
+    echo "Include conf/vhosts.conf" >> /usr/local/apache2/conf/httpd.conf 
     
