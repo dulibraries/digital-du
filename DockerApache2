@@ -9,3 +9,4 @@ FROM httpd:2.4
 MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
 
 COPY ./vhosts.conf /usr/local/apache2/conf/vhosts.conf
+RUN echo "IncludeOptional conf/*.conf" >> /usr/local/apache2/conf/httpd.conf
