@@ -1,10 +1,18 @@
-# Dockerfile for DigitalCC Apache2 reverse-proxy
-FROM httpd:2.4
+FROM ubuntu:16.04
 MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
 
-# Dockerfile for DigitalCC Apache2 web server
-COPY ./apache.conf /usr/local/apache2/conf/httpd.conf
-
+# Install Apache2.4
 RUN apt-get update && \
-    apt-get install -y libapache2-mod-proxy-uwsgi
-      
+    apt-get install -y apache2 && \
+    apt-get install -y libapache2-mod-proxy-uwsgi && \
+    #apt-get install -y apache2.4-common && \
+    a2enmod ssl
+
+
+# Dockerfile for DigitalCC Apache2 web server
+#COPY ./apache.conf /usr/local/apache2/conf/httpd.conf
+
+EXPOSE 80
+EXPOSE 443
+
+CMD ["systemctl", "start", "apache2.service"]
