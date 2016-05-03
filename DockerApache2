@@ -5,9 +5,12 @@ LABEL Vendor="CentOS"
 RUN yum -y update && yum clean all && \
     yum install -y epel-release && \
     yum update -y && \ 
-    yum install -y httpd 
-RUN yum install -y mod_proxy_uwgi && \
-    yum clean all
+    yum install -y httpd && \
+    yum install -y mod_ssl 
+RUN yum install -y mod_proxy_uwsgi && \
+    yum clean all && \
+    rm /etc/httpd/conf.d/ssl.conf && \
+    rm /etc/httpd/conf.d/welcome.conf
     
 ADD digitalcchosts.conf /etc/httpd/conf.d/digitalcchosts.conf
 
