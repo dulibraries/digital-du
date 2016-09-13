@@ -112,8 +112,6 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
 		size: size of result set, defaults to 25
 		from_: From location, used for infinite browse
     """
-    print(facet, facet_value, query, size, from_)
-    
     dsl = {
         "size": size,
 		"from": from_,
@@ -163,7 +161,7 @@ def specific_search(query, type_of, size=25, from_=0):
                  .params(size=50, from_=from_) \
                  .sort("titlePrincipal")
     else:
-        search = search.query(Q("match_phrase", _all=query))
+        search = search.query(Q("query_string", query=query))
     search.params(size=size, from_=from_)
     search.aggs.bucket("Format", A("terms", field="typeOfResource"))
     search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
