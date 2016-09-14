@@ -101,7 +101,7 @@ def get_title(pid):
     """
     return search.get_title(pid)
 
-AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto">
+AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto" id="viewer-{1}">
  <a href="{0}" class="center-block">Download</a>
 </audio>"""
 
@@ -123,17 +123,19 @@ TIFF_TEMPLATE = """<div class="row">
 </div>"""
 
 
-VIDEO_TEMPLATE = """<video src="{0}" controls poster="poster.jpg" width="640" height="480">
+VIDEO_TEMPLATE = """<video src="{0}" controls poster="poster.jpg" width="640" height="480" id="viewer-{1}">
 <a href="{0}" class="center-block">Download video</a>
 </video>"""
 
 
 @app.template_filter("viewer")
-def generate_viewer(datastream):
+def generate_viewer(datastream, dlg_number):
     """Filter takes a datastream and generates HTML5 player based on mime-type
 
     Args:
-        datastream -- Dictionary with Datastream information
+        datastream -- Dictionary with Data stream information
+        dlg_number -- Dialog ID Number
+
     """
     mime_type = datastream.get('mimeType')
     ds_url = url_for(
@@ -145,13 +147,13 @@ def generate_viewer(datastream):
              ds_url,
              datastream.get('label'))
     if mime_type.endswith('audio/mpeg'):
-        return AUDIO_TEMPLATE.format(ds_url)
+        return AUDIO_TEMPLATE.format(ds_url, dlg_number)
     if mime_type.endswith("octet-stream"):
         return DATASET_TEMPLATE.format(ds_url, datastream.get('label'))
     if mime_type.endswith('quicktime'):
         return QT_TEMPLATE.format(ds_url)
     if mime_type.endswith('mp4'):
-        return VIDEO_TEMPLATE.format(ds_url)
+        return VIDEO_TEMPLATE.format(ds_url, dlg_number)
     if mime_type.endswith('jpeg'):
         return """<img src="{}" class="center-block img-thumbnail">""".format(ds_url)
     if mime_type.endswith("tif"):
