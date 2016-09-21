@@ -298,6 +298,7 @@ WHERE {{
         mods_result = requests.get(
             mods_url,
             auth=self.auth)
+        mods_result.encoding = 'utf-8'
         if mods_result.status_code > 399:
             err_title = "Failed to index PID {}, error={} url={}".format(
                 pid,
