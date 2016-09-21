@@ -1,40 +1,24 @@
-<form class="form-search" data-bind="submit: searchCatalog">
+<form class="form-search form-inline" data-bind="submit: searchCatalog">
    <img src="{{ url_for('static', filename="img/mag-glass.png") }}" style="float:left"/>
-
-  <div class="row">
-     <section class="col-md-2">
-      <div class='form-group'>
-
+    <div class='form-group'>
        <select data-bind="click: searchRouting,
                           options: searchingOptions,
                           optionsText: 'name',
  			 value: chosenSearch" 
          class="form-control">
-      </select>
-    </section>
-    <section class="col-md-4">
-     {# <select data-bind="options: numberOptions,
-                         optionsText: 'name',
-                         value: chosenNumberOption,
-                         visible: shouldShowNumber"
-          class="form-control" > 
-  </select> #}
-      <div class='form-group'>
-      <input 
-             data-bind="value: searchQuery"
-             name="q" 
-             type="text" 
-             class="form-control" 
-             placeholder="Search DigitialCC" 
-	     value="{{ request.path }}"></input>
+       </select>
+    </div>
+    <div class='form-group'>
+            <input 
+                 data-bind="value: searchQuery"
+                 name="q" 
+                 type="text"
+                 style="width: 25em;" 
+                 class="form-control" 
+                 placeholder="Search DigitialCC" 
+	         value="{{ request.path }}"></input>
      </div>
-     </section>
-     <section class="col-md-2">
      <div class='form-group'>
 	<input type="submit" class="btn btn-primary" value="Go"></input>
-      </div>	     
-    </section>
-    {#  <label class="checkbox" style="float:left;padding-top:5px;padding-right:5px;">
-        <input type="checkbox" data-bind="checked: exactSearch"> Exact Search</input> #}
-  </div>
+    </div>	     
 </form>
