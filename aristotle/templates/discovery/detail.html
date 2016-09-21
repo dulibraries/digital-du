@@ -235,11 +235,10 @@
 		<h4 class="modal-title">{{ source.get('titlePrincipal') }} {{ datastream.label }}</h4>
       </div>
 	  <div class="modal-body">
-			  {{ datastream|viewer|safe }}
+			  {{ datastream|viewer(loop.index)|safe }}
       </div>
       <div class="modal-footer">
-        <a href="#" onclick="closeAll()" class="btn btn-default">Close2</a>
-        <button type="button" data-bind="click: $parent.closePlayers" class="btn btn-default" {#data-dismiss="modal"#}>Close</button>
+        <a href="#" onclick="closeAll('{{ loop.index }}')" class="btn btn-default">Close</a>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -279,8 +278,9 @@
  var viewModel = new detailViewModel();
  ko.applyBindings(viewModel);
 
- function closeAll () {
-      console.log("Close any players");
+ function closeAll (dlg_id) {
+    $('#viewer-'+dlg_id)[0].pause();
+    $('#dialog-'+dlg_id).modal('hide');
  }
 </script>
 {% endblock %}

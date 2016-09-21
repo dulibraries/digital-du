@@ -161,7 +161,8 @@ def specific_search(query, type_of, size=25, from_=0):
                  .params(size=50, from_=from_) \
                  .sort("titlePrincipal")
     else:
-        search = search.query(Q("query_string", query=query))
+        search = search.query(
+            Q("query_string", query=query, default_operator="AND"))
     search.params(size=size, from_=from_)
     search.aggs.bucket("Format", A("terms", field="typeOfResource"))
     search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
