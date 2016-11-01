@@ -23,10 +23,10 @@ RUN git clone $DIGCC_GIT $DIGCC_HOME && \
   crontab crontab.txt
 
 COPY instance/conf.py $DIGCC_HOME/instance/conf.py
-COPY supervisord.conf /etc/supervisor/conf.d/
+#COPY supervisord.conf /etc/supervisor/conf.d/
 EXPOSE 5000
 
 WORKDIR $DIGCC_HOME
-CMD ["/usr/local/bin/supervisord"]
+#CMD ["/usr/local/bin/supervisord"]
 #CMD ["python", "run.py"]
-#CMD ["nohup", "uwsgi", "-s", "0.0.0.0:5000", "-w", "run:app"]
+CMD ["nohup", "uwsgi", "-s", "0.0.0.0:5000", "-w", "run:app"]

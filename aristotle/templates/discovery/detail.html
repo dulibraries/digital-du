@@ -16,7 +16,7 @@
 		{% include "discovery/search-panel-row.html" %}
 		<div class="row" style="margin-top: 3em;">
 				<ol class="breadcrumb">
-						{% for row in source.get('inCollections') %}
+						{% for row in source.get('inCollections', []) %}
 						<li {% if loop.last %}class="active"{% endif %}>
 						<a href="{{ url_for('fedora_object', identifier='pid', value=row) }}">
 								{{ row|title_principal|truncate(30, True) }}</a>
@@ -38,7 +38,7 @@
 				 class="img-responsive img-thumbnail">
 				 <br>
 				 <div class="btn-group" role="group">
-						 {% for datastream in source.get('datastreams') %}	 
+						 {% for datastream in source.get('datastreams', []) %}	 
 						 <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}" class="btn btn-default btn-lg">
 								 <i class="glyphicon {{ datastream|icon }}"></i> 
 						 </a>
@@ -49,7 +49,7 @@
 				 <div>
 					
 					<h5>Media Files</h5>
-					<ul> {% for datastream in source.get('datastreams') %} 
+					<ul> {% for datastream in source.get('datastreams', []) %} 
 						<li> 
 						 <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}">
 								 {{datastream.get('label')}}
@@ -82,26 +82,38 @@
 				{{ creator }}{% if not loop.last %},{% endif %}
 				{% endfor %}
 				{% endif %}
+                                {% if source.get('dateCreated') != None %}
 				<h5>Date Created</h5>
 				{{ source.get('dateCreated') }}
+                                {% endif %}
+                                {% if source.get('dateIssued') != None %}
+                                <h5>Date Issued</h5>
+                                {{ source.get('dateIssued') }}
+                                 {% endif %}
 				<h5>Place</h5>
                                 {{ source.get('place') }}
+                                {% if not (source.get('language')|length == 1 and source.get('language')[0] == None) %}
 				<h5>Language{% if source.get('language', [])|length > 1%}s{% endif %}</h5>
 				<ul>
 				{% for lang in  source.get('language', []) %}
 				<li>{{ lang }}</li>
 				{% endfor %}
-		        </ul>
+		                </ul>
+                                {% endif %}
 				<h5>Subject</h5>
 				{% for subject, info in source.get('subject').items() %}
-				  {% if info[0] %}
-				  <strong>{{ subject }}</strong>
-                  <ul>
+                                  {% if info|length == 1 and info[0] == None %}
+
+                                  {% else %}
+				  <strong>{{ subject|title }}</strong>
+                                  <ul>
 				  {% for row in info %}
-				  <li>{{ row }}</li>
+                                    {% if not row == None %}
+				    <li>{{ row }}</li>
+                                    {% endif %}
 				  {% endfor %}
-		          </ul>
-				  {% endif %}	
+        		          </ul>
+                                  {% endif %}
 				{% endfor %}
 				<h5>Genre</h5>
 				<ul>
@@ -226,7 +238,7 @@
  {% endblock %}
 
  {% block dialogs %}
- {% for datastream in source.get('datastreams') %}
+ {% for datastream in source.get('datastreams', []) %}
  <div class="modal fade" tabindex="-1" role="dialog" id="dialog-{{ loop.index }}">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -279,8 +291,8 @@
  ko.applyBindings(viewModel);
 
  function closeAll (dlg_id) {
-    $('#viewer-'+dlg_id)[0].pause();
-    $('#dialog-'+dlg_id).modal('hide');
+   $('#dialog-'+dlg_id).modal('hide');
+   $('#viewer-'+dlg_id)[0].pause();
  }
 </script>
 {% endblock %}

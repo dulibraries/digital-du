@@ -7,7 +7,7 @@
  <div class="col-md-9 results-block">
 		{% if info %}
 		<ol class="breadcrumb" style="font-size: .8em">
-						{% for row in info.get('inCollections') %}
+						{% for row in info.get('inCollections', []) %}
 						<li {% if loop.last %}class="active"{% endif %}>
 						<a href="{{ url_for('fedora_object', identifier='pid', value=row) }}">
 								{{ row|title_principal|truncate(30, True) }}</a>
