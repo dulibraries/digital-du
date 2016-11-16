@@ -39,9 +39,12 @@
 				 <br>
 				 <div class="btn-group" role="group">
 						 {% for datastream in source.get('datastreams', []) %}	 
+                                                {% if not datastream.get('label') in ['PREVIEW', 'TN', 'PROXY_MP3', 'MEDIUM_SIZE'] %}
+
 						 <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}" class="btn btn-default btn-lg">
 								 <i class="glyphicon {{ datastream|icon }}"></i> 
 						 </a>
+                                                {% endif %}
 						 {% endfor %}
 				 </div>
 				 <br>
@@ -50,12 +53,15 @@
 					
 					<h5>Media Files</h5>
 					<ul> {% for datastream in source.get('datastreams', []) %} 
+                                                {% if not datastream.get('label') in ['PREVIEW', 'TN', 'PROXY_MP3', 'MEDIUM_SIZE'] %}
 						<li> 
 						 <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}">
+                                                
 								 {{datastream.get('label')}}
 								 <i class="glyphicon {{ datastream|icon }}"></i>
 						 </a>
 						 </li>	
+                                                 {% endif %}
 							{% endfor %}
 					</ul>
 				 </div>			
