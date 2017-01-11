@@ -19,7 +19,7 @@ etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 REPO_SEARCH = None
 AGGS_DSL = {
-    "sort": ["titlePrincipal"],
+    "sort": ["titlePrincipal.keyword"],
     "size": 0,
     "aggs": {
         "Format": {
@@ -39,7 +39,7 @@ AGGS_DSL = {
         },
         "Languages": {
 	        "terms": {
-                "field": "language"
+                "field": "language.keyword"
 			}
         },
         "Publication Year": {
@@ -84,7 +84,7 @@ def browse(pid, from_=0):
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", parent=pid) \
              .params(size=50, from_=from_) \
-             .sort("titlePrincipal")
+             .sort("titlePrincipal.keyword")
     results = search.execute()
     output = results.to_dict()
     search = Search(using=REPO_SEARCH, index="repository") \
@@ -93,7 +93,7 @@ def browse(pid, from_=0):
     search.aggs.bucket("Format", A("terms", field="typeOfResource"))
     search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
     search.aggs.bucket("Genres", A("terms", field="genre"))
-    search.aggs.bucket("Languages", A("terms", field="language"))
+    search.aggs.bucket("Languages", A("terms", field="language.keyword"))
     search.aggs.bucket("Publication Year", A("terms", field="publicationYear"))
     search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
     search.aggs.bucket("Topic", A("terms", field="subject.topic"))
@@ -114,20 +114,35 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
     """
     dsl = {
         "size": size,
-		"from": from_,
-        "query": {
-            "filtered":  {
-                "filter": {
-                    "term": {
-							AGGS_DSL["aggs"][facet]["terms"]["field"]: facet_value
-                    }
-                }
-            }
-         },
-		"aggs": AGGS_DSL['aggs']
+	"from": from_,
+        "aggs": AGGS_DSL['aggs'],
     }
+    field_name = AGGS_DSL["aggs"][facet]["terms"]["field"] 
     if query is not None:
-        dsl["query"]["match"] = {"_all": query}
+        dsl["query"] = {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "_all": query
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "term": {
+                            field_name : facet_value
+                        }
+                    }
+                ]
+            }
+        }
+    else:
+        dsl["query"] = {
+            "term": {
+                field_name : facet_value
+            }
+        }
     results = REPO_SEARCH.search(body=dsl, index="repository")
     return results
 
@@ -167,7 +182,7 @@ def specific_search(query, type_of, size=25, from_=0):
     search.aggs.bucket("Format", A("terms", field="typeOfResource"))
     search.aggs.bucket("Geographic", A("terms", field="subject.geographic"))
     search.aggs.bucket("Genres", A("terms", field="genre"))
-    search.aggs.bucket("Languages", A("terms", field="language"))
+    search.aggs.bucket("Languages", A("terms", field="language.keyword"))
     search.aggs.bucket("Publication Year", A("terms", field="dateCreated"))
     search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
     search.aggs.bucket("Topic", A("terms", field="subject.topic"))
@@ -230,10 +245,10 @@ def get_title(pid):
         pid -- PID of Fedora Object
     """
     result = REPO_SEARCH.search(body={"query": {"term": {"pid": pid }},
-			                          "fields": ["titlePrincipal"]},
+			                         "_source": ["titlePrincipal"]},
                                 index='repository')
     if result.get('hits').get('total') == 1:
-        return result['hits']['hits'][0]['fields']['titlePrincipal'][0]
+        return result['hits']['hits'][0]['_source']['titlePrincipal']
     return "Home"
 
 if __name__ == "__main__":
