@@ -98,7 +98,7 @@
                                  {% endif %}
 				<h5>Place</h5>
                                 {{ source.get('place') }}
-                                {% if not (source.get('language')|length == 1 and source.get('language')[0] == None) %}
+                                {% if not (source.get('language', [])|length == 1 and source.get('language')[0] == None) %}
 				<h5>Language{% if source.get('language', [])|length > 1%}s{% endif %}</h5>
 				<ul>
 				{% for lang in  source.get('language', []) %}
