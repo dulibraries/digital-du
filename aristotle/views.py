@@ -102,6 +102,19 @@ def image(uid):
         #raw_thumbnail = result.text
         return Response(result.text, mimetype="image/jpeg")
 
+@app.route("/advanced-search",  methods=["POST", "GET"])
+def advanced_search():
+    """Preforms and advanced search"""
+    if request.method.startswith("POST"):
+        return "In search"
+    
+    return render_template(
+        'discovery/index.html',
+        pid="coccc:root",
+        is_advanced_search=True,
+        q=request.args.get('q', None),
+        mode=request.args.get('mode', None)
+    )
 
 @app.route("/search", methods=["POST", "GET"])
 def query():

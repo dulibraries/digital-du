@@ -1,29 +1,92 @@
-{% load i18n %}
-{% load discovery_extras %}
- <form action="{% url discovery-adv-search %}" name="catalog_search" method="POST">
-        {% csrf_token %} 
-        <fieldset id="adv-searchbox">
-         <h3>Advanced Search</h3>
-         <select name="field1_type" style="width:100px">
-         {{ advanced_query.field1_type|search_field_options }} 
-         </select>
-         <input type="text" name="field1_phrase" value="{{ advanced_query.field1_phrase }}" />
-         <select name="field1_operator" style="width:100px">
-         {{ advanced_query.field1_operator|search_operator_options }}
-         </select>
-         <br/>
-         <select name="field2_type" style="width:100px">
-         {{ advanced_query.field2_type|search_field_options }} 
-         </select>
-         <input type="text" name="field2_phrase" value="{{ advanced_query.field2_phrase }}" />
-         <select name="field2_operator" style="width:100px">
-         {{ advanced_query.field2_operator|search_operator_options }}
-         </select>
-         <br/>
-         <select name="field3_type" style="width:100px">
-         {{ advanced_query.field3_type|search_field_options }} 
-         </select>
-         <input type="text" name="field3_phrase" value="{{ advanced_query.field3_phrase }}" />
-         <input type="submit" name="btnsubmit" class="submit btn" value="Search" />
-        </fieldset>
-</form>
+<div class="col-sm-9">
+    <h3>Advanced Search</h3>
+    <div class="row">
+        <div class="col-xs-3">
+            <label>Find objects with</label>
+        </div>
+        <div class="col-xs-6">
+            <input type="text" id="query" class="form-control"></input>
+        </div>
+
+        <div class="col-xs-3">
+             <select class="form-control" data-bind="options: searchingOptions,
+                                                     optionsText: 'name'">
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3">
+          <select class="form-control" data-bind="options: booleanConnectors,
+                                                  optionsText: 'name'">
+          </select>
+        </div>
+        <div class="col-xs-6">
+            <input type="text" id="query" class="form-control"></input>
+        </div>
+        <div class="col-xs-3">
+            <select class="form-control" data-bind="options: searchingOptions,
+                                                     optionsText: 'name'">
+           </select>
+         </div>
+    </div>
+    <a href="#" {#onclick="AddSearchRow()"#} data-bind="click: addSearchRow" id="add-row" 
+       class="label label-primary"><i class="glyphicon glyphicon-plus-sign"></i></a>
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-10">
+            <a href="#" class="btn btn-primary">Go</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">
+                    Image
+                </label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">
+                    Moving Image
+                </label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">
+                   PDF 
+                </label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">
+                     Audiofile
+                </label>
+            </div>
+        </div>
+    </div>
+    <label>Narrow By:</label>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="#">+</a> Language<br>
+            
+            Location<br>
+            Department
+        </div>
+        <div class="col-md-4">
+            Time<br>
+            Genre<br>
+            Collection
+        </div>
+        <div class="col-md-4">
+            Topic<br>
+            Publication Year
+        </div>
+
+    </div>
+</div>

@@ -15,6 +15,7 @@ function AddCartItem(anchor_tag,record_id) {
    });
 }
 
+
 function CartToRefworks(session_id) {
   var refworks_url = 'http://www.refworks.com/express/expressimport.asp?vendor=iii&filter=RefWorks%20Tagged%20Format&url=http%3A//' + window.location.host + '/catalog/cart/refworks?session=' + session_id;
   window.open(refworks_url);
@@ -267,6 +268,12 @@ var simpleViewModel = function() {
       { name: "doi", number_type: "DOI" }
    ];
 
+  self.booleanConnectors = [
+    { name: "and", bool_type: "and"},
+    { name: "or", bool_type: "or"},
+    { name: "not", bool_type: "not"},
+  ];
+
   self.activeFacet = ko.observable();
   self.activeFacetValue = ko.observable();
   self.chosenNumberOption = ko.observable();
@@ -289,7 +296,20 @@ var simpleViewModel = function() {
   self.creatorSearch = function() {
 
 
-  };
+  }
+
+  self.addSearchRow = function() {
+    var lastDiv = $("#add-row").prev('div');
+    var new_row = document.createElement("div");
+    $(new_row).addClass("row");
+    var new_bool_div = document.createElement("div");
+    new_bool_div.class = "col-xs-3";
+    var select_bool = document.createElement("select");
+    select_bool.class = "form-control";
+    new_row.appendChild(select_bool);
+    console.log("Before lastDiv appendChild " + new_row.length());
+    lastDiv.appendChild(new_row);
+}
 
 
   self.showAbstract = function(abstract_) {
@@ -310,6 +330,8 @@ var simpleViewModel = function() {
            "facetName": name,
            "buckets": buckets}
   }
+
+
 
   self.processResult = function(source) {
       var summary_limit = 400;
