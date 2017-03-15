@@ -20,12 +20,12 @@ Colorado College's Institutional Repository</h1>
     {% include "discovery/snippets/advanced-search.html" %}
     {% endif %}
     <div class="col-sm-3">
-  <ul class="search-options">
+  <ul class="search-options" style="font-size: .95em">
    {% if is_advanced_search %}
     <li><a href="/catalog/">Basic Search</a></li>
     <li><a href="/advanced-search">New Advanced Search</a></li>
    {% else %}
-    <li><a href="/advanced-search">Advanced Search</a></li>
+    {#<li><a href="/advanced-search">Advanced Search</a></li>#}
     <li><a href="/">New Search</a></li>
    {% endif %}
    {% if search_history %}

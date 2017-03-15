@@ -37,7 +37,8 @@ def get_icon(datastream):
     mime_type = datastream.get('mimeType')
     if mime_type.endswith("pdf"):
         return "glyphicon-file"
-    if mime_type.endswith("mp4"):
+    if mime_type.endswith("mp4") or\
+       mime_type.endswith("quicktime"):
         return "glyphicon-facetime-video"
     if mime_type.endswith("mp3") or\
        mime_type.endswith("wav") or\
@@ -146,7 +147,8 @@ def generate_viewer(datastream, dlg_number):
         return PDF_TEMPLATE.format(
              ds_url,
              datastream.get('label'))
-    if mime_type.endswith('audio/mpeg'):
+    if mime_type.endswith('audio/mpeg') or\
+       mime_type.endswith("wav"):
         return AUDIO_TEMPLATE.format(ds_url, dlg_number)
     if mime_type.endswith("octet-stream"):
         return DATASET_TEMPLATE.format(ds_url, datastream.get('label'))
