@@ -102,7 +102,7 @@ def get_title(pid):
     """
     return search.get_title(pid)
 
-AUDIO_TEMPLATE = """<audio src="{0}" controls style="height: 75px; width: auto" id="viewer-{1}">
+AUDIO_TEMPLATE = """<audio src="{0}" controls="controls" id="viewer-{1}">
  <a href="{0}" class="center-block">Download</a>
 </audio>"""
 
@@ -124,7 +124,7 @@ TIFF_TEMPLATE = """<div class="row">
 </div>"""
 
 
-VIDEO_TEMPLATE = """<video src="{0}" controls poster="poster.jpg" width="640" height="480" id="viewer-{1}">
+VIDEO_TEMPLATE = """<video src="{0}" controls="controls" poster="poster.jpg" width="640" height="480" id="viewer-{1}">
 <a href="{0}" class="center-block">Download video</a>
 </video>"""
 
@@ -143,6 +143,7 @@ def generate_viewer(datastream, dlg_number):
         'get_datastream', 
         pid=datastream.get('pid'),
         dsid=datastream.get('dsid'))
+    print(mime_type, ds_url)
     if mime_type.endswith('pdf'):
         return PDF_TEMPLATE.format(
              ds_url,
