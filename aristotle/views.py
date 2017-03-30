@@ -2,13 +2,29 @@
 Flask using Elasticsearch"""
 __author__ = "Jeremy Nelson"
 
+import datetime
+import os
 import requests
+
+HOME = os.path.abspath(os.curdir)
+with open(os.path.join(HOME, "VERSION")) as fo:
+    VERSION = fo.read()
 
 from flask import abort, jsonify, render_template, redirect, request,\
     Response, url_for
 from . import app, cache, REPO_SEARCH
 from search import browse, filter_query, get_aggregations, get_detail, get_pid,\
     specific_search
+
+@app.route("/about")
+def about_digitalcc():
+    """Displays details of current version of Digital CC"""
+    index_created_on = REPO_SEARCH.indices.get('repository').get('repository').get('settings').get('index').get('creation_date')
+    indexed_on = datetime.datetime.utcfromtimestamp(int(index_created_on[0:10]))
+    return render_template("discovery/About.html",
+        indexed_on = indexed_on,
+        version = VERSION)
+    
 
 @app.route("/browse", methods=["POST", "GET"])
 def browser():

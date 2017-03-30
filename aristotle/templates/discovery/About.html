@@ -1,0 +1,12 @@
+{% extends 'discovery/base.html' %}
+
+{% block container %}
+<div class="container">
+		{% include "discovery/search-panel-row.html" %}
+		<div class="row" style="margin-top: 3em;">
+		<h3>About Digital CC</h3>
+                <h4>Version: {{ version }}</h4>
+                <h4>Indexed On {{ indexed_on }}</h4>
+		</div>
+</div>
+{% endblock %}
