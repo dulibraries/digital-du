@@ -17,6 +17,7 @@ except ImportError or ValueError:
 app = Flask(__name__,  instance_relative_config=True)
 app.config.from_pyfile('conf.py')
 
+
 cache = FileSystemCache(
     app.config.get(
         "CACHE_DIR", 

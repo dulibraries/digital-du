@@ -163,8 +163,7 @@ def specific_search(query, type_of, size=25, from_=0):
     if type_of.startswith("creator"):
         search = search.query("match_phrase", creator=query)
     elif type_of.startswith("number"):
-        search = search.query(
-            Q("match_phrase", pid=query) | Q("match_phrase", doi=query))
+        search = search.filter("term", pid=query)
     elif type_of.startswith("title"):
         search = search.query("match_phrase", titlePrincipal=query)
     elif type_of.startswith("subject"):
