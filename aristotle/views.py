@@ -198,6 +198,8 @@ def fedora_datastream(pid, dsid, ext):
         mimetype = 'image/jpg'
     if ext.startswith("mp3"):
         mimetype = "audio/mpeg"
+    if ext.startswith("wav"):
+        mimetype = "audio/wav"
     return Response(result.text, mimetype=mimetype) 
 
 @app.route("/<identifier>/<value>")

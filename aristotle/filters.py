@@ -42,6 +42,7 @@ def get_icon(datastream):
         return "glyphicon-facetime-video"
     if mime_type.endswith("mp3") or\
        mime_type.endswith("wav") or\
+       mime_type.endswith("wave") or\
        mime_type.endswith("mpeg"):
         return "glyphicon-headphones"
     if mime_type.endswith("jpg") or\
