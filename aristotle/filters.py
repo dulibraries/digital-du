@@ -150,7 +150,8 @@ def generate_viewer(datastream, dlg_number):
              ds_url,
              datastream.get('label'))
     if mime_type.endswith('audio/mpeg') or\
-       mime_type.endswith("wav"):
+       mime_type.endswith("wav") or\
+       mime_type.endswith("wave"):
         return AUDIO_TEMPLATE.format(ds_url, dlg_number)
     if mime_type.endswith("octet-stream"):
         return DATASET_TEMPLATE.format(ds_url, datastream.get('label'))
