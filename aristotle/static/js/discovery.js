@@ -292,6 +292,7 @@ var simpleViewModel = function() {
   self.fromOffset = ko.observable(0);
   self.shardSize = ko.observable(15);
   self.searchMode = ko.observable("search"); // Should be either search, facet, or browse
+  self.searchPlaceholder = ko.observable("Search DigitalCC");
 
   self.creatorSearch = function() {
 
@@ -443,7 +444,7 @@ var simpleViewModel = function() {
           break;
 
       case "number_search":
-           self.searchMode("number");
+             self.searchMode("number");
        	   $.ajax({
             url: '/search',
             data: {q: search_query,
@@ -505,10 +506,12 @@ var simpleViewModel = function() {
     }
   }
   self.searchRouting = function() {
+    self.searchPlaceholder("Search DigitalCC");
     var search_type = self.chosenSearch()["search_type"];
     switch(search_type) {
        case "number_search":
          self.shouldShowNumber(true);
+         self.searchPlaceholder("Search by PID i.e. coccc:5454");
          self.exactSearch(true);
          break;
 

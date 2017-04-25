@@ -11,12 +11,12 @@
     </div>
     <div class='form-group'>
             <input 
-                 data-bind="value: searchQuery"
+                 data-bind="value: searchQuery, attr: { placeholder: searchPlaceholder }"
                  name="q" 
                  type="text"
                  style="width: 25em;" 
                  class="form-control" 
-                 placeholder="Search DigitalCC" 
+                 {# placeholder="Search DigitalCC" #}
 	         value="{{ request.path }}"></input>
      </div>
      <div class='form-group'>
