@@ -176,10 +176,10 @@
 			{{ source.get('publisher') }}
 		<h5>PID</h5>
 			{{ source.get('pid') }}	
-                {% if source.get('handle') %}
+                {# if source.get('handle') %}
 		<h5>Handle</h5>
   		<a href="{{ source.get('handle') }}">{{ source.get('handle') }}</a>
-                {% endif %}
+                {% endif #}
                 {% if source.get('digitalOrigin')  %}
 		<h5>Digital Origin</h5>
 			{{ source.get('digitalOrigin') }}
