@@ -111,7 +111,7 @@ DATASET_TEMPLATE = """Download Dataset <em>{1}</em> <a href="{0}" class="btn btn
 <i class="glyphicon-stats glyphicon"></i></a>"""
 
 PDF_TEMPLATE = """<object data="{0}" type="application/pdf" width="100%" height="600px">
-        alt : <ahref="{0}">{1}</a> 
+        alt : <a href="{0}">{1}</a> 
 </object>"""
 
 QT_TEMPLATE = """<embed src="{}" width="640" height="480" class="center-block" 
