@@ -148,7 +148,7 @@
 			<p>{{ abstract|safe }}</p>
 			{% endfor %}
 		<h5>Note</h5>
-			{% for note in source.get("note")%}
+			{% for note in source.get("note", [])%}
                         {% if note %}
 			<p>{{ note|safe }}</p>
                         {% endif %}
