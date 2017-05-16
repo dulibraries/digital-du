@@ -145,7 +145,6 @@ def generate_viewer(datastream, dlg_number):
         'get_datastream', 
         pid=datastream.get('pid'),
         dsid=datastream.get('dsid'))
-    print(mime_type, ds_url)
     if mime_type.endswith('pdf'):
         return PDF_TEMPLATE.format(
              ds_url,
