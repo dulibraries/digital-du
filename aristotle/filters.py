@@ -43,7 +43,8 @@ def get_icon(datastream):
     if mime_type.endswith("mp3") or\
        mime_type.endswith("wav") or\
        mime_type.endswith("wave") or\
-       mime_type.endswith("mpeg"):
+       mime_type.endswith("mpeg") or\
+       mime_type.startswith("audio/x-m4a"):
         return "glyphicon-headphones"
     if mime_type.endswith("jpg") or\
        mime_type.endswith("jpeg") or\
@@ -151,6 +152,7 @@ def generate_viewer(datastream, dlg_number):
              datastream.get('label'))
     if mime_type.endswith('audio/mpeg') or\
        mime_type.endswith("audio/mp3") or\
+       mime_type.endswith("audio/x-m4a") or\
        mime_type.endswith("wav") or\
        mime_type.endswith("wave"):
         return AUDIO_TEMPLATE.format(ds_url, dlg_number)
