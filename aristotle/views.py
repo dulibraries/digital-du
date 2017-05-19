@@ -153,29 +153,42 @@ def query():
         size = request.args.get('size', 25)
         facet_val = request.args.get('val')
         query = request.args.get('q', None)
+    search_results = None
     if mode in ["creator", "title", "subject", "number"]:
-        return jsonify(
-            specific_search(
+         search_results = specific_search(
                 query,
                 mode,
                 size,
-                from_))
+                from_)
     if mode.startswith("facet"):
-        return jsonify(
-            filter_query(
+        search_results = filter_query(
             facet, 
             facet_val, 
             query,
             size,
-		    from_
-            ))
-    return jsonify(
-       specific_search(
+            from_)
+    if not search_results and query is not None:
+       search_results = specific_search(
            query,
            "keyword",
            size,
            from_)
-    )
+    if "html" in request.headers.get("Accept"):
+        return render_template(
+            'discovery/search-results.html',
+            facet=facet,
+            facet_val=facet_val,
+            mode=mode,
+            search_results = search_results,
+            query=query,
+            size=size,
+            offset=from_
+        )
+    else:
+        return jsonify(search_results)
+    
+
+
 
 @app.route("/pid/<pid>/datastream/<dsid>.<ext>")
 def fedora_datastream(pid, dsid, ext):
@@ -258,7 +271,7 @@ def index():
     """Displays Home-page of Digital Repository"""
     return render_template(
         'discovery/index.html',
-        pid="coccc:root",
+        pid=app.config.get("INITIAL_PID"),
         q=request.args.get('q', None),
         mode=request.args.get('mode', None)
     )

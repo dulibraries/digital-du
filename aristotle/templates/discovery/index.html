@@ -4,100 +4,16 @@
  
 {% endblock %}
 
-{% block library_breadcrumb %}
- <div id="breadcrumb"></div>
-{% endblock %}
-
-{% block results_detail %}
-{% endblock %}
-
-
-{% block results_list %}
-{% endblock %}
-
-
-{% block more_scripts %}
-{# comment %}
-<script src="{{ STATIC_URL }}js/jquery.js"></script>
-{% endcomment #}
-<script src="{{ url_for('static', filename='js/discovery.js') }}"></script>
-{#<script src="{{ STATIC_URL }}js/google-analytics.js"></script>#}
-<script>
- $(function() {
-   $("#cart-dlg").on('show', function() {
-     ShowCart("{{ session_id }}")
-   });
- });
- var viewModel = new simpleViewModel();
- ko.applyBindings(viewModel);
- {% if q and mode %}
-
-  viewModel.searchQuery("{{ q }}");
-  viewModel.chosenSearch()["search_type"] = "{{ mode }}";
-  viewModel.searchCatalog();
- {% else %}
-  if(viewModel.searchResults().length < 1) {
-    viewModel.initDisplay("{{ pid }}");
-   }
- {% endif %}
- $(window).scroll(function() {
-		 if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
-				 var new_offset = viewModel.fromOffset() + viewModel.searchResults().length;
-                 if (new_offset >= viewModel.totalHits()) {
-                     console.log("No more hits");
-					 return;
-		 }
-                 var url = "/search";
-		 var data = { from: new_offset,
-			     mode: viewModel.searchMode(),
-			     size: viewModel.shardSize(),
-			     q: viewModel.searchQuery() };
-                 if (viewModel.searchMode() === 'browse') {
-                    url = "/browse"; 
-                    data['pid'] = "{{ request.path.split("/")[-1] }}";
-                 }
-
-                 if(viewModel.searchMode() === "facet") {
-			 data["facet"] = viewModel.activeFacet();
-			 data["val"] = viewModel.activeFacetValue();	 
-		  }
-			 $.ajax({
-				 method: "GET",
-				 data: data,
-		    	         url: url,
-				 success: function(data) {
-				   for(i in data["hits"]["hits"]) {
-                                       var row = data["hits"]["hits"][i];
-                                       viewModel.searchResults.push(viewModel.processResult(row['_source'])); 
-
-                                    }
-
-                                   console.log("Successful search " + data);
-
-			    }
-				
-
-				 });
-    }
-});
-
-window.onbeforeunload = function(e) {
-  if(viewModel.searchMode() === 'browse') {
-    console.log("Browse mode");
-  } else {
-    console.log("View model search Mode " + viewModel.searchMode());
-  }
-
-}
-
-</script>
-{% endblock more_scripts %}
-
-{% block dialogs %}
-<div id="search_dialog" class="modal hide">
-{% include 'discovery/snippets/search_history_dialog.html' %}
-</div>
-<div id="cart-dlg" class="modal hide">
-{% include 'discovery/snippets/cart_dialog.html' %}
+{% block main %}
+<h1>Aristotle Digital Repository</h1>
+<p>{% if pid %}Initial PID: {{ pid }}{% endif %}
+<div class="row">
+    <div class="col-md-4">
+        <h2>Facets</h2>
+        {% include 'discovery/snippets/facets.html' %}
+    </div>
+    <div class="col-md-8">
+        <h2>Results</h2>
+    </div>
 </div>
 {% endblock %}

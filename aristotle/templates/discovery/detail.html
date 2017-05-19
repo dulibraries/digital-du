@@ -115,7 +115,9 @@
                                   <ul>
 				  {% for row in info %}
                                     {% if not row == None %}
-				    <li>{{ row }}</li>
+				    <li>
+                                        <a href="{{ url_for('query') }}?mode=facet&facet={{ subject|title }}&val={{ row }}">{{ row }}</a>
+                                    </li>
                                     {% endif %}
 				  {% endfor %}
         		          </ul>

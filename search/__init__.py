@@ -147,7 +147,7 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
     return results
 
 
-def specific_search(query, type_of, size=25, from_=0):
+def specific_search(query, type_of, size=25, from_=0, pid=None):
     """Function takes a query and fields list and runs a search on those
     specific fields.
 
@@ -170,7 +170,7 @@ def specific_search(query, type_of, size=25, from_=0):
         search = search.query(Q("match_phrase", **{"subject.topic": query}) |\
                      Q("match_phrase", **{"subject.geographic": query}) |\
                      Q("match_phrase", **{"subject.temporal": query}))
-    elif query is None:
+    elif query is None and pid is not None:
         search = search.filter("term", parent=pid) \
                  .params(size=50, from_=from_) \
                  .sort("titlePrincipal")
