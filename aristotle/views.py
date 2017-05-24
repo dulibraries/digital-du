@@ -14,6 +14,7 @@ from flask import abort, jsonify, render_template, redirect, request,\
     Response, url_for, current_app
 from . import cache, REPO_SEARCH
 from .blueprint import aristotle
+from .forms import SimpleSearch
 from search import browse, filter_query, get_aggregations, get_detail, get_pid,\
     specific_search
 
@@ -93,11 +94,6 @@ def detailer():
         detailed_info = get_detail(pid)
         return jsonify(detailed_info)
 
-
-@aristotle.route("/header")
-def header():
-    """Returns HTML doc to be included in iframe"""
-    return render_template('discovery/snippets/header.html')
 
 @aristotle.route("/image/<uid>")
 def image(uid):
@@ -180,7 +176,8 @@ def query():
             facet=facet,
             facet_val=facet_val,
             mode=mode,
-            search_results = search_results,
+            results = search_results,
+            search_form=SimpleSearch(),
             query=query,
             size=size,
             offset=from_
@@ -244,7 +241,10 @@ def fedora_object(identifier, value):
         return render_template(
             'discovery/index.html',
             pid=value,
+            results=results,
             info=get_detail(value)['hits']['hits'][0]['_source'],
+            search_form=SimpleSearch(),
+            q=value,
             facets=get_aggregations(value))
     if identifier.startswith("thumbnail"):
         thumbnail_url = "{}{}/datastreams/TN/content".format(
@@ -270,9 +270,18 @@ def fedora_object(identifier, value):
 @aristotle.route("/")
 def index():
     """Displays Home-page of Digital Repository"""
+    query = request.args.get('q', None)
+    mode=request.args.get('mode', None)
+    pid = request.args.get('pid', current_app.config.get("INITIAL_PID"))
+    if query is None:  
+        results = browse(pid)
+    else:
+        results = search(q=query)
     return render_template(
         'discovery/index.html',
-        pid=current_app.config.get("INITIAL_PID"),
-        q=request.args.get('q', None),
-        mode=request.args.get('mode', None)
+        pid=pid,
+        q=query,
+        results = results,
+        search_form=SimpleSearch(),
+        mode=mode
     )

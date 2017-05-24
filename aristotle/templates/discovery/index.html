@@ -1,19 +1,16 @@
 {% extends 'discovery/base.html' %}
 
-{% block more_css %}
- 
-{% endblock %}
-
 {% block main %}
 <h1>Aristotle Digital Repository</h1>
-<p>{% if pid %}Initial PID: {{ pid }}{% endif %}
+{% include 'discovery/search-panel.html' %}
 <div class="row">
     <div class="col-md-4">
         <h2>Facets</h2>
         {% include 'discovery/facets.html' %}
     </div>
     <div class="col-md-8">
-        <h2>Results</h2>
+        <h2>Results {% if q %}for <em>{{ q }}</em>{% endif %}</h2>
+        {% include 'discovery/results.html' %}
     </div>
 </div>
 {% endblock %}

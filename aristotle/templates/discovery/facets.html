@@ -1,0 +1,24 @@
+<div id="facets-accordion" role="tablist" aria-multiselectable="true">
+{% for name, facet in results.aggregations.items() %}
+  <div class="card">
+    <div class="card-header" role="tab" id="heading-{{ loop.index }}">
+      <h5 class="mb-0">
+        <a data-toggle="collapse" class="{% if not loop.first %}collapsed{% endif %}"
+           data-parent="#accordion" href="#collapse-{{ loop.index }}" aria-expanded="true" aria-controls="collapse-{{ loop.index }}">
+          {{ name }}
+        </a>
+      </h5>
+    </div>
+
+    <div id="collapse-{{ loop.index }}" class="collapse {% if loop.first %}show{% endif %}" role="tabpanel" aria-labelledby="heading-{{ loop.index }}">
+      <div class="card-block">
+        <ul>
+        {% for bucket in facet.buckets %}
+            <li><a href="{{ url_for('aristotle.query') }}?mode=facet&facet={{ name }}&facet_val={{ bucket.key }}{% if query %}q={{ query }}{% endif %}">{{ bucket.key }}</a> <span class="badge badge-pill badge-default">{{ bucket.doc_count }}</span></li>
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>

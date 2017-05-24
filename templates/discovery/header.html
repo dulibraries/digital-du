@@ -1,0 +1,58 @@
+{% block more_css %}
+<style>
+    body {
+        background-color: #F1EBD5;
+    }
+
+    div.header {
+        background: url("{{ url_for('static', filename='img/header.jpg') }}") repeat scroll 50%;
+        font-family: Neofill,Verdana !important;
+        text-transform: uppercase;
+        padding-top: 1.5em;
+        padding-bottom: 1em; 
+    }
+
+    a.header {
+        color: #996600;
+    }
+
+    footer {
+        padding: 16px 0;
+        color: #fff;
+        background: #292C34;
+    }
+
+    footer.a {
+        color: #fff;
+    }
+</style>
+{% endblock %}
+<div style="" class="header">
+    <div class="row" >
+        <div class="col-md-8">
+            <img src="{{ url_for('static', filename='img/cc-logo.png') }}" 
+                 style="padding-bottom: 1em;"
+                 alt="Colorado College Logo">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <a href="https://www.coloradocollege.edu/basics/welcome/index.html" class="header">The Basics</a>
+        </div>
+        <div class="col-md-2">
+            <a href="https://www.coloradocollege.edu/academics/curriculum/index.html" class="header">Academics</a> 
+        </div>
+        <div class="col-md-2">
+            <a href="http://www.coloradocollege.edu/lifeatcc" class="header">Life at CC</a>
+        </div>
+        <div class="col-md-2">
+            <a href="http://www.coloradocollege.edu/admission" class="header">Admission &amp; Aid<?a>
+        </div>
+        <div class="col-md-2">
+            <a href="http://www.coloradocollege.edu/newsevents" class="header">News &amp; Events</a>
+        </div>
+        <div class="col-md-2">
+            <a href="http://www.coloradocollege.edu/us/students" class="header">For Us</a>
+        </div>
+    </div>
+</div>

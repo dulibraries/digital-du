@@ -1,0 +1,12 @@
+{% for hit in results.hits.hits %}
+<div class="row" style="padding-bottom: .5em">
+    {% set result = hit._source %}
+    <div class="card col" >
+        <h4 class="card-title">{{ result.titlePrincipal }}</h4>
+        PID={{ result.pid }}
+        {% for note in result.abstract %}
+        <p class="card-text">{{ note }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}

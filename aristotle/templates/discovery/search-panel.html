@@ -1,0 +1,13 @@
+<form class="form" method="POST" action="{{ url_for('aristotle.query') }}">
+    <div class="row">
+        <div class="col-2 offset-1">
+            {{ search_form.mode(class_='form-control') }}
+        </div>
+        <div class="col-6">
+            {{ search_form.q(class_='form-control') }}
+        </div>
+        <div class="col-1">
+            <input type="submit" value="Go" class="btn btn-primary"></input>
+        </div>
+    </div>
+</form>
