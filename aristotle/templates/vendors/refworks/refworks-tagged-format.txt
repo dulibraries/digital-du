@@ -1,5 +1,0 @@
-{% for record in citations %}
-RT {{ record.rt }}
-SR {{ record.sr }}
-ID {{ record.id }}
-

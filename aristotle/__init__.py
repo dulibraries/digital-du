@@ -6,25 +6,18 @@ import os
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
-from flask import Flask, url_for
+from flask import Flask, url_for, current_app
 from werkzeug.contrib.cache import FileSystemCache
 try:
     from .search import REPO_SEARCH
 except ImportError or ValueError:
     from search import REPO_SEARCH
 
-
-app = Flask(__name__,  instance_relative_config=True)
-app.config.from_pyfile('conf.py')
-
-
 cache = FileSystemCache(
-    app.config.get(
-        "CACHE_DIR", 
-        os.path.join(
-            os.path.split(
-                os.path.abspath(os.path.curdir))[0],
-                "cache")))
+    os.path.join(
+        os.path.split(
+            os.path.abspath(os.path.curdir))[0],
+                "cache"))
 
 def harvest():
     """ Harvests Header, Tabs, and Footer from Library Website"""
@@ -73,5 +66,5 @@ def harvest():
     cache.set("scripts", '\n'.join([str(s) for s in scripts]))
 
 
-from .views import *
-from .filters import *
+#from .views import *
+#from .filters import *

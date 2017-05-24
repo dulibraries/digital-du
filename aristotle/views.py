@@ -11,12 +11,13 @@ with open(os.path.join(HOME, "VERSION")) as fo:
     VERSION = fo.read()
 
 from flask import abort, jsonify, render_template, redirect, request,\
-    Response, url_for
-from . import app, cache, REPO_SEARCH
+    Response, url_for, current_app
+from . import cache, REPO_SEARCH
+from .blueprint import aristotle
 from search import browse, filter_query, get_aggregations, get_detail, get_pid,\
     specific_search
 
-@app.route("/about")
+@aristotle.route("/about")
 def about_digitalcc():
     """Displays details of current version of Digital CC"""
     index_created_on = REPO_SEARCH.indices.get('repository').get('repository').get('settings').get('index').get('creation_date')
@@ -26,7 +27,7 @@ def about_digitalcc():
         version = VERSION)
     
 
-@app.route("/browse", methods=["POST", "GET"])
+@aristotle.route("/browse", methods=["POST", "GET"])
 def browser():
     """Browse view for AJAX call from client based on the PID in the
     Form
@@ -46,20 +47,20 @@ def browser():
         cache.set(cache_key, browsed)
     return jsonify(browsed)
 
-@app.route("/contribute")
+@aristotle.route("/contribute")
 def view_contribute():
     return render_template("discovery/Contribute.html")
 	
-@app.route("/takedownpolicy")
+@aristotle.route("/takedownpolicy")
 def view_takedownpolicy():
     return render_template("discovery/Takedown.html")	
 
-@app.route("/needhelp")
+@aristotle.route("/needhelp")
 def view_help():
     return render_template("discovery/Help.html")	
 	
-@app.route("/pid/<pid>/datastream/<dsid>")
-@app.route("/pid/<pid>/datastream/<dsid>.<ext>")
+@aristotle.route("/pid/<pid>/datastream/<dsid>")
+@aristotle.route("/pid/<pid>/datastream/<dsid>.<ext>")
 def get_datastream(pid, dsid, ext=None):
     """View returns the datastream based on pid and dsid
 
@@ -79,7 +80,7 @@ def get_datastream(pid, dsid, ext=None):
         mimetype=exists_result.headers.get('Content-Type'))
 
 
-@app.route("/detail", methods=["POST"])
+@aristotle.route("/detail", methods=["POST"])
 def detailer():
     """Detail view for AJAX call from client based on the PID in
 	the Form.
@@ -93,12 +94,12 @@ def detailer():
         return jsonify(detailed_info)
 
 
-@app.route("/header")
+@aristotle.route("/header")
 def header():
     """Returns HTML doc to be included in iframe"""
-    return render_template('discovery/snippets/cc-header.html')
+    return render_template('discovery/snippets/header.html')
 
-@app.route("/image/<uid>")
+@aristotle.route("/image/<uid>")
 def image(uid):
     """View extracts the Thumbnail datastream from Fedora based on the
     Elasticsearch ID
@@ -118,7 +119,7 @@ def image(uid):
         #raw_thumbnail = result.text
         return Response(result.text, mimetype="image/jpeg")
 
-@app.route("/advanced-search",  methods=["POST", "GET"])
+@aristotle.route("/advanced-search",  methods=["POST", "GET"])
 def advanced_search():
     """Preforms and advanced search"""
     if request.method.startswith("POST"):
@@ -132,7 +133,7 @@ def advanced_search():
         mode=request.args.get('mode', None)
     )
 
-@app.route("/search", methods=["POST", "GET"])
+@aristotle.route("/search", methods=["POST", "GET"])
 def query():
     """View returns Elasticsearch query search results
 
@@ -190,7 +191,7 @@ def query():
 
 
 
-@app.route("/pid/<pid>/datastream/<dsid>.<ext>")
+@aristotle.route("/pid/<pid>/datastream/<dsid>.<ext>")
 def fedora_datastream(pid, dsid, ext):
     """View returns a specific Fedora Datastream including Images, PDFs,
     audio, and video datastreams
@@ -215,7 +216,7 @@ def fedora_datastream(pid, dsid, ext):
         mimetype = "audio/wav"
     return Response(result.text, mimetype=mimetype) 
 
-@app.route("/<identifier>/<value>")
+@aristotle.route("/<identifier>/<value>")
 def fedora_object(identifier, value):
     """View routes to a Fedora Object based on type of identifier and
     a value. Currently only supports routing by PID, should support DOI
@@ -266,12 +267,12 @@ def fedora_object(identifier, value):
 
     return "Should return detail for {} {}".format(identifier, value)
 
-@app.route("/")
+@aristotle.route("/")
 def index():
     """Displays Home-page of Digital Repository"""
     return render_template(
         'discovery/index.html',
-        pid=app.config.get("INITIAL_PID"),
+        pid=current_app.config.get("INITIAL_PID"),
         q=request.args.get('q', None),
         mode=request.args.get('mode', None)
     )

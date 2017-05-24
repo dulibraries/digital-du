@@ -1,33 +1,12 @@
 __author__ = "Jeremy Nelson"
 
 import re
-from . import app, harvest, cache
 from flask import url_for
+from .blueprint import aristotle
 import search
 
 
-@app.template_filter('footer')
-def get_footer(s):
-    footer = cache.get('footer')
-    if footer:
-        return footer
-    harvest()
-    return cache.get('footer')
-
-@app.template_filter('format_icon')
-def get_format_icon(term):
-    return ''
-
-@app.template_filter('header')
-def get_header(s):
-    header = cache.get('header')
-    if header:
-        return header
-    harvest()
-    return cache.get('header')
-
-
-@app.template_filter('icon')
+@aristotle.app_template_filter('icon')
 def get_icon(datastream):
     """Filter returns the glyphicon CSS class for a datastream
 
@@ -55,7 +34,7 @@ def get_icon(datastream):
     if mime_type.endswith("tif"):
         return "glyphicon-download"
 
-@app.template_filter('scripts')
+@aristotle.app_template_filter('scripts')
 def get_scripts(s):
     scripts = cache.get('scripts')
     if scripts:
@@ -63,7 +42,7 @@ def get_scripts(s):
     harvest()
     return cache.get('scripts')
 
-@app.template_filter('slugify')
+@aristotle.app_template_filter('slugify')
 def slugify(value):
     """
     Converts to lowercase, removes non-word characters (alphanumerics and
@@ -73,7 +52,7 @@ def slugify(value):
     value = re.sub('[^\w\s-]', '', value).strip().lower()
     return re.sub('[-\s]+', '-', value)
 
-@app.template_filter('styles')
+@aristotle.app_template_filter('styles')
 def get_styles(s):
     styles = cache.get('styles')
     if styles:
@@ -81,7 +60,7 @@ def get_styles(s):
     harvest()
     return cache.get('styles')
 
-@app.template_filter('tabs')
+@aristotle.app_template_filter('tabs')
 def get_tabs(s):
     """Filter retrieves or harvests CC Library's homepage tabs
   
@@ -95,7 +74,7 @@ def get_tabs(s):
     return cache.get('tabs')
 
 
-@app.template_filter('title_principal')
+@aristotle.app_template_filter('title_principal')
 def get_title(pid):
     """Filter takes a pid and attempts to return the titlePrincipal
 
@@ -131,7 +110,7 @@ VIDEO_TEMPLATE = """<video src="{0}" controls="controls" poster="poster.jpg" wid
 </video>"""
 
 
-@app.template_filter("viewer")
+@aristotle.app_template_filter("viewer")
 def generate_viewer(datastream, dlg_number):
     """Filter takes a datastream and generates HTML5 player based on mime-type
 
