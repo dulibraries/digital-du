@@ -1,12 +1,50 @@
 {% for hit in results.hits.hits %}
+{% set result = hit._source %}
 <div class="row" style="padding-bottom: .5em">
-    {% set result = hit._source %}
     <div class="card col" >
-        <h4 class="card-title">{{ result.titlePrincipal }}</h4>
-        PID={{ result.pid }}
+        <h3 class="card-title">
+        <a href="{{ url_for("aristotle.fedora_object", identifier="pid", value=result.pid) }}">{{ result.titlePrincipal }}</a>
+        </h3>
+        {% if result.creator %}<h4 class="card-title">by{% endif %}
+        {% for creator in  result.creator %}
+        <a href="{{ url_for('aristotle.query') }}?mode=creator&q={{ creator }}">{{ creator }}</a>
+        {% if not loop.last %},{% else %}</h4>{% endif %}
+        {% endfor %}
         {% for note in result.abstract %}
         <p class="card-text">{{ note }}</p>
         {% endfor %}
     </div>
 </div>
 {% endfor %}
+
+Offset: {{ offset }} Size: {{ size }}
+{% if results.hits.total > 25 %}
+<nav aria-label="Search results pagination">
+    <ul class="pagination">
+        <li class="page-item">
+            <a href="#" class="page-link">Previous</a>
+        </li>
+    {% for number in range(0, results.hits.total, 25) %}
+        {% if loop.index < 5 %}
+        <li class="page-item">
+            <a class="page-link" href="#">{{ "{:,}".format(number) }}</a>
+        </li>
+        {% endif %}
+        {% if loop.index == 5 %}
+        <li class="page-item disabled">
+            <a href="#" class="page-link">&hellip;</a>
+        </li>
+        {% endif %}
+        {% if loop.index >= (loop.length-4) %}
+         <li class="page-item">
+            <a class="page-link" href="#">{{ "{:,}".format(number) }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        <li class="page-item">
+            <a href="#" class="page-link">Next</a>
+        </li>
+
+    </ul>
+</nav>
+{% endif %}

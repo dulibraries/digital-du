@@ -3,13 +3,32 @@
 {% block main %}
 <h1>Aristotle Digital Repository</h1>
 {% include 'discovery/search-panel.html' %}
+{% if info %}
+<div class="row">
+    <div class="col-10">
+        <ol class="breadcrumb" style="margin-top: 1em;">
+        {% for row in info.get('inCollections', []) %}
+            <li class="breadcrumb-item {% if loop.last %}active{% endif %}">
+                <a href="{{ url_for('aristotle.fedora_object', identifier='pid', value=row) }}">
+                {{ row|title_principal|truncate(30, True) }}</a>
+            </li>
+        {% endfor %}
+            <li class="breadcrumb-item">
+                {{ info.titlePrincipal|truncate(30, True) }}
+            </li>
+        </ol>
+    </div>
+</div>
+{% endif %}
 <div class="row">
     <div class="col-md-4">
         <h2>Facets</h2>
         {% include 'discovery/facets.html' %}
     </div>
     <div class="col-md-8">
-        <h2>Results {% if q %}for <em>{{ q }}</em>{% endif %}</h2>
+        <h2>{% if results.hits.total > 0 %}{{ "{:,}".format(results.hits.total) }}{% endif %} 
+            Results {% if q %}for <em>{{ q }}</em>{% endif %}
+        </h2>
         {% include 'discovery/results.html' %}
     </div>
 </div>

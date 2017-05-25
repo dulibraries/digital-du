@@ -19,8 +19,8 @@ from search import browse, filter_query, get_aggregations, get_detail, get_pid,\
     specific_search
 
 @aristotle.route("/about")
-def about_digitalcc():
-    """Displays details of current version of Digital CC"""
+def about_aristotle():
+    """Displays details of current version of Aristotle"""
     index_created_on = REPO_SEARCH.indices.get('repository').get('repository').get('settings').get('index').get('creation_date')
     indexed_on = datetime.datetime.utcfromtimestamp(int(index_created_on[0:10]))
     return render_template("discovery/About.html",
@@ -235,9 +235,10 @@ def fedora_object(identifier, value):
                 return render_template(
                     'discovery/detail.html',
                     pid=value,
-                    info=detail_result['hits']['hits'][0])
+                    info=detail_result['hits']['hits'][0],
+                    search_form=SimpleSearch())
         if value.endswith("root"):
-            return redirect(url_for('index'))
+            return redirect(url_for('aristotle.index'))
         return render_template(
             'discovery/index.html',
             pid=value,
@@ -248,14 +249,14 @@ def fedora_object(identifier, value):
             facets=get_aggregations(value))
     if identifier.startswith("thumbnail"):
         thumbnail_url = "{}{}/datastreams/TN/content".format(
-            app.config.get("REST_URL"),
+            current_app.config.get("REST_URL"),
             value)
         tn_result = requests.get(thumbnail_url)
         if tn_result.status_code == 404:
             thumbnail = cache.get('default-thumbnail')
             if not thumbnail:
-                with app.open_resource(
-                    "static/images/CCSquareLogo100.png") as fo:
+                with current_app.open_resource(
+                    "static/img/default-tn.png") as fo:
                     thumbnail = fo.read()
                     cache.set('default-thumbnail', thumbnail)
             mime_type = "image/png"
