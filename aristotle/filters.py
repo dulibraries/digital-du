@@ -121,7 +121,7 @@ def generate_viewer(datastream, dlg_number):
     """
     mime_type = datastream.get('mimeType')
     ds_url = url_for(
-        'get_datastream', 
+        'aristotle.get_datastream', 
         pid=datastream.get('pid'),
         dsid=datastream.get('dsid'))
     if mime_type.endswith('pdf'):

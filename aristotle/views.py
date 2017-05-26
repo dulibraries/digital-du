@@ -70,7 +70,7 @@ def get_datastream(pid, dsid, ext=None):
         dsid -- Either datastream ID of PID
     """
     fedora_url = "{}{}/datastreams/{}/content".format(
-        app.config.get("REST_URL"),
+        current_app.config.get("REST_URL"),
         pid,
         dsid)
     exists_result = requests.get(fedora_url)
@@ -227,7 +227,8 @@ def fedora_object(identifier, value):
         Rendered HTML from template and Elasticsearch
     """
     if identifier.startswith("pid"):
-        results = browse(value)
+        offset = request.args.get("offset", 0)
+        results = browse(value, from_=offset)
         if results['hits']['total'] < 1:
             detail_result = get_detail(value)
             if not 'islandora:collectionCModel' in\
@@ -237,7 +238,7 @@ def fedora_object(identifier, value):
                     pid=value,
                     info=detail_result['hits']['hits'][0],
                     search_form=SimpleSearch())
-        if value.endswith("root"):
+        if value == current_app.config.get("INITIAL_PID"):
             return redirect(url_for('aristotle.index'))
         return render_template(
             'discovery/index.html',
@@ -246,6 +247,7 @@ def fedora_object(identifier, value):
             info=get_detail(value)['hits']['hits'][0]['_source'],
             search_form=SimpleSearch(),
             q=value,
+            offset=offset,
             facets=get_aggregations(value))
     if identifier.startswith("thumbnail"):
         thumbnail_url = "{}{}/datastreams/TN/content".format(

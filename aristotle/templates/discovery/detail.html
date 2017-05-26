@@ -235,7 +235,7 @@
     {% endif %}
         </div>  
     </section>
-</div>#}
+</div>
  {% endblock %}
 
  {% block dialogs %}
@@ -260,37 +260,8 @@
  
 {% endblock %}
 
-{% block more_scripts %}
+{% block more_js %}
 <script>
- var detailViewModel = function() {
-   var self = this;
-   self.chosenSearch = ko.observable();
-
-   self.closePlayers = function() {
-       console.log("Close any players");
-   }
-
-   self.searchingOptions =  [
-      { name: "Keyword", search_type: "search" },
-      { name: "Author", search_type: "author_search" },
-      { name: "Title", search_type: "title_search" },
-      { name: "Subject", search_type: "subject_search" },
-      { name: "Number", search_type: "number_search" }
-    ];
-   self.searchQuery = ko.observable();
-   self.searchCatalog = function() {
-     var query = self.searchQuery();
-     if(query) {
-        var url = "{{ url_for('index') }}?q=" + query +"&mode=" + self.chosenSearch()["search_type"];
-        console.log(url);
-        window.location=url; 
-     }
-   }
-   self.searchRouting = function() {}
- }
- var viewModel = new detailViewModel();
- ko.applyBindings(viewModel);
-
  function closeAll (dlg_id) {
    $('#dialog-'+dlg_id).modal('hide');
    $('#viewer-'+dlg_id)[0].pause();

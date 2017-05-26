@@ -3,6 +3,7 @@
 {% block main %}
 <h1>Aristotle Digital Repository</h1>
 {% include 'discovery/search-panel.html' %}
+<br>
 {% if info %}
 <div class="row">
     <div class="col-10">
@@ -20,16 +21,22 @@
     </div>
 </div>
 {% endif %}
+{% if mode == 'facet' %}
+<div class="alert alert-info">
+Browsing {% if results.hits.total > 0 %}{{ "{:,}".format(results.hits.total) }}{% endif %} results
+for facet <strong>{{ facet }}</strong> with value of <strong>{{ facet_val }}</strong>. 
+</div>
+{% endif %}
 <div class="row">
-    <div class="col-md-4">
-        <h2>Facets</h2>
-        {% include 'discovery/facets.html' %}
-    </div>
     <div class="col-md-8">
-        <h2>{% if results.hits.total > 0 %}{{ "{:,}".format(results.hits.total) }}{% endif %} 
+        {#<h2>{% if results.hits.total > 0 %}{{ "{:,}".format(results.hits.total) }}{% endif %} 
             Results {% if q %}for <em>{{ q }}</em>{% endif %}
-        </h2>
+        </h2>#}
         {% include 'discovery/results.html' %}
+    </div>
+    <div class="col-md-4">
+        {#<h2>Facets</h2>#}
+        {% include 'discovery/facets.html' %}
     </div>
 </div>
 {% endblock %}
