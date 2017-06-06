@@ -178,7 +178,7 @@ def query():
             mode=mode,
             results = search_results,
             search_form=SimpleSearch(),
-            query=query,
+            q=query,
             size=size,
             offset=from_
         )

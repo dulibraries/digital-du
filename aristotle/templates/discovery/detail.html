@@ -41,8 +41,10 @@
                                              {% if not datastream.get('label') in ['PREVIEW', 'TN', 'PROXY_MP3', 'MEDIUM_SIZE'] %}
 
                                               <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}" class="btn btn-default btn-lg">
-                                                              <i class="glyphicon {{ datastream|icon }}"></i> 
+                                                              <i class="fa {{ datastream|icon }}"></i> 
                                               </a>
+                                              
+                                              
                                              {% endif %}
                                               {% endfor %}
                               </div>
@@ -57,8 +59,9 @@
                                               <a data-toggle="modal" href="#" data-target="#dialog-{{ loop.index }}">
                                              
                                                               {{datastream.get('label')}}
-                                                              <i class="glyphicon {{ datastream|icon }}"></i>
+                                                              <i class="fa {{ datastream|icon }}"></i>
                                               </a>
+                                                <a href="#"><i class="fa fa-cloud-download" aria-hidden="true"></i></a>
                                               </li>	
                                               {% endif %}
                                                      {% endfor %}
@@ -201,30 +204,30 @@
             <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
                 <div class="card-block">
 		    <h5>Thesis</h5>
-			{% for thesis in source.get("thesis")%}
+			{% for thesis in source.get("thesis", [])%}
 			{{ thesis|safe }}
 			{% endfor %}
 		    <h5>Thesis Advisor</h5>
-			{% for thesisAdvisor in source.get("thesisAdvisor")%}
+			{% for thesisAdvisor in source.get("thesisAdvisor", [])%}
 			{{ thesisAdvisor|safe}}
 			{% endfor %}
                 {% if "sponsor" in source %}
 		    <h5>Department/Program</h5>
-			{% for sponsor in source.get("sponsor")%}
+			{% for sponsor in source.get("sponsor", [])%}
 			{{ sponsor|safe}}
 			{% endfor %}
                 {% endif %}
 		    <h5>Degree Name</h5>
-			{% for degreeName in source.get("degreeName")%}
+			{% for degreeName in source.get("degreeName", [])%}
 			{{ degreeName|safe}}
 			{% endfor %}	
 		    <h5>Degree Type</h5>
-			{% for degreeType in source.get("degreeType")%}
+			{% for degreeType in source.get("degreeType", [])%}
 			{{ degreeType|safe}}
 			{% endfor %}
                 {% if "degreeGrantor" in source %}
 		    <h5>Degree Grantor</h5>
-			{% for degreeGrantor in source.get("degreeGrantor")%}
+			{% for degreeGrantor in source.get("degreeGrantor", [])%}
 			{{ degreeGrantor|safe}}
 			{% endfor %}
                 {% endif %}

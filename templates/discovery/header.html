@@ -1,4 +1,5 @@
 {% block more_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}"></link>
 <style>
     body {
         background-color: #F1EBD5;
@@ -11,6 +12,23 @@
         padding-top: 1.5em;
         padding-bottom: 1em; 
     }
+
+    div.card-header {
+        background-color: rgb(205,202,180);
+    }
+   
+    div.search-header {
+        background-color: #2d4873;
+        color: #fff;
+        margin-top: .5em;
+        padding: .5em;
+        
+    }
+
+    h1.search-header, h3.search-header {
+        color: #fddb55;
+    }
+
 
     a.header {
         color: #996600;
@@ -25,9 +43,22 @@
     footer.a {
         color: #fff;
     }
+
+    form.search-box {
+        background-color: #f1ece5;
+        border: 5px solid #ffffff;
+        padding-left: 10px;
+        padding-top: 15px;
+    }
+
+    a.search-box {
+        color: 	rgb(150,23,46);
+        font-size: 11pt;
+        font-weight: bold;
+    }
 </style>
 {% endblock %}
-<div style="" class="header">
+<div class="header">
     <div class="row" >
         <div class="col-md-8">
             <img src="{{ url_for('static', filename='img/cc-logo.png') }}" 

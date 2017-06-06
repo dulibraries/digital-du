@@ -15,16 +15,16 @@ def get_icon(datastream):
     """
     mime_type = datastream.get('mimeType')
     if mime_type.endswith("pdf"):
-        return "glyphicon-file"
+        return "fa-file-pdf-o"
     if mime_type.endswith("mp4") or\
        mime_type.endswith("quicktime"):
-        return "glyphicon-facetime-video"
+        return "file-movie-o"
     if mime_type.endswith("mp3") or\
        mime_type.endswith("wav") or\
        mime_type.endswith("wave") or\
        mime_type.endswith("mpeg") or\
        mime_type.startswith("audio/x-m4a"):
-        return "glyphicon-headphones"
+        return "fa-audio-o"
     if mime_type.endswith("jpg") or\
        mime_type.endswith("jpeg") or\
        mime_type.endswith("jp2"):

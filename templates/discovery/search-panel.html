@@ -1,0 +1,40 @@
+<div class="search-header">
+    <h1 class="search-header">Digital CC: Colorado College's Institutional Repository</h1>
+    <div class="row">
+        <section class="col-3">
+            <h3 class="search-header" style="font-size: 14pt">Contacting Tutt Library</h3>
+            <ul style="list-style-type:none">
+                <li>Circulation Desk: 389-6184</li>
+                <li>Reference Desk: 389-6662</li>
+                <li>
+                    <a style="color: #fddb55" href="mailto:tuttref@coloradocollege.edu">Email</a> | <a style="color: #fddb55" href="http://www.coloradocollege.edu/library/about/contact.dot">IM</a> a Librarian
+                </li>
+            </ul>
+        </section>
+        <section class="col-9">
+           <form class="form search-box" {#method="POST"#} action="{{ url_for('aristotle.query') }}">
+               <div class="row">
+                   <div class="col-3">
+                       {{ search_form.mode(class_='form-control') }}
+                   </div>
+                   <div class="col-6">
+                       <div class="input-group">
+                        {{ search_form.q(class_='form-control') }}
+                        <span class="input-group-btn">
+                            <input type="submit" value="Go" class="btn btn-primary"></input>
+                        </span>
+                        </div>
+                   </div>
+                   <div class="col-2">
+                        <ul style="margin-left: -30px">
+                            <li><a class="search-box" href="{{ url_for('aristotle.index') }}">New Search</a></li>
+                            <li><a class="search-box" href="#" onclick="alert('need url_for ');">Contribute</a></li>
+                            <li><a class="search-box" href="#" onclick="alert('need url_for ');">Take-Down Policy</a></li>
+                            <li><a class="search-box" href="#" onclick="alert('need url_for ');">Need Help</a></li>
+                        </ul>
+                   </div>
+               </div>
+           </form>
+        </section>
+    </div>
+</div>

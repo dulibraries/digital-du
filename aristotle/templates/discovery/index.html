@@ -1,7 +1,6 @@
 {% extends 'discovery/base.html' %}
 
 {% block main %}
-<h1>Aristotle Digital Repository</h1>
 {% include 'discovery/search-panel.html' %}
 <br>
 {% if info %}
@@ -21,10 +20,17 @@
     </div>
 </div>
 {% endif %}
+{% if mode %}
+<div class="alert alert-success">
 {% if mode == 'facet' %}
-<div class="alert alert-info">
-Browsing {% if results.hits.total > 0 %}{{ "{:,}".format(results.hits.total) }}{% endif %} results
+Browsing {% if results.hits.total > 0 %}{{ "{:,}".format(results.hits.total) }}{% else %}0{% endif %} result{% if results.hits.total > 1%}s{% endif %}
 for facet <strong>{{ facet }}</strong> with value of <strong>{{ facet_val }}</strong>. 
+</div>
+{% else %}
+    <em>{% if mode == 'kw' %}Keyword{% else %}{{ mode|title }}{% endif %}</em> search 
+    total {{ "{:,}".format(results.hits.total) }} result{% if results.hits.total > 1%}s{% endif %}
+    for <strong>{{ q }}</strong> 
+{% endif %}
 </div>
 {% endif %}
 <div class="row">
