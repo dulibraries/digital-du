@@ -2,27 +2,44 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}"></link>
 <style>
     body {
-        background-color: #F1EBD5;
+        background-color: #f6efe9;
     }
 
-    div.header {
-        background: url("{{ url_for('static', filename='img/header.jpg') }}") repeat scroll 50%;
-        font-family: Neofill,Verdana !important;
-        text-transform: uppercase;
-        padding-top: 1.5em;
-        padding-bottom: 1em; 
-    }
 
     div.card-header {
         background-color: rgb(205,202,180);
     }
-   
+
+    div.header {
+        font-family: Neofill,Verdana !important;
+        padding-top: 1.5em;
+        padding-bottom: 1em; 
+    }
+
     div.search-header {
         background-color: #2d4873;
         color: #fff;
         margin-top: .5em;
         padding: .5em;
-        
+    }
+
+    div.library-tabs {
+        background-image: url("{{ url_for('static', filename='img/busy-library.jpg') }}");
+        height: 75px;
+    }
+
+    a.tab {
+        color: #fff;
+        background-color: #4b6282;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+        display: inline;
+
+    }
+
+    a.tab-highlight {
+        background-color: #fddb55;
+        color: #1f375a;
     }
 
     h1.search-header, h3.search-header {
@@ -31,7 +48,10 @@
 
 
     a.header {
-        color: #996600;
+        color: #000;
+        font-weight: bold;
+        {#font-size: 1.21em;#}
+        font-family: montserrat;
     }
 
     footer {
@@ -58,7 +78,7 @@
     }
 </style>
 {% endblock %}
-<div class="header">
+<div class="header container">
     <div class="row" >
         <div class="col-md-8">
             <img src="{{ url_for('static', filename='img/cc-logo.png') }}" 
@@ -87,3 +107,28 @@
         </div>
     </div>
 </div>
+<div class="library-tabs">
+    <div class="container">
+        <ul class="nav nav-fill">
+            <li class="nav-item">
+                <a href="https://www.coloradocollege.edu/library/" class="nav-link tab">Tutt Library Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="https://www.coloradocollege.edu/library/renovation/index.html" 
+                    class="nav-link tab tab-highlight">Library Renovation</a>
+            </li>
+            <li class="nav-item">
+                <a href="https://www.coloradocollege.edu/library/about/" 
+                   class="nav-link tab">About the Library</a>
+            </li>
+            <li class="nav-item">
+                <a href="https://www.coloradocollege.edu/library/resources/"
+                    class="nav-link tab">Find Resources</a>
+            </li>
+            <li class="nav-item">
+                <a href="https://www.coloradocollege.edu/library/help/"
+                   class="nav-link tab tab-highlight">Help &amp; How-To's</a>
+            </li>
+        </ul>
+    </div>{# END container DIV #}
+</div>{# END library-tabs DIV #}
