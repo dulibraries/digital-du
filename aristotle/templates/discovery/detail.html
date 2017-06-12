@@ -9,6 +9,7 @@
 
 
 {% block main %}
+<div class="container">
 <ol class="breadcrumb" style="margin-top: 1em;">
 {% for row in source.get('inCollections', []) %}
     <li class="breadcrumb-item {% if loop.last %}active{% endif %}">
@@ -83,11 +84,21 @@
 		    <div class="card-block">
 		    {% if 'creator' in source %}
                         <h5>Creator</h5>
-				{% for creator in source.get('creator', []) %}
-				{{ creator }}{% if not loop.last %},{% endif %}
-				{% endfor %}
-				{% endif %}
-                                {% if source.get('dateCreated') != None %}
+                        <ul>
+                        {% for creator in source.get('creator', []) %}
+                            <li>{{ creator }}</li>
+                        {% endfor %}
+                        </ul>
+                     {% endif %}
+                    {% if 'contributor' in source %}
+                        <h5>Contributor</h5>
+                        <ul>
+                        {% for contributor in source.get('contributor', []) %}
+                            <li>{{ contributor}}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                     {% if source.get('dateCreated') != None %}
 				<h5>Date Created</h5>
 				{{ source.get('dateCreated') }}
                                 {% endif %}
@@ -238,6 +249,7 @@
     {% endif %}
         </div>  
     </section>
+</div>
 </div>
  {% endblock %}
 
