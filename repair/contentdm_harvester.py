@@ -130,7 +130,7 @@ class Harvester(object):
         new_pid_result = requests.post(
             "{}new?namespace={}".format(
                 self.conf.REST_URL,
-                "coccc"),
+                "codu"),
             auth=self.conf.FEDORA_AUTH) 
         if new_pid_result.status_code > 399:
             return

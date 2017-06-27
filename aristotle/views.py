@@ -123,7 +123,7 @@ def advanced_search():
     
     return render_template(
         'discovery/index.html',
-        pid="coccc:root",
+        pid="codu:root",
         is_advanced_search=True,
         q=request.args.get('q', None),
         mode=request.args.get('mode', None)

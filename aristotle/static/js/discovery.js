@@ -511,7 +511,7 @@ var simpleViewModel = function() {
     switch(search_type) {
        case "number_search":
          self.shouldShowNumber(true);
-         self.searchPlaceholder("Search by PID i.e. coccc:5454");
+         self.searchPlaceholder("Search by PID i.e. codu:5454");
          self.exactSearch(true);
          break;
 

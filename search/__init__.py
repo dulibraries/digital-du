@@ -92,6 +92,7 @@ def browse(pid, from_=0):
              .params(size=50, from_=from_) \
              .sort("titleInfo.title")
     results = search.execute()
+    print("Results: ", results)
     output = results.to_dict()
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", inCollections=pid) \
