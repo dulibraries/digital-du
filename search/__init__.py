@@ -19,7 +19,7 @@ etree.register_namespace("mods", "http://www.loc.gov/mods/v3")
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 REPO_SEARCH = None
 AGGS_DSL = {
-    "sort": ["titlePrincipal.keyword"],
+    "sort": ["titleInfo.title"],
     "size": 0,
     "aggs": {
         "Format": {
@@ -90,7 +90,7 @@ def browse(pid, from_=0):
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", parent=pid) \
              .params(size=50, from_=from_) \
-             .sort("titlePrincipal.keyword")
+             .sort("titleInfo.title")
     results = search.execute()
     output = results.to_dict()
     search = Search(using=REPO_SEARCH, index="repository") \
