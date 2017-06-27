@@ -34,24 +34,24 @@ AGGS_DSL = {
         },
         "Genres": {
             "terms": {
-                "field": "genre"
+                "field": "subject.genre"
             }
         },
         "Languages": {
 	        "terms": {
-                "field": "language.keyword"
+                "field": "language.languageTerm"
 			}
         },
-        "Publication Year": {
-            "terms": {
-                "field": "publicationYear"
-			}
-        },
-        "Temporal (Time)": {
-            "terms": {
-                "field": "subject.temporal"
-            }
-        },
+   #      "Publication Year": {
+   #          "terms": {
+   #              "field": "publicationYear"
+			# }
+   #      },
+        # "Temporal (Time)": {
+        #     "terms": {
+        #         "field": "subject.temporal"
+        #     }
+        # },
         "Topic": {
             "terms": {
                 "field": "subject.topic"
@@ -81,6 +81,12 @@ def browse(pid, from_=0):
     Args:
 		pid: PID of Fedora Object
     """
+
+    # DU TEST
+   # print("TEST3")
+    pid="codu:root"
+   # print(pid)
+    print("Test");
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", parent=pid) \
              .params(size=50, from_=from_) \
