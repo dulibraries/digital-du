@@ -136,6 +136,8 @@ def query():
     Returns:
         jsonified version of the search result
     """
+    # DU
+    print("DU: Query function data:");
     if request.method.startswith("POST"):
         mode = request.form.get('mode', 'keyword')
         facet = request.form.get('facet')
@@ -143,6 +145,8 @@ def query():
         from_ = request.form.get('from', 0)
         size = request.form.get('size', 25)
         query = request.form["q"]
+
+        print(" A", mode)
     else:
         mode = request.args.get('mode', 'keyword')
         facet = request.args.get('facet')
@@ -150,6 +154,8 @@ def query():
         size = request.args.get('size', 25)
         facet_val = request.args.get('val')
         query = request.args.get('q', None)
+
+        print(" B", mode);
     search_results = None
     if mode in ["creator", "title", "subject", "number"]:
          search_results = specific_search(
@@ -157,6 +163,7 @@ def query():
                 mode,
                 size,
                 from_)
+         print("C1 Results:", search_results)
     if mode.startswith("facet"):
         search_results = filter_query(
             facet, 
@@ -164,13 +171,16 @@ def query():
             query,
             size,
             from_)
+        print("C2 Results:", search_results)
     if not search_results and query is not None:
        search_results = specific_search(
            query,
            "keyword",
            size,
            from_)
+    print("C3 Results:", search_results)
     if "html" in request.headers.get("Accept"):
+        print("D1")
         return render_template(
             'discovery/search-results.html',
             facet=facet,
@@ -183,6 +193,7 @@ def query():
             offset=from_
         )
     else:
+        print("D2")
         return jsonify(search_results)
     
 
@@ -226,6 +237,9 @@ def fedora_object(identifier, value):
     Returns:
         Rendered HTML from template and Elasticsearch
     """
+    # DU
+    print("DU: fed_obj: identifier:", identifier)
+    print("DU: fed_obj: value:", value)
     if identifier.startswith("pid"):
         offset = request.args.get("offset", 0)
         results = browse(value, from_=offset)

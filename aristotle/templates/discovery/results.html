@@ -9,19 +9,11 @@
             </section>
             <section class="col-9">
                 <h3 class="card-title">
-                    <a href="{{ url_for("aristotle.fedora_object", identifier="pid", value=result.pid) }}">{{ result.titlePrincipal }}</a>
+                    <a href="{{ url_for("aristotle.fedora_object", identifier="pid", value=result.pid) }}">{{ result.titleInfo.title }}</a>
                 </h3>
-                {% if result.creator %}<h4 class="card-title">by
-                    {% for creator in  result.creator %}
-                    <a href="{{ url_for('aristotle.query') }}?mode=creator&q={{ creator }}">{{ creator }}</a>
-                    {% if not loop.last %},{% else %}</h4>{% endif %}
-                    {% endfor %}
-                {% endif %}
-                {% for note in result.abstract %}
-                    {% if note and note|length > 0 %}
-                    <p class="card-text">{{ note }}</p>
+                    {% if result.abstract and result.abstract|length > 0 %}
+                    <p class="card-text">{{ result.abstract }}</p>
                     {% endif %}
-                {% endfor %}
             </section>
         </div>
     </div>

@@ -85,14 +85,13 @@ def browse(pid, from_=0):
     # DU TEST
    # print("TEST3")
     pid="codu:root"
-   # print(pid)
-    print("Test");
+    print("DU: Browse PID: ", pid)
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", parent=pid) \
              .params(size=50, from_=from_) \
              .sort("titleInfo.title")
     results = search.execute()
-    print("Results: ", results)
+    print("DU: Browse search results: ", results)
     output = results.to_dict()
     search = Search(using=REPO_SEARCH, index="repository") \
              .filter("term", inCollections=pid) \
