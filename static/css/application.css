@@ -38,7 +38,7 @@
     }
 
     div.search-header {
-        background-color: #2d4873;
+        background-color: #b7ad70;
         color: #fff;
         margin-top: .5em;
         padding: .5em;
@@ -96,4 +96,8 @@
         color: 	rgb(150,23,46);
         font-size: 11pt;
         font-weight: bold;
+    }
+
+    form#search-form {
+    	min-height: 150px;
     }
