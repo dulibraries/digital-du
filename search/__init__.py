@@ -82,15 +82,17 @@ def browse(pid, from_=0):
 		pid: PID of Fedora Object
     """
 
-    # DU TEST
-   # print("TEST3")
-    pid="codu:root"
-    print("DU: Browse PID: ", pid)
+    # DU DEV
+    #pid="codu:root"
+    # .filter("term", parent=pid) \
     search = Search(using=REPO_SEARCH, index="repository") \
-             .filter("term", parent=pid) \
              .params(size=50, from_=from_) \
              .sort("titleInfo.title")
     results = search.execute()
+
+
+
+    # DU DEV
     print("DU: Browse search results: ", results)
     output = results.to_dict()
     search = Search(using=REPO_SEARCH, index="repository") \
@@ -104,6 +106,9 @@ def browse(pid, from_=0):
     search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
     search.aggs.bucket("Topic", A("terms", field="subject.topic"))
     facets = search.execute()
+
+    print("DU: Browse search facet results: ", facets)
+
     output['aggregations'] = facets.to_dict()["aggregations"]
     return output
 
@@ -156,7 +161,7 @@ def filter_query(facet, facet_value, query=None, size=25, from_=0):
 def specific_search(query, type_of, size=25, from_=0, pid=None):
     """Function takes a query and fields list and runs a search on those
     specific fields.
-
+    
     Args:
         query: query terms to search on
         type_of: Type of query, choices should be creator, title, subject,
@@ -165,7 +170,15 @@ def specific_search(query, type_of, size=25, from_=0, pid=None):
     Returns:
 	    A dict of the search results
     """
+
+    #DU: Specific search test
+    print("DU: Specific search pid: ", pid)
+    print("DU: Specific search query: ", query)
+    print("DU: Specific search type_of: ", type_of)
+
+
     search = Search(using=REPO_SEARCH, index="repository")
+
     if type_of.startswith("creator"):
         search = search.query("match_phrase", creator=query)
     elif type_of.startswith("number"):
@@ -179,7 +192,9 @@ def specific_search(query, type_of, size=25, from_=0, pid=None):
     elif query is None and pid is not None:
         search = search.filter("term", parent=pid) \
                  .params(size=50, from_=from_) \
-                 .sort("titlePrincipal")
+                 .sort("titleInfo.title")
+
+
     else:
         search = search.query(
             Q("query_string", query=query, default_operator="AND"))
@@ -192,6 +207,9 @@ def specific_search(query, type_of, size=25, from_=0, pid=None):
     search.aggs.bucket("Temporal (Time)", A("terms", field="subject.temporal"))
     search.aggs.bucket("Topic", A("terms", field="subject.topic"))
     results = search.execute()
+    
+    print("Specific search facet results: ", results)
+
     return results.to_dict()
 
 def get_aggregations(pid=None):
