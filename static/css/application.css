@@ -1,0 +1,99 @@
+
+    body {
+        background-color: #f6efe9;
+    }
+
+    header#du-header {
+        width: 100%;
+        background-color: #8b2332;
+    }
+
+
+    div.card-header {
+        background-color: rgb(205,202,180);
+    }
+
+    div.header {
+/*        font-family: Neofill,Verdana !important;
+        padding-top: 1.5em;
+        padding-bottom: 1em; */
+    }
+
+    div#du-red-header-inner {
+        background-color: #8b2332;
+        height: 50px;
+        margin: auto;
+        width: 99.5%;
+    }
+
+    span#du-logo {
+        margin-top: 5px;
+    }
+
+    span#du-logo a img {
+        height: 38px;
+        width: 133px;
+        margin-top: 5px;
+        margin-left: 5px;
+    }
+
+    div.search-header {
+        background-color: #2d4873;
+        color: #fff;
+        margin-top: .5em;
+        padding: .5em;
+    }
+
+    div.library-tabs {
+        background-image: url("{{ url_for('static', filename='img/busy-library.jpg') }}");
+        height: 75px;
+    }
+
+    a.tab {
+        color: #fff;
+        background-color: #4b6282;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+        display: inline;
+
+    }
+
+    a.tab-highlight {
+        background-color: #fddb55;
+        color: #1f375a;
+    }
+
+    h1.search-header, h3.search-header {
+        color: #fddb55;
+    }
+
+
+    a.header {
+        color: #000;
+        font-weight: bold;
+        {#font-size: 1.21em;#}
+        font-family: montserrat;
+    }
+
+    footer {
+        padding: 16px 0;
+        color: #fff;
+        background: #8b2332;
+    }
+
+    footer a {
+        color: #e5e3e1 !important;
+    }
+
+    form.search-box {
+        background-color: #f1ece5;
+        border: 5px solid #ffffff;
+        padding-left: 10px;
+        padding-top: 15px;
+    }
+
+    a.search-box {
+        color: 	rgb(150,23,46);
+        font-size: 11pt;
+        font-weight: bold;
+    }
